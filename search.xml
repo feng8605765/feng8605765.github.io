@@ -1,6 +1,449 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>MySQL锁总结</title>
+    <url>/2020/04/15/MySQL%E9%94%81%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<blockquote>
+<p>锁是计算机协调多个进程或线程并发访问某一资源的机制。锁保证数据并发<br>访问的一致性，有效性；锁冲突也是影响数据库并发访问性能的一个重要因素<br>锁是Mysql在服务层和存储引擎层的并发控制。</p>
+</blockquote>
+<p>加锁是消耗资源的，锁的各种操作，包括获得锁，检测锁是否已解除，释放锁等。</p>
+<h3 id="锁机制"><a href="#锁机制" class="headerlink" title="锁机制"></a>锁机制</h3><h4 id="共享锁与排他锁"><a href="#共享锁与排他锁" class="headerlink" title="共享锁与排他锁"></a>共享锁与排他锁</h4><ul>
+<li>共享锁（读锁）：其他事务可以读，但不能写。</li>
+<li>排他锁（写锁）：其他事务不能读取，也不能写。</li>
+</ul>
+<h4 id="粒度锁"><a href="#粒度锁" class="headerlink" title="粒度锁"></a>粒度锁</h4><p>MySQL不同的存储引擎支持不同的锁机制，所有的存储引擎都以自己的方式显现了<br>锁机制，服务器层完全不了解存储引擎中的锁实现：</p>
+<ul>
+<li>MyISAM 和 MEMORY 存储引擎采用的是表级锁（table-level locking）</li>
+<li>BDB存储引擎采用的是页面锁（page-level locking）,但也支持表级锁</li>
+<li>InnoDB存储引擎支持行级锁（row-level locking）,也支持表级锁，但默认情况<br>下是采用行级锁。</li>
+</ul>
+<blockquote>
+<p>默认情况下，表锁和行锁都是自动获得的，不需要额外的命令。<br>但是在有的情况下，用户需要明确地进行锁表或者进行事务的控制，以便确保整个<br>事务的完整性，这样就需要使用事务控制和锁定语句来完成。</p>
+</blockquote>
+<h4 id="不同粒度锁的比较："><a href="#不同粒度锁的比较：" class="headerlink" title="不同粒度锁的比较："></a>不同粒度锁的比较：</h4><ul>
+<li>表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高，并发度最低。<ul>
+<li>表级锁更适合以查询为主，并发用户少，只有少量按索引条件更新数据的应用，如web<br>应用</li>
+<li>这些存储引擎通过总是一次性同时获取所有需要的锁以及总是按相同的顺序获取表<br>锁来避免死锁。</li>
+</ul>
+</li>
+<li>行级锁：开销大，加锁慢。会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发<br>度也最高。<ul>
+<li>最大程度的支持并发，同时也带来了最大的锁开销。</li>
+<li>在InnoDB中，除单个 SQL 组成的事务外，锁是逐步获得的，这就决定了再InnoDB<br>中发生死锁是可能的。</li>
+<li>行级锁只在存储引擎层实现，而Mysql服务器层没有实现。行级锁更适合于有大量<br>按索引条件并发更新少量不同数据，同时又有并发查询的应用，如一些在线事务处理<br>（OLTP）系统。</li>
+</ul>
+</li>
+<li>页面锁：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之<br>间，并发度一般。</li>
+</ul>
+<hr>
+<h3 id="MyISAM-表锁"><a href="#MyISAM-表锁" class="headerlink" title="MyISAM 表锁"></a>MyISAM 表锁</h3><h4 id="MyISAM-表级锁模式："><a href="#MyISAM-表级锁模式：" class="headerlink" title="MyISAM 表级锁模式："></a>MyISAM 表级锁模式：</h4><ul>
+<li>表共享读锁（Table Read Lock）：不会阻塞其他用户对同一表的读请求，但会阻塞对<br>同一表的写请求；</li>
+<li>表独占写锁（Table Write Lock）：会阻塞其他用户对同一表的读和写操作；</li>
+</ul>
+<p>MyISAM表的读操作与写操作之间，以及写操作之间是串行的。当一个线程获得对一个表的<br>写锁后，只有持有锁的线程可以对表进行更新操作。其他线程的读，写操作都会等待，直到<br>锁被释放为止。</p>
+<p>默认情况下，写锁比读锁具有更高的优先级：当一个锁释放时，这个锁会优先给写锁队列中<br>等候的获取锁请求，然后再给读锁队列中等候的获取锁请求。</p>
+<p>这也正是MyISAM表不太适合于有大量更新操作和查询操作应用的原因，因为，大量的更新<br>操作会造成查询操作很难获得读锁，从而可能永远阻塞。同时，一些需要长时间运行的查询<br>操作，也会使写线程”饿死”，应用中应尽量避免出现长时间运行的查询操作（在可能的情<br>况下可以通过使用中间表等措施对SQL语句做一定的”分解”，使每一步查询都能在较短时间<br>完成，从而减少锁冲突，如果复杂查询不可避免，应尽量安排在数据库空闲时段执行，比如<br>一些定期统计可以安排在夜间执行）。</p>
+<p>可以设置改变读锁和写锁的优先级：</p>
+<ul>
+<li>通过指定启动参数low-priority-updates，使MyISAM引擎默认给予读请求以优先的权利。</li>
+<li>通过执行命令 SET LOW_PRIORITY_UPDATES = 1，使该链接发出的更新请求优先级降低。</li>
+<li>通过指定INSERT，UPDATE，DELETE语句的LOW_PRIORITY属性，降低该语句的优先级。</li>
+<li>给系统参数max_write_lock_count设置一个合适的值，当一个表的读锁达到这个值后，<br>MySQL就暂时将写请求的优先级降低，给读进程一定获得锁的机会。</li>
+</ul>
+<h4 id="MyISAM加表锁方法："><a href="#MyISAM加表锁方法：" class="headerlink" title="MyISAM加表锁方法："></a>MyISAM加表锁方法：</h4><h3 id="死锁（Deadlock-Free）"><a href="#死锁（Deadlock-Free）" class="headerlink" title="死锁（Deadlock Free）"></a>死锁（Deadlock Free）</h3><ul>
+<li>死锁产生：<ul>
+<li>死锁是指俩个或多个事务在同一资源上相互占用，并请求锁定对方占用的资源，<br>从而导致恶性循环。</li>
+<li>当事务试图以不同的顺序锁定资源时，就可能产生死锁。多个事务同时锁定同<br>一个资源也可能会产生死锁。</li>
+<li>锁的行为和顺序和存储引擎相关。以同样的顺序执行语句，有些存储引擎会产<br>生死锁有些不会——死锁有双重原因：真正的数据冲突；存储引擎的实现方式。</li>
+</ul>
+</li>
+<li>检测死锁：数据库系统实现了各种死锁检测和死锁超时机制。InnoDB存储引擎检测<br>到死锁的循环依赖并立即返回一个错误。</li>
+<li>死锁恢复：死锁发生以后，只有部分或完全回滚其中一个事务，才能打破死锁，InnoDB<br>目前处理死锁的方法是，将持有最少行级排他锁的事务进行回滚。所以事务型应用程序<br>在设计时必须考虑如何处理死锁，多数情况下只需要重新执行因死锁回滚的事务即可。</li>
+<li>外部锁的死锁检测：发生死锁后，InnoDB一般都能自动检测到，并使一个事务释放并<br>回退，另一个事务获得锁，继续完成事务。但在涉及外部锁，或涉及表锁的情况下，<br>InnoDB并不能完全自动检测到死锁，这需要通过设置锁等待超时参数 innodb_lock_wait_timeout 来解决。</li>
+<li>死锁影响性能：死锁会影响性能而不是会产生严重错误，因为InnoDB会自动检测死锁<br>状况并回滚其中一个受影响的事务。在高并发系统上，当许多线程等待同一个锁时，死<br>锁检测可能导致速度变慢。有时当发生死锁时，禁用死锁检测（使用innodb_deadlock_detect<br>配置选项）可能会更有效，这是可以依赖innodb_lock_wait_timeout设置进行事务回滚。</li>
+</ul>
+<h3 id="MyISAM避免死锁"><a href="#MyISAM避免死锁" class="headerlink" title="MyISAM避免死锁"></a>MyISAM避免死锁</h3><ul>
+<li>在自动加锁的情况下，MyISAM总是一次获得SQL语句所需要的全部锁，所以MyISAM表<br>不会出现死锁。</li>
+</ul>
+<h3 id="InnoDB避免死锁"><a href="#InnoDB避免死锁" class="headerlink" title="InnoDB避免死锁"></a>InnoDB避免死锁</h3><ul>
+<li>为了在单个InnoDB表上执行多个并发写入操作时避免死锁，可以在事务开始时通过为<br>预期要修改的每个元祖（行）使用SELECT…FOR UPDATE语句来获取必要的锁，即使这<br>些行的更改语句是在之后才执行的。</li>
+<li>在事务中，如果要更新记录，应该直接申请足够级别的锁，即排他锁，而不应先申请<br>共享锁，更新时再申请排他锁，因为这时候当用户再申请排他锁时，其他事务可能又已<br>经获得了相同记录的共享锁，从而造成锁冲突，甚至死锁。</li>
+<li>如果事务需要修改或锁定多个表，则应在每个事务中以相同的顺序使用加锁语句。在<br>应用中，如果不同的程序会并发存取多个表，应尽量约定以相同的顺序来访问表，这样<br>可以大大降低产生死锁的机会</li>
+<li>通过SELECT…LOCK IN SHARE MODE获取行的读锁后，如果当前事务再需要对该记录<br>进行更新操作，则很有可能造成死锁。</li>
+<li>改变事务隔离级别</li>
+</ul>
+<blockquote>
+<p>如果出现死锁，可以用 SHOW INNODB STATUS 命令来确定最后一个死锁产生的原因。<br>返回结果中包括死锁相关事务的详细信息。如引发死锁的SQL语句，事务已经获得的锁，<br>正在等待什么锁，以及被回滚的事务等。据此可以分析死锁产生的原因和改进错失。</p>
+</blockquote>
+<h3 id="一些优化锁性能的建议"><a href="#一些优化锁性能的建议" class="headerlink" title="一些优化锁性能的建议"></a>一些优化锁性能的建议</h3><ul>
+<li>尽量使用较低的隔离级别</li>
+<li>精心设计索引，并尽量使用索引访问数据，使加锁更精确，从而减少锁冲突的机会</li>
+<li>选择合理的事务大小，小事务发生锁冲突的几率也更小。</li>
+<li>给记录集显示加锁时，最好一次性请求足够级别的锁，比如要修改数据的话，最好<br>直接申请排他锁，而不是先申请共享锁，修改时再请求排他锁，这样容易死锁。</li>
+<li>不同的程序访问一组表时，应尽量约定以相同的顺序访问各表，对一个表而言，尽<br>可能以固定的顺序存取表中的行，这样可以大大减少死锁的机会。</li>
+<li>尽量用相等条件访问数据，这样可以避免间隙锁对并发插入的影响。</li>
+<li>不要申请超过实际需要的锁级别</li>
+<li>除非必须，查询时不要显示加锁。MySQL的MVCC可以实现事务中的查询不用加锁，优化<br>事务性能；MVC只在COMMITTED READ（读提交）和REPEATABLE READ（可重复读）两种<br>隔离级别下工作。</li>
+<li>对于一些特定的事务，可以使用表锁来提高处理速度或减少死锁的可能。</li>
+</ul>
+<h3 id="乐观锁、悲观锁"><a href="#乐观锁、悲观锁" class="headerlink" title="乐观锁、悲观锁"></a>乐观锁、悲观锁</h3><ul>
+<li>乐观锁（Optimistic Lock）： 假设不会发生并发冲突，只在提交操作时检查是否违反<br>数据完整性，乐观锁不能解决脏读的问题。</li>
+</ul>
+<blockquote>
+<p>乐观锁，顾明思议，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上<br>锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等<br>机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量，像数据库如果提供类似于write_condition<br>机制的其实都是提供的乐观锁。</p>
+</blockquote>
+<ul>
+<li>悲观锁（Pessimistic Lock）： 假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作。</li>
+</ul>
+<blockquote>
+<p>悲观锁，顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿<br>数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据<br>库里面就用到了很多这种锁机制，比如行锁，表锁，写锁等，都是在做操作之前先上锁。</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>MySQL分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vagrant基本命令</title>
+    <url>/2020/04/16/vagrant%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h3 id="vagrant-box-基本命令"><a href="#vagrant-box-基本命令" class="headerlink" title="vagrant box 基本命令"></a>vagrant box 基本命令</h3><ul>
+<li>列出本地环境中所有的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box list</span><br></pre></td></tr></table></figure></li>
+<li>添加box到本地vagrant环境<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box add box-name (box-url)</span><br></pre></td></tr></table></figure></li>
+<li>更新本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box update box-name</span><br></pre></td></tr></table></figure></li>
+<li>删除本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box remove box-name</span><br></pre></td></tr></table></figure></li>
+<li>重新打包本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box repackage box-name</span><br></pre></td></tr></table></figure></li>
+<li>在线查找需要的box<br>网址：<a href="https://app.vagrantup.com/boxes/search" target="_blank" rel="noopener">https://app.vagrantup.com/boxes/search</a></li>
+</ul>
+<h3 id="vagrant-基本命令"><a href="#vagrant-基本命令" class="headerlink" title="vagrant 基本命令"></a>vagrant 基本命令</h3><ul>
+<li>在空文件夹初始化虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagran init [box-name]</span><br></pre></td></tr></table></figure></li>
+<li>在初始化完的文件夹内启动虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant up</span><br></pre></td></tr></table></figure></li>
+<li>ssh登录启动的虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant ssh</span><br></pre></td></tr></table></figure></li>
+<li>挂起启动的虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant suspend</span><br></pre></td></tr></table></figure></li>
+<li>重启虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant reload</span><br></pre></td></tr></table></figure></li>
+<li>关闭虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant halt</span><br></pre></td></tr></table></figure></li>
+<li>查找虚拟机的运行状态<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant status</span><br></pre></td></tr></table></figure></li>
+<li>销毁<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant destroy</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>vagrant基本命令</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>享元模式（Flyweight）</title>
+    <url>/2020/04/14/%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%EF%BC%88Flyweight%EF%BC%89/</url>
+    <content><![CDATA[<hr>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">享元模式（Flyweight Pattern）主要用于减少创建对象的数量，以减少内存的占</span><br><span class="line">用和提高性能。这种类型的设计模式属于结构型模式，它提供了减少对象数量从而改</span><br><span class="line">善应用所需的对象结构的方式。</span><br><span class="line">享元模式尝试重用现有的同类对象，如果未找到匹配的对象，则创建新对象。我们将</span><br><span class="line">通过创建5个对象来画出20个分布不同位置的圆来演示这种模式。由于只有五种可用</span><br><span class="line">的颜色，所以 color 属性被用来检查现有的 Circle 对象</span><br></pre></td></tr></table></figure>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
+<li>意图：运用共享技术有效地支持大量细粒度的对象。</li>
+<li>主要解决：在有大量对象时，有可能会造成内存溢出，我们把其中共同部分抽象出来，<br>如果有相同的业务请求，直接返回在内存中已有的对象，避免重新创建。</li>
+<li>何时使用：</li>
+</ul>
+<ol>
+<li>系统中有大量对象。</li>
+<li>这些对象消耗大量内存。</li>
+<li>这些对象的状态大部分可以外部化。</li>
+<li>这些对象可以按照内蕴状态分为很多组，当把外蕴对象从对象中剔除出来时，每一组<br>对象都可以用一个对象来代替。</li>
+<li>系统不依赖于这些对象身份，这些对象是不可分辨的。</li>
+</ol>
+<ul>
+<li>如何解决：用唯一标识判断，如果在内存中有，则返回这个唯一标识码所标识的对象。</li>
+<li>关键代码：用 <strong>HashMap</strong> 存储这些对象。</li>
+<li>简单来说<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">它用于通过尽可能多地与类似对象共享来最小化内存使用或计算开销。</span><br></pre></td></tr></table></figure></li>
+<li>百度上说<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">在计算机编程中，flyweight 是一种软件设计模式。flyweight 是一个通过与其他</span><br><span class="line">类似对象共享尽可能多的数据来最小化内存使用的对象；当简单的重复表示将使用不</span><br><span class="line">可接受的内存量时，它是一种大量使用对象的方法。</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="现实中的例子"><a href="#现实中的例子" class="headerlink" title="现实中的例子"></a>现实中的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">你有没有从一些摊位买到新鲜的茶？他们经常制作你需要的不止一个杯子，并为其他</span><br><span class="line">任何客户保存其余的，以节省资源，例如天然气等。Flyweight 模式就是那个即共享</span><br></pre></td></tr></table></figure>
+
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>从上面翻译我们的茶为例子。首先，我们有茶类和茶具</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class KarakTea</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class TeaMaker</span><br><span class="line">&#123;</span><br><span class="line">	protected $availableTea &#x3D; [];</span><br><span class="line"></span><br><span class="line">	public function make($preference)</span><br><span class="line">	&#123;</span><br><span class="line">		if (empty($this-&gt;availableTea[$preference]))&#123;</span><br><span class="line">			$this-&gt;availableTeap[$preference] &#x3D; new KarakTea();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return $this-&gt;availableTea[$preference];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们有 <strong>TeaShop</strong> 接受订单并为他们服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TeaShop</span><br><span class="line">&#123;</span><br><span class="line">	protected $orders;</span><br><span class="line">	protected $teaMaker;</span><br><span class="line"></span><br><span class="line">	public function __construct(TeaMaker $teaMaker)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;teaMaker &#x3D; $teaMaker;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function takeOrder(string $teaType, int $table)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;orders[$table] &#x3D; $this-&gt;teaMaker-&gt;make($teaType);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function serve()</span><br><span class="line">	&#123;</span><br><span class="line">		foreach ($this-&gt;orders as $table &#x3D;&gt; $tea)&#123;</span><br><span class="line">			echo &quot;Serving tea to table#&quot;.$table;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它可以如下使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$teaMaker &#x3D; new TeaMaker();</span><br><span class="line">$shop &#x3D; new TeaShop($teaMaker);</span><br><span class="line"></span><br><span class="line">$shop-&gt;takeOrder(&#39;less sugar&#39;,1);</span><br><span class="line">$shop-&gt;takeOrder(&#39;more milk&#39;, 2);</span><br><span class="line">$shop-&gt;takeOrder(&#39;without sugar&#39;, 5);</span><br><span class="line"></span><br><span class="line">$shop-&gt;serve();</span><br></pre></td></tr></table></figure>
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>大大减少对象的创建，降低系统的内存，使效率提高。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>提高了系统的复杂度，需要分离出外部状态和内部状态，而且外部状态具有固有化的<br>性质，不应该随着内部状态的变化而变化，否则会造成系统的混乱。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li>系统有大量相似对象。</li>
+<li>需要缓冲池的场景。</li>
+</ol>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 注意划分外部状态和内部状态，否则可能会引起线程安全问题。</span><br><span class="line">2. 这些类必须有一个工厂对象加以控制。</span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
+    <title>Mysql高级查询优化</title>
+    <url>/2020/04/15/Mysql%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h3 id="数据库事务"><a href="#数据库事务" class="headerlink" title="数据库事务"></a>数据库事务</h3><h4 id="ACID特性"><a href="#ACID特性" class="headerlink" title="ACID特性"></a>ACID特性</h4><ul>
+<li>原子性：事务是最小的执行单位，不允许分割。事务的原子性确保动作要么全部完成，<br>要么完全不起作用。</li>
+<li>一致性：执行事务前后，数据库从一个一致性状态转换到另一个一致性状态。</li>
+<li>隔离性：并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数<br>据库是独立的。</li>
+<li>持久性：一个事务被提交后，它对数据库中数据的改变是持久的，即使数据库发生故障<br>也不应该对其有任何影响。</li>
+</ul>
+<h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><ul>
+<li>READ_UNCOMMITTED（未提交读）：最低的隔离级别，允许读取尚未提交的数据，<br>可能会导致脏读、幻读或不可重复读。</li>
+<li>READ_COMMITTED（提交读）：允许读取并发事务已经提交的数据，可以阻止脏读，<br>但是幻读或不可重复读扔有可能发生。</li>
+<li>REPEATABLE_READ（可重复读）：对同一字段的多次读取结果都是一致的，除非数据<br>是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。</li>
+<li>SERIALIZABLE（串行）：最高的隔离级别，完全服从ACID的隔离级别，所有的事务<br>依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、<br>不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会用到该级别。<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Mysql默认采用的REPEATABLE_READ（可重复读）隔离级别</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="了解索引"><a href="#了解索引" class="headerlink" title="了解索引"></a>了解索引</h3><h4 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h4><ul>
+<li>索引是一种帮助MySQL高效获取数据的数据结构。</li>
+</ul>
+<h4 id="优势和劣势"><a href="#优势和劣势" class="headerlink" title="优势和劣势"></a>优势和劣势</h4><ul>
+<li><strong>优势</strong><ol>
+<li>提高数据检索的效率，降低数据库的IO成本</li>
+<li>降低数据排序的成本，降低了CPU的消耗</li>
+</ol>
+</li>
+<li><strong>劣势</strong><ol>
+<li>索引列要占用空间</li>
+<li>降低了更新表的速度（INSERT、UPDATE）</li>
+<li>建立优秀索引的时间成本</li>
+</ol>
+</li>
+</ul>
+<h4 id="那些情况需要创建索引"><a href="#那些情况需要创建索引" class="headerlink" title="那些情况需要创建索引"></a>那些情况需要创建索引</h4><ul>
+<li>主键自动建立唯一索引</li>
+<li>频繁作为查询条件的字段应该创建索引</li>
+<li>查询中与其他表关联的字段，外键关系建立索引</li>
+<li>where条件里用不到的字段不创建索引</li>
+<li>单间/组合索引的选择问题，在高并发倾向创建组合索引</li>
+<li>查询中排序的字段，排序字段若通过索引去访问将大大提高排序速度</li>
+<li>查询中统计或分组字段</li>
+</ul>
+<h4 id="那些情况下不需要创建索引"><a href="#那些情况下不需要创建索引" class="headerlink" title="那些情况下不需要创建索引"></a>那些情况下不需要创建索引</h4><ul>
+<li>表记录太少</li>
+<li>频繁更新的字段不适合创建索引，因为每次更新不单单是更新了记录还会更新索引，加重了IO负担。</li>
+<li>数据重复且分布平均的表字段（若某个数据列包含许多重复的内容，为它建立索引就<br>没有太大的实际效果，即过滤性不好的字段）</li>
+</ul>
+<h3 id="EXPLAIN【重点】"><a href="#EXPLAIN【重点】" class="headerlink" title="EXPLAIN【重点】"></a>EXPLAIN【重点】</h3><blockquote>
+<p>使用EXPLAIN关键字可以模拟优化器执行SQL查询语句，从而知道MYSQL是如何处理你<br>的SQL语句，分析你的查询语句或是表结构的性能瓶颈。</p>
+</blockquote>
+<h4 id="EXPLAIN查询出来的字段"><a href="#EXPLAIN查询出来的字段" class="headerlink" title="EXPLAIN查询出来的字段"></a>EXPLAIN查询出来的字段</h4><ul>
+<li><strong>id</strong><ol>
+<li>id相同，执行顺序由上至下。</li>
+<li>id不同，id值越大优先级越高，越先被执行</li>
+</ol>
+</li>
+<li><strong>select_type</strong><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">查询的类型，主要是用于区别普通的查询、联合查询、子查询等的复杂查询</span><br></pre></td></tr></table></figure></li>
+<li><strong>table</strong><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">显示这行的数据是关于那张表的。</span><br></pre></td></tr></table></figure></li>
+<li><strong>type（最好到最差的顺序）</strong><ol>
+<li>system：表只有一行记录（等于系统表），这是const的特例，平时不会出现。</li>
+<li>const：表示通过索引一次就找到了，const用于比较primary key或者unique<br>索引。因为只匹配一行数据所以很快。如将主键置于where列表中，MySQL就能将该<br>查询转换为一个常量。</li>
+<li>eq_ref：唯一性索引扫描，对于每个索引建，表中只有一条记录与之匹配。常用<br>于主键或唯一索引扫描。</li>
+<li>ref：非唯一性索引扫描，返回匹配某个单独值的所有行，可能会找到多个符合条件的行。</li>
+<li>range：只检索给定范围的行，使用一个索引来选择行。key列显示使用了哪个索<br>引。一般是你的where语句中出现between，&lt;,&gt;,in等的查询，这种范围扫描索引扫<br>描比全表扫描要好。</li>
+<li>index：index与all的区别为index类型只遍历索引树，也就是说，虽然all和index<br>都是读全表，但index是从索引中读取的，而all是从硬盘中读取的。</li>
+<li>all：遍历全表</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>一般来说，得保证查询至少达到range级别，最好能达到ref</p>
+</blockquote>
+<ul>
+<li><strong>possible_keys</strong><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">可能应用到这张表的索引</span><br></pre></td></tr></table></figure></li>
+<li><strong>key</strong><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">实际使用的索引</span><br></pre></td></tr></table></figure></li>
+<li><strong>key_len</strong><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">索引使用的字节数，在不损失精确性的情况下，长度越短越好</span><br></pre></td></tr></table></figure></li>
+<li><strong>ref</strong><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">显示索引的哪一列被使用了</span><br></pre></td></tr></table></figure></li>
+<li><strong>rows</strong><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">大致估算出找到所需记录要读取的行数</span><br></pre></td></tr></table></figure></li>
+<li><strong>Extra</strong></li>
+<li>Using filesort：说明mysql会对数据使用一个外部的索引排序，而不是按照表内<br>的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序”</li>
+<li>Using temporary：使用了临时表保存中间结果，MySQL在对查询结构排序时使用<br>临时表，常见于排序order by和分组查询group by</li>
+<li>USING index：表示相应的select操作中使用了覆盖索引，避免访问了表的数据行</li>
+</ul>
+<h4 id="什么情况下索引会失效"><a href="#什么情况下索引会失效" class="headerlink" title="什么情况下索引会失效"></a>什么情况下索引会失效</h4><ul>
+<li>全值匹配</li>
+<li>最佳左前缀法则<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果索引了多列，要遵守最左前缀法则，指的是查询从索引的最左前列开始并且 不跳过索引中的列。</span><br></pre></td></tr></table></figure></li>
+<li>不在索引列上做任何操作（计算，函数，（手动或自动）类型转换），会导致索引失效而转向全表扫描</li>
+<li>存储引擎不能使用索引中范围条件右边的列</li>
+<li>尽量使用覆盖索引</li>
+<li>MySQL在使用不等于（！=或&lt;&gt;）的时候无法使用索引会导致全表扫描</li>
+<li>is null，is not null 也无法使用索引</li>
+<li>like以通配符开头（”%bac..”）MySQL索引失效会变成全表扫描的操作。</li>
+<li>字符串不加单引号索引失效（自动类型转换）</li>
+<li>or左边有索引、右边没索引也会失效</li>
+</ul>
+<h4 id="order-By关键字优化"><a href="#order-By关键字优化" class="headerlink" title="order By关键字优化"></a>order By关键字优化</h4><ul>
+<li>尽量使用index方式排序，避免使用filesort（文件排序）方式。</li>
+<li>order by满足两种情况会使用index排序：<br>① order by语句使用索引最左前列<br>② 使用where子句与order by子句条件列组合满足索引最左前列。</li>
+<li>双路排序：MySQL4.1之前，俩次扫描磁盘</li>
+<li>单路排序：从磁盘读取查询需要的所有列，按照order by列在buffer对它们进行排序<br>然后扫描排序后的列进行输出，效率更高一点，但是它会使用更多的空间，因为它每一<br>行都在内存中保存了。<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">单路排序的缺点：因为单路是将所有的字段都放在内存中，假如，</span><br><span class="line">这张表实在太大，大的超过了sort_buffer这个值了，那么每次只</span><br><span class="line">能取sort_buffer的数据，来进行排序（会创建tmp文件，然后多路</span><br><span class="line">合并），相当于多路了，这样一来效率比双路还差。</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<blockquote>
+<p>优化策略：增大sort_buffer_size参数的设置，增大max_length_for_sort_data参数的设置。</p>
+</blockquote>
+<h4 id="group-By关键字优化"><a href="#group-By关键字优化" class="headerlink" title="group By关键字优化"></a>group By关键字优化</h4><ul>
+<li>实质是先后排序后进行分组，遵照索引的最佳左前缀，当无法使用索引列时，增大<br>sort_buffer_size + max_length_for_sort_data参数的设置</li>
+</ul>
+<h3 id="慢查询【重点】"><a href="#慢查询【重点】" class="headerlink" title="慢查询【重点】"></a>慢查询【重点】</h3><h4 id="慢查询日志是什么"><a href="#慢查询日志是什么" class="headerlink" title="慢查询日志是什么"></a>慢查询日志是什么</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">MySQL的慢查询日志是MySQL提供的一种日志记录，它用来记录在MySQL中响应时间</span><br><span class="line">超过阀值的语句，具体运行时间超过long_query_time值的SQL，则会被记录到慢</span><br><span class="line">查询日志中。具体指运行时间超过long_query_time的SQL，则会被记录到慢查询</span><br><span class="line">日志中。long_query_time的默认值为10，意思是运行10秒以上的语句。由他来看</span><br><span class="line">那些SQL超出了我们的最大忍耐时间值，比如一条sql执行超过5秒钟，我们就算慢SQL</span><br><span class="line">希望能收集超过5秒的sql，结合之前explain进行全面分析。</span><br></pre></td></tr></table></figure>
+<h4 id="怎么用"><a href="#怎么用" class="headerlink" title="怎么用"></a>怎么用</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">默认情况下，MySQL数据库没有开启慢查询日志，需要我们手动来设置这个参数。</span><br><span class="line">（当然，如果不是调优需要的话，一般不建议启动该参数，因为开启慢查询日志</span><br><span class="line">会或多或少带来一定的性能影响。慢查询日志支持将日志记录写入文件。）</span><br></pre></td></tr></table></figure>
+<h4 id="Show-Profile-【重点】"><a href="#Show-Profile-【重点】" class="headerlink" title="Show Profile 【重点】"></a>Show Profile 【重点】</h4><ul>
+<li>是什么<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql提供可以用来分析当前会话中语句执行的资源消耗情况，可以用于SQL的调优</span><br><span class="line">的测量，相比explain，show profile展示的数据更加详尽。</span><br></pre></td></tr></table></figure></li>
+<li>怎么用<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 查看是否开启</span><br><span class="line">show variables like &#39;profiling&#39;;</span><br><span class="line"></span><br><span class="line">-- 开启功能，默认是关闭 使用前需要开启</span><br><span class="line">set profiling &#x3D; 1；</span><br><span class="line"></span><br><span class="line">-- 诊断SQL</span><br><span class="line">show profile cpu,block io for query n;</span><br><span class="line">-- 还可以通过SELECT * FROM information_schema.profiling WHERE query_id &#x3D; n ORDER BY seq;获取</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>数据库的优化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>工厂模式（Factory）</title>
+    <url>/2020/04/14/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h3><ul>
+<li>定义: 工厂模式(Factory Pattern)最常用的设计模式之一。这种类型的设计模式<br>数据创建型模式，提供了一种创建对象的最佳方式。</li>
+<li>意图： 定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式<br>使其创建过程延迟到子类进行。</li>
+<li>主要解决： 接口选择的问题。</li>
+<li>何时使用： 明确地计划不同条件下创建不同实例时。</li>
+<li>如何解决： 让其子类实现工厂接口，返回的也是一个抽象的产品。</li>
+<li>关键代码： 创建过程在其子类执行。</li>
+<li>简单来说： 简单工厂只是为客户端生成一个实例，而不会向客户端公开任何实例化逻辑。</li>
+</ul>
+<h3 id="现实场景的例子"><a href="#现实场景的例子" class="headerlink" title="现实场景的例子"></a>现实场景的例子</h3><ul>
+<li>你再造一辆车，而你需要一个引擎。这时你可以带上工具，材料及所需要的工具。<br>或者你可以简单的打个电话给工厂让他们给你送过来。而你不需要知道引擎制作的复杂工序。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>我们需要个引擎和实现工序</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Engine</span><br><span class="line">&#123;</span><br><span class="line">	public function getSteel():float;</span><br><span class="line"></span><br><span class="line">	public function getGasoline():float;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CarEngine implements Engine</span><br><span class="line">&#123;</span><br><span class="line">	protected $steel;  &#x2F;&#x2F; 钢铁</span><br><span class="line"></span><br><span class="line">	protected $gasoline; &#x2F;&#x2F; 汽油</span><br><span class="line"></span><br><span class="line">	public function __construct(float $steel, float $gasoline)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;steel &#x3D; $steel;</span><br><span class="line">		$this-&gt;gasoline &#x3D; $gasoline;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getSteel():float</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;steel;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getGasoline():float</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;gasoline;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们有自己的工厂去制造它</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class EngineFactory</span><br><span class="line">&#123;</span><br><span class="line">	public static function makeEngine($steel, $gasoline): Engine</span><br><span class="line">	&#123;</span><br><span class="line">		return new CarEngine($steel, $gasoline);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们就需要开始制作它。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$engine &#x3D; EngineFactory::makeEngine(100, 100);</span><br><span class="line"></span><br><span class="line">echo &#39;steel: &#39;.$engine-&gt;getSteel();</span><br><span class="line">echo &#39;gasoline: &#39;.$engine-&gt;getGasoline();</span><br><span class="line"></span><br><span class="line">$engine2 &#x3D; EngineFactory::makeEngine(100, 200);</span><br></pre></td></tr></table></figure>
+<p>需要采用工厂模式的时机</p>
+<ul>
+<li>当创建对象不仅仅是一些分配而且涉及一些逻辑时，将它放在专用的工厂中而不是在任何<br>地方重复相同的代码。</li>
+</ul>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>一个调用者想创建一个对象，只要知道其名称就可以了。</li>
+<li>扩展性搞，如果想增加一个产品，只要扩展一个工厂类就可以了。</li>
+<li>屏蔽产品的具体实现，调用者只关心产品的接口。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>每次增加一个产品时，都需要增加一个具体类和对象实现工厂，使得系统中类的个数成<br>倍增加，在一定程度上增加了系统的复杂度，同时增加了系统具体类的依赖。</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>简单的工厂模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 安装 docker</title>
+    <url>/2020/04/16/ubuntu-install-docker/</url>
+    <content><![CDATA[<h3 id="Ubuntu安装国内镜像"><a href="#Ubuntu安装国内镜像" class="headerlink" title="Ubuntu安装国内镜像"></a>Ubuntu安装国内镜像</h3><ul>
+<li>buntu 的软件源配置文件是 /etc/apt/sources.list。将系统自带的该文件做个备份，将该文件替换为下面内容，即可使用 TUNA 的软件源镜像。</li>
+</ul>
+<p>当前选择16.04版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial main restricted universe multiverse</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-updates main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-updates main restricted universe multiverse</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-backports main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-backports main restricted universe multiverse</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-security main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line"># 预发布软件源，不建议启用</span><br><span class="line"># deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-proposed main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-proposed main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果需要其它镜像可参考链接：<a href="https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/</a></p>
+</blockquote>
+<h3 id="Ubuntu上安装Docker-Engine"><a href="#Ubuntu上安装Docker-Engine" class="headerlink" title="Ubuntu上安装Docker Engine"></a>Ubuntu上安装Docker Engine</h3><h5 id="文档参考：https-docs-docker-com-engine-install-ubuntu"><a href="#文档参考：https-docs-docker-com-engine-install-ubuntu" class="headerlink" title="文档参考：https://docs.docker.com/engine/install/ubuntu/"></a>文档参考：<a href="https://docs.docker.com/engine/install/ubuntu/" target="_blank" rel="noopener">https://docs.docker.com/engine/install/ubuntu/</a></h5><h4 id="操作系统要求"><a href="#操作系统要求" class="headerlink" title="操作系统要求"></a>操作系统要求</h4><p>要安装Docker Engine，您需要以下Ubuntu版本之一的64位版本：</p>
+<ul>
+<li>Ubuntu Eoan 19.10</li>
+<li>Ubuntu Bionic 18.04（LTS）</li>
+<li>Ubuntu Xenial 16.04（LTS）</li>
+</ul>
+<h4 id="卸载旧版本"><a href="#卸载旧版本" class="headerlink" title="卸载旧版本"></a>卸载旧版本</h4><p>旧的Docker版本被称为 docker，docker.io or docker-engine.如果你已安装，请先卸载。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
+<p>如果apt-get提示没有安装这些软件包，则允许/var/lib/docker/中的内容包括（images，containers，<br>volumes 和 networks）保留。Docker Engine包现在被称为Docker ce。</p>
+<h4 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h4><p>您可以根据需要不同的方式安装Docker Engine:</p>
+<ul>
+<li>大多数用户会 设置Docker的存储库并从中进行安装，以简化安装和升级任务，推荐方法。（以下会采用）</li>
+<li>一些用户下载并 手动安装 DEB软件包，并完全手动管理升级。这在无法访问互联网的空白<br>系统上安装Docker的情况下很有用。</li>
+<li>在测试和开发环境中，一些用户选择使用自动 便利脚本 来安装Docker.</li>
+</ul>
+<h5 id="使用储存库安装（推荐）"><a href="#使用储存库安装（推荐）" class="headerlink" title="使用储存库安装（推荐）"></a>使用储存库安装（推荐）</h5><p>在新的系统上首次安装Docker Engine之前，需要设置Docker存储库，之后您可以从存储库安装<br>和更新Docker。</p>
+<p>** SET UP THE REPOSITORY (设置存储库) **</p>
+<ol>
+<li><p>更新apt 软件包索引并安装软件包以允许apt通过HTTPS使用存储库：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure></li>
+<li><p>添加Docker的官方GPG秘钥：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ curl -fsSL https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu&#x2F;gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88通过搜索指纹的后8个字符，验证您现在是否拥有带有指纹的密钥 。</p>
+</blockquote>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-key fingerprint 0EBFCD88 </span><br><span class="line">pub   rsa4096 2017-02-22 [SCEA]</span><br><span class="line">     9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid           [ unknown] Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   rsa4096 2017-02-22 [S]</span><br></pre></td></tr></table></figure></li>
+<li><p>使用以下命令来设置稳定的存储库，要添加 nightly(每晚) or test(测试) repository(存储库)<br>。请在以下命令中最后添加上 nightly 或 test（两者）stable.了解nightly和test <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener">频道链接</a>：</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x86_64 &#x2F; amd64</span><br><span class="line">$ sudo add-apt-repository \</span><br><span class="line">   &quot;deb [arch&#x3D;amd64] https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu \</span><br><span class="line">   $(lsb_release -cs) \</span><br><span class="line">   stable&quot;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="安装-Docker-ENGINE-引擎"><a href="#安装-Docker-ENGINE-引擎" class="headerlink" title="安装 Docker ENGINE 引擎"></a>安装 Docker ENGINE 引擎</h4><ol>
+<li><p>更新<strong>apt</strong>程序包索引，并安装最新版本的<strong>Docker Engine</strong>和<strong>containerd</strong>(容器)，<br>或转到下一步安装特定的版本：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果你启用了多个Docker存储库，则在末尾<strong>apt-get install</strong> or <strong>apt-get update</strong> 命<br>令中指定版本的情况进行安装或更新将始终安装可能的最高版本，这可能不适合您的稳定性的需求。</p>
+</blockquote>
+</li>
+<li><p>要安装特定版本的<strong>Docker Engine</strong>，请在存储库中列出可用版本，然后选择并安装一种：<br>列出您的仓库可用的版本：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ apt-cache madison docker-ce</span><br><span class="line">  docker-ce | 5:18.09.1~3-0~ubuntu-xenial | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line">  docker-ce | 5:18.09.0~3-0~ubuntu-xenial | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line">  docker-ce | 18.06.1~ce~3-0~ubuntu       | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line">  docker-ce | 18.06.0~ce~3-0~ubuntu       | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line"> ...</span><br></pre></td></tr></table></figure>
+<p> ② 使用第二列中的版本字符串安装特定版本，例如<code>5:18.09.1~3-0~ubuntu-xenial</code>.(不指定则直接默认)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install docker-ce&#x3D;&lt;VERSION_STRING&gt; docker-ce-cli&#x3D;&lt;VERSION_STRING&gt; containerd.io</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过允许<code>hello-world</code>映像来验证是否正确安装了Docker Engine。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<blockquote>
+<p>Docker Engine已安装并正在运行。该<code>docker</code>已创建，但未添加任何用户，需要使用<code>sudo</code><br>来运行Docker命令。继续执行<a href="https://docs.docker.com/engine/install/linux-postinstall/" target="_blank" rel="noopener">Linux的安装后步骤</a>,以允许非特权用户允许Docker命令以及其他<br>可选配置步骤。</p>
+</blockquote>
+]]></content>
+  </entry>
+  <entry>
+    <title>策略模式（Strategy）</title>
+    <url>/2020/04/14/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><ul>
+<li>定义： 在计算机编程中，策略模式（也称为策略模式）是一种行为软件设计模式，<br>可以在运行时选择算法的行为。</li>
+<li>意图： 定义一系列的算法，把它们一个个封装起来，并且使它们可相互替换。</li>
+<li>主要解决： 在有多种算法相似的情况下，使用if…else所带来的复杂和难以维护。</li>
+<li>何时使用： 一个系统有许许多多类，而区分它们的只是他们的直接的行为。</li>
+<li>如何解决： 将这些算法封装成一个一个的类，任意的替换。</li>
+<li>关键代码： 实现同一个接口。</li>
+</ul>
+<h3 id="现实中的实际应用"><a href="#现实中的实际应用" class="headerlink" title="现实中的实际应用"></a>现实中的实际应用</h3><ol>
+<li>诸葛亮的锦囊妙计，每一个锦囊就是一个策略。</li>
+<li>旅行的出游方式，选择骑自行车。坐汽车。每一种旅行方式都是一个策略。</li>
+</ol>
+<h3 id="程序代码实现"><a href="#程序代码实现" class="headerlink" title="程序代码实现"></a>程序代码实现</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BusTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通工具_&quot;.$vechicle;</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CarTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通_&quot;.$vehicle；</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们的客户将使用任何策略</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Traveler</span><br><span class="line">&#123;</span><br><span class="line">	protected $travel;</span><br><span class="line"></span><br><span class="line">	public function __construct(Travel $travel)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;travel &#x3D; $travel;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;travel-&gt;vehicle($vehicle);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$vehicle &#x3D; &#39;私家车&#39;;</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new CarTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new BusTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br></pre></td></tr></table></figure>
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>算法可以自由切换。</li>
+<li>避免使用多重条件判断。</li>
+<li>扩展性良好。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>策略类会增多。</li>
+<li>所有策略类都需要对外暴露。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li>如果一个系统里面有许多类，它们之间的区别仅在于它们的行为，那么使用策略模式<br>可以动态地让一个对象在许多行为中选择一种行为。</li>
+<li>一个系统需要动态地在几种算法中选择一种。</li>
+<li>如果一个对象有很多的行为，如果不用恰当的模式，这些行为就只好使用多重的条件<br>选择语句来实现。</li>
+</ol>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果一个系统的策略多余四个，就需要考虑使用混合模式，解决策略类膨胀的问题。</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>单例模式</title>
     <url>/2020/04/13/My-Gallery/</url>
     <content><![CDATA[<h3 id="实际中的例子"><a href="#实际中的例子" class="headerlink" title="实际中的例子"></a>实际中的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">一个班只有一个班主任,班里所有的学生请假都需要班主任的签字才能通过。</span><br></pre></td></tr></table></figure>
@@ -44,8 +487,151 @@
 ]]></content>
   </entry>
   <entry>
-    <title>工厂模式</title>
-    <url>/2020/04/14/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[]]></content>
+    <title>观察者模式（Observer）</title>
+    <url>/2020/04/14/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="观察者模式（Observer）"><a href="#观察者模式（Observer）" class="headerlink" title="观察者模式（Observer）"></a>观察者模式（Observer）</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">当对象间存在一对多关系时，则使用观察者模式（Observer Pattern）。比如，</span><br><span class="line">当一个对象被修改时，则会自动通知它的依赖对象。观察者模式属于行为型模式。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>意图： 定义对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有</li>
+<li>依赖它的对象都得到通知并自动更新。</li>
+<li>主要解决： 一个对象状态改变给其它对象通知的问题，而且要考虑到易用和低耦合，保证高度的协作。</li>
+<li>何时使用：一个对象（目标对象）的状态发生改变，所有的依赖对象（观察者对象）都将<br>得到通知，进行广播通知。</li>
+<li>如何解决：使用面向对象技术，可以将这种依赖关系弱化。</li>
+<li>关键代码：在抽象类里面有一个ArrayList 存放观察者们。</li>
+</ul>
+<h3 id="现实中应用"><a href="#现实中应用" class="headerlink" title="现实中应用"></a>现实中应用</h3><ul>
+<li>求职者订阅了一些职位发布网站，只要有匹配的工作机会，他们就会得到通知。</li>
+<li>拍卖的时候，拍卖师观察最高标价，然后通知给其他竞价者竞价。</li>
+<li>西游记里面悟空请求菩萨降服红孩儿，菩萨洒了一地水招来一个老乌龟，这个乌龟就是<br>观察者，它观察菩萨洒水这个动作。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class JobPost</span><br><span class="line">&#123;</span><br><span class="line">	protect $title;</span><br><span class="line"></span><br><span class="line">	public function __contruct(string $title)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;title &#x3D; $title;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getTitle()</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;title;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class JobSeeker implements Observer</span><br><span class="line">&#123;</span><br><span class="line">	protected $name;</span><br><span class="line"></span><br><span class="line">	public function __contruct(string $name)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;name &#x3D; $name;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function onJobPosted(JobPost $job)</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;Hi &#39;. $this-&gt;name.&#39;! New job posted: &#39;.$job-&gt;getTitle();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们会找到求职者会订阅的招聘信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class EmploymentAgency implements Observable</span><br><span class="line">&#123;</span><br><span class="line">	protected $observers &#x3D; [];</span><br><span class="line"></span><br><span class="line">	protected function notify(JobPost $jobPosting)</span><br><span class="line">	&#123;</span><br><span class="line">		foreach ($this-&gt;observers as $observer)&#123;</span><br><span class="line">			$observer-&gt;onJobPosted($jobPosting);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function attach(Observer $observer)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;observers[] &#x3D; $observer;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addJob(JobPost $jobPosting)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;notify($jobPosting);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来调用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$johnDoe &#x3D; new JobSeeker(&#39;John Doe&#39;);</span><br><span class="line">$janeDoe &#x3D; new JobSeeker(&#39;Jane Doe&#39;);</span><br><span class="line"></span><br><span class="line">$jobPostings &#x3D; new EmploymentAgency();</span><br><span class="line">$jobPostings-&gt;attach($johnDoe);</span><br><span class="line">$jobPostings-&gt;attach($janeDoe);</span><br><span class="line"></span><br><span class="line">$jobPostings-&gt;addJob(new JobPost(&#39;Software Engineer&#39;));</span><br></pre></td></tr></table></figure>
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>观察者和被观察者是抽象耦合的。</li>
+<li>建立一套触发机制。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>一个抽象模型有俩个方面，其中一个方面依赖于另一个方面。将这些方面封装在独立的<br>对象中使它们可以各自独立的改变和复用。</li>
+<li>一个对象的改变将导致其它一个或多个对象也发送改变，而不知道具体有多少对象将发<br>生改变，可以降低对象之间的耦合度。</li>
+<li>一个对象必须通知其它对象，而并不知道这些对象是谁。</li>
+<li>需要系统中创建一个触发链，A对象的行为将影响B对象，B对象的行为将影响C对象，可<br>以使用观察者模式创建一种链式触发机制。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>避免循环引用</li>
+<li>如果顺序执行，某一观察者错误会导致系统卡壳，一般采用异步形式</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>适配器模式（Adapter）</title>
+    <url>/2020/04/14/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<hr>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">适配器模式（Adapter Pattern）是作为两个不兼容的接口之间的桥梁。这种类型</span><br><span class="line">的设计模式数据结构型模式，它结合了俩个独立接口的能力。</span><br><span class="line">这种模式涉及到一个单一的类，该类负责加入独立的或不兼容的接口能力。举个真实</span><br><span class="line">的例子，读卡器是作为内存卡和笔记本之间的适配器。您将内存卡插入读卡器，再将</span><br><span class="line">读卡器插入笔记本，这样就可以通过笔记本来读取内存卡。</span><br></pre></td></tr></table></figure>
+<h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><ul>
+<li>意图：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原本由于接口<br>不兼容而不能一起工作的那些类可以一起工作。</li>
+<li>主要解决：在软件系统中，常常要将一些”现存的对象”放到新的环境中，而新的环境要<br>求的接口是现对象不能满足的。</li>
+<li>何时使用：</li>
+</ul>
+<ol>
+<li>系统需要使用现有的类，而此类的接口不符合系统的需要。</li>
+<li>想要建立一个可以重复使用的类，用于一些彼此之间没有太大关联的一些类，包括一<br>些可能在将来引进的类一起工作，这些源类不一定有一致的接口。</li>
+<li>通过接口转换，将一个类插入另一个类系中。（比如老虎和飞禽，现在多了一个飞<br>虎，在不增加实体需求下，增加一个适配器，在里面包容一个虎的对象，实现飞的接口）</li>
+</ol>
+<ul>
+<li>如何解决：继承或依赖（推荐）。</li>
+<li>关键代码：适配器继承或依赖已有的对象，实现想要的目标接口。</li>
+<li>简单来说<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">适配器模式允许您在适配器中包装其他不兼容的对象，以使其与另一个类兼容。</span><br></pre></td></tr></table></figure></li>
+<li>百度上说<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">适配器模式是一种软件设计模式，它允许将现有类的接口用作另一个接口。它通常</span><br><span class="line">用于使现有类与其他类一起工作而无需修改其源代码。</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="现实中的应用"><a href="#现实中的应用" class="headerlink" title="现实中的应用"></a>现实中的应用</h3><ul>
+<li>美国电器110v,中国220v，就要有一个适配器将110v转化为220v。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>考虑一个有猎人的游戏，他猎杀狮子。<br>首先，我们有一个<strong>Lion</strong>所有类型的狮子必须实现的接口。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Lion</span><br><span class="line">&#123;</span><br><span class="line">	public function roar();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>猎人期望任何<strong>Lion</strong>接口的实现都可以进行搜索</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class hunter</span><br><span class="line">&#123;</span><br><span class="line">	public function hunt(Lion $lion)</span><br><span class="line">	&#123;</span><br><span class="line">		$lion-&gt;roar();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在让我们必须<strong>WildDog</strong>在我们的游戏中添加一个，以便猎人可以追捕它。但我们不<br>能直接这样做，因为够有不同的界面。为了使它与我们的猎人兼容，我们将不得不创建一<br>个兼容的适配器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class WildDog</span><br><span class="line">&#123;</span><br><span class="line">	public function bark()</span><br><span class="line">	&#123;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class WildDogAdapter implements Lion</span><br><span class="line">&#123;</span><br><span class="line">	protected $dog;</span><br><span class="line"></span><br><span class="line">	public function __construct(WildDog $dog)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;dog &#x3D; $dog;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function roar()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;dog-&gt;bark();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而现在<strong>WildDog</strong>可以在我们的游戏中使用<strong>WildDogAdapter</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$wildDog &#x3D; new WildDog();</span><br><span class="line">$wildDogAdapter &#x3D; new WildDogAdapter($wildDog);</span><br><span class="line"></span><br><span class="line">$hunter &#x3D; new Hunter();</span><br><span class="line">$hunter-&gt;hunt($wildDogAdapter);</span><br></pre></td></tr></table></figure>
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>可以让任何俩个没有关联的类一起运行。</li>
+<li>提高了类的复用。</li>
+<li>增加了类的透明度。</li>
+<li>灵活性好。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>过多的使用适配器，会让系统非常零乱，不易整体进行把握。比如明明看到调用的是A<br>接口，其实内部被适配成了B接口的实现，一个系统如果太多出现这种情况，无异于一场<br>灾难。因此如果不是很有必要，可以不使用适配器，而是直接对系统进行重构。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
+<li>有动机地修改一个正常运行的系统的接口，这时应该考虑使用适配器模式。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">适配器不是在详细设计时添加的，而是解决正在服役的项目的问题。</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>建造者模式（Builder）</title>
+    <url>/2020/04/14/%E6%9E%84%E5%BB%BA%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<hr>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">建造者模式（Builder Pattern）使用多个简单的对象一步一步构建成一个复杂</span><br><span class="line">的对象。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。</span><br><span class="line">一个Builder类会一步一步构造最终的对象。该Builder类是独立于其它对象的。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>意图：将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。</li>
+<li>主要解决：主要解决在软件系统中，有时候面临着”一个复杂对象”的创建工作，其通常<br>由各个部分的子对象用一定的算法构成；由于需求的变化，这个复杂对象的各个部分经常<br>面临着剧烈的变化，但是它们组合在一起的算法相对稳定。</li>
+<li>何时使用：一些基本部件不会变，而其组合经常变化的时候。</li>
+<li>如何解决：将变与不变分离开。</li>
+<li>关键代码：创建和提供实例，导演：管理建造出来的实例的依赖关系。</li>
+</ul>
+<h3 id="现实中的例子"><a href="#现实中的例子" class="headerlink" title="现实中的例子"></a>现实中的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">想象下，你在万达订购了一个特定的交易，让我们说：“Big Hardee”，他们毫无疑问地把它交给你了；这是简单工厂的例子。</span><br><span class="line">但有些情况下，创建逻辑可能涉及更多步骤。例如，你想要一个定制的汉堡交易，</span><br><span class="line">你有多种选择如何制作你的汉堡，例如你想要什么面包？你想要什么类型的酱汁？</span><br><span class="line">你想要什么奶酪？在这种情况下，建造者模式得以拯救</span><br></pre></td></tr></table></figure>
+<h3 id="简单来说"><a href="#简单来说" class="headerlink" title="简单来说"></a>简单来说</h3><ul>
+<li>允许您创建不同风格的对象，同时避免构造函数污染，当有几种风格的物体很有用。或<br>者在创建对象时涉及很多步骤。</li>
+</ul>
+<h3 id="百度上说"><a href="#百度上说" class="headerlink" title="百度上说"></a>百度上说</h3><ul>
+<li>建造者模式是对象创建软件设计模式，其目的是找到伸缩构造器反模式的解决方案。</li>
+</ul>
+<p>伸缩构造函数反模式是什么。在某一点或另一点，我们看到了如下构造函数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public function __construct($size, $cheese &#x3D; true, $pepperoni &#x3D; true,$tomato &#x3D; false, $lettuce &#x3D;  true)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们可以看到：构造函数参数的数量很快就会失控，并且可能难以理解参数的排列。此外<br>如果您希望将来添加更多选项，此参数列表可能会继续增长。这被称为伸缩构造器反模式。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>理智的替代方案是使用建造者模式。首先，我们要制作汉堡。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Burger</span><br><span class="line">&#123;</span><br><span class="line">	protect $size;</span><br><span class="line">	protect $cheese &#x3D; false;</span><br><span class="line">	protect $lettuce &#x3D; false;</span><br><span class="line">	protect $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(BurgerBuilder $builder)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $builder-&gt;size;</span><br><span class="line">		$this-&gt;cheese &#x3D; $builder-&gt;cheese;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; $builder-&gt;pepperoni;</span><br><span class="line">		$this-&gt;lettuce &#x3D; $builder-&gt;lettuce;</span><br><span class="line">		$this-&gt;tomato &#x3D; $builder-&gt;tomato;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们就有了建设者</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class BurgerBuilder</span><br><span class="line">&#123;</span><br><span class="line">	public $size;</span><br><span class="line"></span><br><span class="line">	public $cheese &#x3D; false;</span><br><span class="line">	public $pepperoni &#x3D; false;</span><br><span class="line">	public $lettuce &#x3D; false;</span><br><span class="line">	public $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(int $size)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $size;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addPepperoni()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addLettuce()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;lettuce &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addCheese()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;cheese &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addTomato()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;tomato &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function build(): Burger</span><br><span class="line">	&#123;</span><br><span class="line">		return new Burger($this);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后它可以用作：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$burger &#x3D; (new BurgerBuilder(14))</span><br><span class="line">-&gt;addPepperoni()</span><br><span class="line">-&gt;addLettuce()</span><br><span class="line">-&gt;addTomato()</span><br><span class="line">-&gt;build()</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>建造者独立，易扩展。</li>
+<li>便于控制细节风险。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>产品必须有共同点，范围有限制。</li>
+<li>如内部变化复杂，会有很多的建造类。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
+<li>需要生成的对象具有复杂的内部结构。</li>
+<li>需要生产的对象内部属性本身相互依赖。</li>
+<li>当可能存在几种类型的对象并避免构造函数伸缩时。</li>
+</ul>
+<h3 id="与工厂模式区别"><a href="#与工厂模式区别" class="headerlink" title="与工厂模式区别"></a>与工厂模式区别</h3><ul>
+<li>当创建时一步过程时，将使用工厂模式，而当创建时多步骤时，将使用建造者模式。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">与工厂模式的区别是：建造者模式更加关注与零件装配的顺序</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
   </entry>
 </search>
