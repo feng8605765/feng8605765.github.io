@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="CN">
+<html lang="">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -24,7 +24,6 @@
 <meta property="og:title" content="十二月的doge">
 <meta property="og:url" content="http://yoursite.com/page/2/index.html">
 <meta property="og:site_name" content="十二月的doge">
-<meta property="og:locale" content="CN">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
@@ -37,7 +36,7 @@
     sidebar: "",
     isHome : true,
     isPost : false,
-    lang   : 'CN'
+    lang   : 'default'
   };
 </script>
 
@@ -144,7 +143,99 @@
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/14/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">观察者模式（Observer）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+              
+
+              <time title="أُنشأ: 2020-04-14 11:03:41 / عُدل: 16:56:06" itemprop="dateCreated datePublished" datetime="2020-04-14T11:03:41+08:00">2020-04-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="观察者模式（Observer）"><a href="#观察者模式（Observer）" class="headerlink" title="观察者模式（Observer）"></a>观察者模式（Observer）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">当对象间存在一对多关系时，则使用观察者模式（Observer Pattern）。比如，</span><br><span class="line">当一个对象被修改时，则会自动通知它的依赖对象。观察者模式属于行为型模式。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>意图： 定义对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有</li>
+<li>依赖它的对象都得到通知并自动更新。</li>
+<li>主要解决： 一个对象状态改变给其它对象通知的问题，而且要考虑到易用和低耦合，保证高度的协作。</li>
+<li>何时使用：一个对象（目标对象）的状态发生改变，所有的依赖对象（观察者对象）都将<br>得到通知，进行广播通知。</li>
+<li>如何解决：使用面向对象技术，可以将这种依赖关系弱化。</li>
+<li>关键代码：在抽象类里面有一个ArrayList 存放观察者们。</li>
+</ul>
+<h3 id="现实中应用"><a href="#现实中应用" class="headerlink" title="现实中应用"></a>现实中应用</h3><ul>
+<li>求职者订阅了一些职位发布网站，只要有匹配的工作机会，他们就会得到通知。</li>
+<li>拍卖的时候，拍卖师观察最高标价，然后通知给其他竞价者竞价。</li>
+<li>西游记里面悟空请求菩萨降服红孩儿，菩萨洒了一地水招来一个老乌龟，这个乌龟就是<br>观察者，它观察菩萨洒水这个动作。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">class JobPost</span><br><span class="line">&#123;</span><br><span class="line">	protect $title;</span><br><span class="line"></span><br><span class="line">	public function __contruct(string $title)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;title &#x3D; $title;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getTitle()</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;title;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class JobSeeker implements Observer</span><br><span class="line">&#123;</span><br><span class="line">	protected $name;</span><br><span class="line"></span><br><span class="line">	public function __contruct(string $name)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;name &#x3D; $name;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function onJobPosted(JobPost $job)</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;Hi &#39;. $this-&gt;name.&#39;! New job posted: &#39;.$job-&gt;getTitle();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们会找到求职者会订阅的招聘信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class EmploymentAgency implements Observable</span><br><span class="line">&#123;</span><br><span class="line">	protected $observers &#x3D; [];</span><br><span class="line"></span><br><span class="line">	protected function notify(JobPost $jobPosting)</span><br><span class="line">	&#123;</span><br><span class="line">		foreach ($this-&gt;observers as $observer)&#123;</span><br><span class="line">			$observer-&gt;onJobPosted($jobPosting);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function attach(Observer $observer)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;observers[] &#x3D; $observer;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addJob(JobPost $jobPosting)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;notify($jobPosting);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$johnDoe &#x3D; new JobSeeker(&#39;John Doe&#39;);</span><br><span class="line">$janeDoe &#x3D; new JobSeeker(&#39;Jane Doe&#39;);</span><br><span class="line"></span><br><span class="line">$jobPostings &#x3D; new EmploymentAgency();</span><br><span class="line">$jobPostings-&gt;attach($johnDoe);</span><br><span class="line">$jobPostings-&gt;attach($janeDoe);</span><br><span class="line"></span><br><span class="line">$jobPostings-&gt;addJob(new JobPost(&#39;Software Engineer&#39;));</span><br></pre></td></tr></table></figure>
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>观察者和被观察者是抽象耦合的。</li>
+<li>建立一套触发机制。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>一个抽象模型有俩个方面，其中一个方面依赖于另一个方面。将这些方面封装在独立的<br>对象中使它们可以各自独立的改变和复用。</li>
+<li>一个对象的改变将导致其它一个或多个对象也发送改变，而不知道具体有多少对象将发<br>生改变，可以降低对象之间的耦合度。</li>
+<li>一个对象必须通知其它对象，而并不知道这些对象是谁。</li>
+<li>需要系统中创建一个触发链，A对象的行为将影响B对象，B对象的行为将影响C对象，可<br>以使用观察者模式创建一种链式触发机制。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>避免循环引用</li>
+<li>如果顺序执行，某一观察者错误会导致系统卡壳，一般采用异步形式</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -235,7 +326,7 @@
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -323,7 +414,7 @@
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/13/My-Gallery/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -404,7 +495,7 @@
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/13/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -540,12 +631,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">المقالات</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">الوسوم</span>
       </div>
   </nav>
