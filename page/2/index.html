@@ -80,7 +80,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Navigationsleiste an/ausschalten">
+    <div class="toggle" aria-label="تشغيل شريط التصفح">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -109,12 +109,12 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Startseite</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archiv</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
 
   </li>
   </ul>
@@ -144,6 +144,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E6%9E%84%E5%BB%BA%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/14/%E6%9E%84%E5%BB%BA%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">建造者模式（Builder）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+              
+
+              <time title="أُنشأ: 2020-04-14 14:06:55 / عُدل: 16:55:50" itemprop="dateCreated datePublished" datetime="2020-04-14T14:06:55+08:00">2020-04-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">建造者模式（Builder Pattern）使用多个简单的对象一步一步构建成一个复杂</span><br><span class="line">的对象。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。</span><br><span class="line">一个Builder类会一步一步构造最终的对象。该Builder类是独立于其它对象的。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>意图：将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。</li>
+<li>主要解决：主要解决在软件系统中，有时候面临着”一个复杂对象”的创建工作，其通常<br>由各个部分的子对象用一定的算法构成；由于需求的变化，这个复杂对象的各个部分经常<br>面临着剧烈的变化，但是它们组合在一起的算法相对稳定。</li>
+<li>何时使用：一些基本部件不会变，而其组合经常变化的时候。</li>
+<li>如何解决：将变与不变分离开。</li>
+<li>关键代码：创建和提供实例，导演：管理建造出来的实例的依赖关系。</li>
+</ul>
+<h3 id="现实中的例子"><a href="#现实中的例子" class="headerlink" title="现实中的例子"></a>现实中的例子</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">想象下，你在万达订购了一个特定的交易，让我们说：“Big Hardee”，他们毫无疑问地把它交给你了；这是简单工厂的例子。</span><br><span class="line">但有些情况下，创建逻辑可能涉及更多步骤。例如，你想要一个定制的汉堡交易，</span><br><span class="line">你有多种选择如何制作你的汉堡，例如你想要什么面包？你想要什么类型的酱汁？</span><br><span class="line">你想要什么奶酪？在这种情况下，建造者模式得以拯救</span><br></pre></td></tr></table></figure>
+<h3 id="简单来说"><a href="#简单来说" class="headerlink" title="简单来说"></a>简单来说</h3><ul>
+<li>允许您创建不同风格的对象，同时避免构造函数污染，当有几种风格的物体很有用。或<br>者在创建对象时涉及很多步骤。</li>
+</ul>
+<h3 id="百度上说"><a href="#百度上说" class="headerlink" title="百度上说"></a>百度上说</h3><ul>
+<li>建造者模式是对象创建软件设计模式，其目的是找到伸缩构造器反模式的解决方案。</li>
+</ul>
+<p>伸缩构造函数反模式是什么。在某一点或另一点，我们看到了如下构造函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public function __construct($size, $cheese &#x3D; true, $pepperoni &#x3D; true,$tomato &#x3D; false, $lettuce &#x3D;  true)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们可以看到：构造函数参数的数量很快就会失控，并且可能难以理解参数的排列。此外<br>如果您希望将来添加更多选项，此参数列表可能会继续增长。这被称为伸缩构造器反模式。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>理智的替代方案是使用建造者模式。首先，我们要制作汉堡。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">class Burger</span><br><span class="line">&#123;</span><br><span class="line">	protect $size;</span><br><span class="line">	protect $cheese &#x3D; false;</span><br><span class="line">	protect $lettuce &#x3D; false;</span><br><span class="line">	protect $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(BurgerBuilder $builder)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $builder-&gt;size;</span><br><span class="line">		$this-&gt;cheese &#x3D; $builder-&gt;cheese;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; $builder-&gt;pepperoni;</span><br><span class="line">		$this-&gt;lettuce &#x3D; $builder-&gt;lettuce;</span><br><span class="line">		$this-&gt;tomato &#x3D; $builder-&gt;tomato;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们就有了建设者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">class BurgerBuilder</span><br><span class="line">&#123;</span><br><span class="line">	public $size;</span><br><span class="line"></span><br><span class="line">	public $cheese &#x3D; false;</span><br><span class="line">	public $pepperoni &#x3D; false;</span><br><span class="line">	public $lettuce &#x3D; false;</span><br><span class="line">	public $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(int $size)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $size;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addPepperoni()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addLettuce()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;lettuce &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addCheese()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;cheese &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addTomato()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;tomato &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function build(): Burger</span><br><span class="line">	&#123;</span><br><span class="line">		return new Burger($this);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后它可以用作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$burger &#x3D; (new BurgerBuilder(14))</span><br><span class="line">-&gt;addPepperoni()</span><br><span class="line">-&gt;addLettuce()</span><br><span class="line">-&gt;addTomato()</span><br><span class="line">-&gt;build()</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>建造者独立，易扩展。</li>
+<li>便于控制细节风险。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>产品必须有共同点，范围有限制。</li>
+<li>如内部变化复杂，会有很多的建造类。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
+<li>需要生成的对象具有复杂的内部结构。</li>
+<li>需要生产的对象内部属性本身相互依赖。</li>
+<li>当可能存在几种类型的对象并避免构造函数伸缩时。</li>
+</ul>
+<h3 id="与工厂模式区别"><a href="#与工厂模式区别" class="headerlink" title="与工厂模式区别"></a>与工厂模式区别</h3><ul>
+<li>当创建时一步过程时，将使用工厂模式，而当创建时多步骤时，将使用建造者模式。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">与工厂模式的区别是：建造者模式更加关注与零件装配的顺序</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -166,10 +270,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-14 11:03:41 / Geändert am: 16:56:06" itemprop="dateCreated datePublished" datetime="2020-04-14T11:03:41+08:00">2020-04-14</time>
+              <time title="أُنشأ: 2020-04-14 11:03:41 / عُدل: 16:56:06" itemprop="dateCreated datePublished" datetime="2020-04-14T11:03:41+08:00">2020-04-14</time>
             </span>
 
           
@@ -258,10 +362,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-14 09:56:53 / Geändert am: 16:55:32" itemprop="dateCreated datePublished" datetime="2020-04-14T09:56:53+08:00">2020-04-14</time>
+              <time title="أُنشأ: 2020-04-14 09:56:53 / عُدل: 16:55:32" itemprop="dateCreated datePublished" datetime="2020-04-14T09:56:53+08:00">2020-04-14</time>
             </span>
 
           
@@ -349,10 +453,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-14 08:53:38 / Geändert am: 16:54:34" itemprop="dateCreated datePublished" datetime="2020-04-14T08:53:38+08:00">2020-04-14</time>
+              <time title="أُنشأ: 2020-04-14 08:53:38 / عُدل: 16:54:34" itemprop="dateCreated datePublished" datetime="2020-04-14T08:53:38+08:00">2020-04-14</time>
             </span>
 
           
@@ -437,16 +541,16 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
 
-              <time title="Erstellt: 2020-04-13 15:35:18" itemprop="dateCreated datePublished" datetime="2020-04-13T15:35:18+08:00">2020-04-13</time>
+              <time title="أُنشأ: 2020-04-13 15:35:18" itemprop="dateCreated datePublished" datetime="2020-04-13T15:35:18+08:00">2020-04-13</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
-                <span class="post-meta-item-text">Bearbeitet am</span>
-                <time title="Geändert am: 2020-04-14 08:43:03" itemprop="dateModified" datetime="2020-04-14T08:43:03+08:00">2020-04-14</time>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-04-14 08:43:03" itemprop="dateModified" datetime="2020-04-14T08:43:03+08:00">2020-04-14</time>
               </span>
 
           
@@ -518,9 +622,9 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
 
-              <time title="Erstellt: 2020-04-13 14:53:24" itemprop="dateCreated datePublished" datetime="2020-04-13T14:53:24+08:00">2020-04-13</time>
+              <time title="أُنشأ: 2020-04-13 14:53:24" itemprop="dateCreated datePublished" datetime="2020-04-13T14:53:24+08:00">2020-04-13</time>
             </span>
 
           
@@ -565,7 +669,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Vorherige Seite"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="الصفحة السابقة"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
   </nav>
 
 
@@ -609,10 +713,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Inhaltsverzeichnis
+          المحتويات
         </li>
         <li class="sidebar-nav-overview">
-          Übersicht
+          عام
         </li>
       </ul>
 
@@ -631,13 +735,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
-          <span class="site-state-item-name">Artikel</span>
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">المقالات</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">8</span>
-        <span class="site-state-item-name">schlagwörter</span>
+        <span class="site-state-item-name">الوسوم</span>
       </div>
   </nav>
 </div>
@@ -669,7 +773,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">GIO</span>
 </div>
-  <div class="powered-by">Erstellt mit  <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
         
