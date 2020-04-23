@@ -80,7 +80,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="تشغيل شريط التصفح">
+    <div class="toggle" aria-label="Navigationsleiste an/ausschalten">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -109,12 +109,12 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Startseite</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archiv</a>
 
   </li>
   </ul>
@@ -144,6 +144,268 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">redis三种集群模式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              <time title="Erstellt: 2020-04-23 14:34:01 / Geändert am: 14:43:51" itemprop="dateCreated datePublished" datetime="2020-04-23T14:34:01+08:00">2020-04-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Redis发展过程中的三种模式：主从，哨兵，集群"><a href="#Redis发展过程中的三种模式：主从，哨兵，集群" class="headerlink" title="Redis发展过程中的三种模式：主从，哨兵，集群"></a>Redis发展过程中的三种模式：主从，哨兵，集群</h3><h4 id="主从模式"><a href="#主从模式" class="headerlink" title="主从模式"></a>主从模式</h4><p>Redis早期用于保证数据可靠性的一种简单方式，具体来说，Master可用于写，读，而Slave一般只用于读。</p>
+<p><strong>优点</strong><br>读写分离，提高效率<br>数据热备份，提供多个副本</p>
+<p><strong>缺点</strong><br>主节点故障，集群则无法进行工作，可用性比较低，从节点升主节点需要人工手动干预。<br>单点容易造成性能低下<br>主节点的存储能力受到限制<br>主节点的写受到限制（只有一个主节点）<br>全量同步可能会造成毫秒或者秒级的卡顿现象</p>
+<p><strong>特点</strong><br>只能master到slave 单向的；</p>
+<h4 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h4><h5 id="1-哨兵模式介绍"><a href="#1-哨兵模式介绍" class="headerlink" title="1.哨兵模式介绍"></a>1.哨兵模式介绍</h5><ul>
+<li>Sentinel(哨兵)进程是用于监控Redis集群中Master主服务器工作的状态。</li>
+<li>在Master主服务器发生故障的时候，可以实现Master和Slave服务器的切换,保证系统的高可用（HA）</li>
+<li>其已经被集成在redis2.6+的版本中，Redis的哨兵模式到2.8版本之后就稳定了下来。</li>
+</ul>
+<h5 id="2-哨兵进程的作用"><a href="#2-哨兵进程的作用" class="headerlink" title="2.哨兵进程的作用"></a>2.哨兵进程的作用</h5><ul>
+<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器。</li>
+<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其它的从服务<br>器，修改配置文件，让它们切换主机。</li>
+</ul>
+<p><strong>优点</strong></p>
+<ul>
+<li>Redis Sentinel 集群部署简单</li>
+<li>可以实现一套Sentinel监控一组 Redis数据节点或多组数据节点</li>
+<li>有效解决主从模式主库异常手动主从切换的问题。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>运维复杂，哨兵选举期间，不能对外提供服务。</li>
+<li>部署相对Redis主从模式要复杂一些，原理理解更繁琐；</li>
+<li>不能解决读写分离问题，实现起来相对复杂</li>
+</ul>
+<h3 id="集群模式-Redis-Cluster"><a href="#集群模式-Redis-Cluster" class="headerlink" title="集群模式(Redis Cluster)"></a>集群模式(Redis Cluster)</h3><p>Redis Cluster 是社区版推出的Redis分布式集群解决方案，主要解决Redis分布式方面的需求，比如<br>当遇到单机内存，并发和流量等瓶颈的时候，Redis Cluster能起到很好的负载均衡的目的。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>无中心架构</li>
+<li>数据按照slot存储分布在多个节点，节点间数据共享，可动态调整数据分布；</li>
+<li>可扩展性：可线扩展到1000多个节点，节点可动态添加或删除；</li>
+<li>高可用性：部分节点不可用时，集群仍可用，通过增加Slave或standby数据副本，能够实现故障自动<br>failover，节点之间通过gossip协议交换状态信息，用投票机制完成Slave到Master的角色提升；</li>
+<li>降低运维成本，提高系统的扩展性和可用性。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>Client实现复杂，驱动要求实现Smart Client，缓存slots mapping信息并及时更新，提高了开发<br>难度，客户端的不成熟影响业务的稳定性。目前仅JedisCluster相对成熟，异常处理部分还不完善，<br>比如常见的 “max redirect exception”.</li>
+<li>数据通过异步复制，不保证数据的强一致性。</li>
+</ul>
+<blockquote>
+<p>参考的文档：<a href="https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ</a></p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/redis%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/23/redis%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" class="post-title-link" itemprop="url">redis高级特性</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              <time title="Erstellt: 2020-04-23 13:54:50 / Geändert am: 15:52:24" itemprop="dateCreated datePublished" datetime="2020-04-23T13:54:50+08:00">2020-04-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Redis的数据基本类型"><a href="#Redis的数据基本类型" class="headerlink" title="Redis的数据基本类型"></a>Redis的数据基本类型</h3><p><strong>String</strong><br>Redis中最基本，也是最简单的数据类型。注意：VALUE既可以简单的string 也可以是复杂的String，<br>如JSON，在实际中常常利用fastjson将对象序列化后存储到Redis中，另外注意mget批量获取可以提<br>高效率。</p>
+<p><strong>Hash</strong><br>Hash结构适用于存储对象，相较于String，存储占用更少的内存。Hash结构可以使你像在数据库中<br>Update一个属性一样只修改某一项属性值，而且还可以快速定位数据。比如：如果我们把表User中<br>的一个数据可以这样放置到Redis中：Hash存储，Key：User，Field：USERID,VALUE:user 序列化后<br>的string。</p>
+<p><strong>List</strong><br>既可以当做栈，又可以当做队列。实际上，可以利用Lisg的先进先出或者先进后出的特性维护一段列表，<br>比如排行榜，实时列表等，甚至还可以简单的当做消息队列来使用。</p>
+<p><strong>Set</strong><br>Set是String类型的不重复无序集合。Set的特点在于，它提供了集合的一些运算，比如交集，并集，差<br>集等。这些运算特性，非常方便的解决实际场景中的一些问题，如共同关注，共同粉丝等。</p>
+<p><strong>ZSet</strong><br>ZSet就是SortedSet 实际中，很多排序场景都可以考虑ZSet来做。</p>
+<hr>
+<h3 id="Redis的事务（transaction）"><a href="#Redis的事务（transaction）" class="headerlink" title="Redis的事务（transaction）"></a>Redis的事务（transaction）</h3><p>redis中的事务是一组命令的集合，事务同命令一样都是redis的最小执行单元。一组事务中的命令要么<br>都执行，要么都不执行。（例如：转账）</p>
+<p>原理：<br>先将属于一个事务的命令发送给redis进行缓存，最后再让redis依次执行这些命令。</p>
+<p>应用场景：</p>
+<ol>
+<li>一组命令必须同时都执行，或者都不执行。</li>
+<li>我们想要保证一组命令在执行的过程中不被其它命令插入。</li>
+</ol>
+<p>命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">multi  &#x2F;&#x2F; 事务开始</span><br><span class="line">.....</span><br><span class="line">exec   &#x2F;&#x2F; 事务结束，开始执行事务中的命令</span><br><span class="line">discard  	&#x2F;&#x2F; 放弃事务</span><br></pre></td></tr></table></figure>
+
+<p>错误处理</p>
+<ol>
+<li>语法错误：致命的错误，事务中的所有命令都不会执行。</li>
+<li>运行错误：不会影响事务中其它命令的执行。</li>
+</ol>
+<p>Redis不支持回滚 （roll back）<br>正因为redis不支持回滚功能，才使得redis在事务上可以保持简洁和快速。</p>
+<p>watch命令</p>
+<blockquote>
+<p>作用：监控一个或多个键，当被监控的键值被修改后阻止之后的一个事务的执行。但是不能保证其它<br>客户端不修改这一键值，所以我们需要在事务执行失败后重新执行事务中的命令。</p>
+</blockquote>
+<p>注意：执行完事务的exec命令之后，watch就会取消对所有键值的监控。<br>unwatch：取消监控</p>
+<h3 id="redis中数据的排序（sort）"><a href="#redis中数据的排序（sort）" class="headerlink" title="redis中数据的排序（sort）"></a>redis中数据的排序（sort）</h3><p>sort命令可以对列表类型，集合类和有序集合类型进行排序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sort key [desc] [limit offset count]</span><br></pre></td></tr></table></figure>
+
+<p>by 参考值（参考值可以使字符串类型或者是hash类型的某个字段，hash类型的格式为：键名-&gt;字段名）</p>
+<ol>
+<li>如果参考键中不带*号则不排序</li>
+<li>如果某个元素的参考键不存在，则默认参考键的值为0</li>
+</ol>
+<p>扩展get参数</p>
+<ol>
+<li>get参数的规则和by参数的规则一样</li>
+<li>get #（返回元素本身的值）</li>
+</ol>
+<p>扩展store参数<br>使用store参数可以把sort的排序结果保存到指定的列表中</p>
+<p>性能优化：</p>
+<ol>
+<li>尽可能减少待排序键中元素的数量。</li>
+<li>使用limit参数只获取需要的数据。</li>
+<li>如果要排序的数据数量很大，尽可能使用store参数将结果缓存。</li>
+</ol>
+<h3 id="“发布-订阅”模式"><a href="#“发布-订阅”模式" class="headerlink" title="“发布/订阅”模式"></a>“发布/订阅”模式</h3><p>发布：publish</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">publish channel message</span><br></pre></td></tr></table></figure>
+<p>订阅：subscribe</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">subscribe channel [.....]</span><br></pre></td></tr></table></figure>
+<p>取消订阅：unsubscribe</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unsubscribe [channel]</span><br></pre></td></tr></table></figure>
+<p>按照规则订阅：psubscribe</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psubscribe channel ?</span><br></pre></td></tr></table></figure>
+<p>按照规则取消订阅：punsubscribe<br>ps：使用punsubscribe命令只能退订通过psubscribe订阅的频道</p>
+<h3 id="redis管道（pipeline）"><a href="#redis管道（pipeline）" class="headerlink" title="redis管道（pipeline）"></a>redis管道（pipeline）</h3><p>redis的pipeline(管道)功能在命令行中没有，但是redis是支持管道的。</p>
+<h3 id="redis持久化（persistence）"><a href="#redis持久化（persistence）" class="headerlink" title="redis持久化（persistence）"></a>redis持久化（persistence）</h3><p>redis支持两种方式的持久化，可以单独使用或者结合起来使用。</p>
+<ol>
+<li>RDB方式（redis默认的持久化方式）</li>
+<li>AOF方式</li>
+</ol>
+<p><strong>RDB方式</strong><br>rdb方式的持久化是通过快照完成的。当符合一定条件时redis会自动将内存中的所有数据执行操作并<br>存储到硬盘上。默认存储在dump.rdb文件中。（文件名在配置文件中dbfilename）</p>
+<p>redis进行快照的时机（在配置文件redis.conf中）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1</span><br><span class="line">save 300 10</span><br><span class="line">save 60  10000</span><br></pre></td></tr></table></figure>
+<p>Redis自动实现快照的过程</p>
+<ol>
+<li>redis使用fork函数复制一份当前进程的副本（子进程）</li>
+<li>父进程继续接收并处理客户端发来的命令。而子进程开始将内存中的数据写入硬盘中的临时文件</li>
+<li>当子进程写入完所有数据后会用该临时文件替换旧的RDB文件，至此 一次快照操作完成。</li>
+</ol>
+<p>注意：redis在进行快照的过程中不会修改RDB文件，只有快照结束后才会将旧的文件替换成新的，也就<br>是说任何时候RDB文件都是完整的。</p>
+<p>这就使得我们可以通过定时备份RDB文件来实现redis数据库的备份</p>
+<p>RDB文件是经过压缩的二进制文件，占用的空间会小于内存中的数据，更加利于传输</p>
+<p>手动执行save或者bgsave命令会让redis执行快照</p>
+<p>两个命令的区别在于 save是由主进程进行快照操作，会阻塞其它请求。bgsave是由redis执行fork函<br>数复制出一个子进程来进行快照操作。</p>
+<p>文件修复：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-check-dump</span><br></pre></td></tr></table></figure>
+<p>rdb的优缺点：</p>
+<ul>
+<li>优点：由于存储的有数据快照文件，恢复数据很方便</li>
+<li>缺点：会丢失最后一次快照以后更改的所有数据</li>
+</ul>
+<p><strong>AOF方式</strong><br>aof方式的持久化是通过日志文件的方式。默认情况下redis没有开启aof,可以通过参数appendonly参<br>数开启。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+<p>aof文件的保存位置和rdb文件的位置相同，都是dir参数设置的。默认文件名是appendonly.aof,可以通过参数appendfilename参数修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendfilename appendonly.aof</span><br></pre></td></tr></table></figure>
+<p>redis写命令同步的时机</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">appendfsync always 每次都会执行</span><br><span class="line">appendfsync everysec 默认 每秒执行一次同步操作</span><br><span class="line">appendfsync no 不主动进行同步 由操作系统来做，30秒一次</span><br></pre></td></tr></table></figure>
+<p>aof日志文件重写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br></pre></td></tr></table></figure>
+<p>手动执行bgrewriteaof进行重写<br>重写的过程只和内存中的数据有关，和之前的aof文件无关<br>所谓的”重写”其实是一个有歧义的词语，实际上 AOF重写并不需要对原有的AOF文件进行任何写入和读<br>取，它针对的是数据库中键的当前值。</p>
+<p>文件修复：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-check-aof</span><br></pre></td></tr></table></figure>
+<p>动态切换redis持久方式，从RDB切换到AOF（支持Redis2.2及以上）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CONFIG SET appendonly yes</span><br><span class="line">CONFIG SET save &quot;&quot; (可选)</span><br></pre></td></tr></table></figure>
+
+<p>注意： </p>
+<blockquote>
+<ol>
+<li>当redis启动时，如果rdb持久化和aof持久化都打开了，那么程序会优先使用aof方式来回复数据<br>集，因为aof方式所保存的数据通常是最完整的。如果aof文件丢失了，则启动之后数据库内容为空。</li>
+<li>如果想把正在运行的redis数据库，从RDB切换到AOF 建议先使用动态切换方式，再修改配置文件<br>重启数据库（不能自己修改配置文件，重启数据库，否则数据库中数据就为空了）</li>
+</ol>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/%E7%B1%BB-%E5%AF%B9%E8%B1%A1%E5%87%BD%E6%95%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -166,10 +428,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-23 09:59:34 / عُدل: 13:51:16" itemprop="dateCreated datePublished" datetime="2020-04-23T09:59:34+08:00">2020-04-23</time>
+              <time title="Erstellt: 2020-04-23 09:59:34 / Geändert am: 13:51:16" itemprop="dateCreated datePublished" datetime="2020-04-23T09:59:34+08:00">2020-04-23</time>
             </span>
 
           
@@ -276,10 +538,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-21 14:06:01 / عُدل: 14:55:12" itemprop="dateCreated datePublished" datetime="2020-04-21T14:06:01+08:00">2020-04-21</time>
+              <time title="Erstellt: 2020-04-21 14:06:01 / Geändert am: 14:55:12" itemprop="dateCreated datePublished" datetime="2020-04-21T14:06:01+08:00">2020-04-21</time>
             </span>
 
           
@@ -429,10 +691,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-21 10:21:12 / عُدل: 14:04:17" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
+              <time title="Erstellt: 2020-04-21 10:21:12 / Geändert am: 14:04:17" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
             </span>
 
           
@@ -538,10 +800,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-16 17:14:37 / عُدل: 17:54:30" itemprop="dateCreated datePublished" datetime="2020-04-16T17:14:37+08:00">2020-04-16</time>
+              <time title="Erstellt: 2020-04-16 17:14:37 / Geändert am: 17:54:30" itemprop="dateCreated datePublished" datetime="2020-04-16T17:14:37+08:00">2020-04-16</time>
             </span>
 
           
@@ -603,10 +865,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-16 16:50:43 / عُدل: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
+              <time title="Erstellt: 2020-04-16 16:50:43 / Geändert am: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
             </span>
 
           
@@ -663,10 +925,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-16 14:11:52 / عُدل: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
+              <time title="Erstellt: 2020-04-16 14:11:52 / Geändert am: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
             </span>
 
           
@@ -740,10 +1002,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-16 10:12:06 / عُدل: 17:14:03" itemprop="dateCreated datePublished" datetime="2020-04-16T10:12:06+08:00">2020-04-16</time>
+              <time title="Erstellt: 2020-04-16 10:12:06 / Geändert am: 17:14:03" itemprop="dateCreated datePublished" datetime="2020-04-16T10:12:06+08:00">2020-04-16</time>
             </span>
 
           
@@ -866,10 +1128,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="أُنشأ: 2020-04-15 14:15:34 / عُدل: 15:33:42" itemprop="dateCreated datePublished" datetime="2020-04-15T14:15:34+08:00">2020-04-15</time>
+              <time title="Erstellt: 2020-04-15 14:15:34 / Geändert am: 15:33:42" itemprop="dateCreated datePublished" datetime="2020-04-15T14:15:34+08:00">2020-04-15</time>
             </span>
 
           
@@ -992,282 +1254,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/15/Mysql%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/15/Mysql%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">Mysql高级查询优化</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">نُشر في</span>
-              
-
-              <time title="أُنشأ: 2020-04-15 08:56:50 / عُدل: 14:13:05" itemprop="dateCreated datePublished" datetime="2020-04-15T08:56:50+08:00">2020-04-15</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="数据库事务"><a href="#数据库事务" class="headerlink" title="数据库事务"></a>数据库事务</h3><h4 id="ACID特性"><a href="#ACID特性" class="headerlink" title="ACID特性"></a>ACID特性</h4><ul>
-<li>原子性：事务是最小的执行单位，不允许分割。事务的原子性确保动作要么全部完成，<br>要么完全不起作用。</li>
-<li>一致性：执行事务前后，数据库从一个一致性状态转换到另一个一致性状态。</li>
-<li>隔离性：并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数<br>据库是独立的。</li>
-<li>持久性：一个事务被提交后，它对数据库中数据的改变是持久的，即使数据库发生故障<br>也不应该对其有任何影响。</li>
-</ul>
-<h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><ul>
-<li>READ_UNCOMMITTED（未提交读）：最低的隔离级别，允许读取尚未提交的数据，<br>可能会导致脏读、幻读或不可重复读。</li>
-<li>READ_COMMITTED（提交读）：允许读取并发事务已经提交的数据，可以阻止脏读，<br>但是幻读或不可重复读扔有可能发生。</li>
-<li>REPEATABLE_READ（可重复读）：对同一字段的多次读取结果都是一致的，除非数据<br>是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。</li>
-<li>SERIALIZABLE（串行）：最高的隔离级别，完全服从ACID的隔离级别，所有的事务<br>依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、<br>不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会用到该级别。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mysql默认采用的REPEATABLE_READ（可重复读）隔离级别</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="了解索引"><a href="#了解索引" class="headerlink" title="了解索引"></a>了解索引</h3><h4 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h4><ul>
-<li>索引是一种帮助MySQL高效获取数据的数据结构。</li>
-</ul>
-<h4 id="优势和劣势"><a href="#优势和劣势" class="headerlink" title="优势和劣势"></a>优势和劣势</h4><ul>
-<li><strong>优势</strong><ol>
-<li>提高数据检索的效率，降低数据库的IO成本</li>
-<li>降低数据排序的成本，降低了CPU的消耗</li>
-</ol>
-</li>
-<li><strong>劣势</strong><ol>
-<li>索引列要占用空间</li>
-<li>降低了更新表的速度（INSERT、UPDATE）</li>
-<li>建立优秀索引的时间成本</li>
-</ol>
-</li>
-</ul>
-<h4 id="那些情况需要创建索引"><a href="#那些情况需要创建索引" class="headerlink" title="那些情况需要创建索引"></a>那些情况需要创建索引</h4><ul>
-<li>主键自动建立唯一索引</li>
-<li>频繁作为查询条件的字段应该创建索引</li>
-<li>查询中与其他表关联的字段，外键关系建立索引</li>
-<li>where条件里用不到的字段不创建索引</li>
-<li>单间/组合索引的选择问题，在高并发倾向创建组合索引</li>
-<li>查询中排序的字段，排序字段若通过索引去访问将大大提高排序速度</li>
-<li>查询中统计或分组字段</li>
-</ul>
-<h4 id="那些情况下不需要创建索引"><a href="#那些情况下不需要创建索引" class="headerlink" title="那些情况下不需要创建索引"></a>那些情况下不需要创建索引</h4><ul>
-<li>表记录太少</li>
-<li>频繁更新的字段不适合创建索引，因为每次更新不单单是更新了记录还会更新索引，加重了IO负担。</li>
-<li>数据重复且分布平均的表字段（若某个数据列包含许多重复的内容，为它建立索引就<br>没有太大的实际效果，即过滤性不好的字段）</li>
-</ul>
-<h3 id="EXPLAIN【重点】"><a href="#EXPLAIN【重点】" class="headerlink" title="EXPLAIN【重点】"></a>EXPLAIN【重点】</h3><blockquote>
-<p>使用EXPLAIN关键字可以模拟优化器执行SQL查询语句，从而知道MYSQL是如何处理你<br>的SQL语句，分析你的查询语句或是表结构的性能瓶颈。</p>
-</blockquote>
-<h4 id="EXPLAIN查询出来的字段"><a href="#EXPLAIN查询出来的字段" class="headerlink" title="EXPLAIN查询出来的字段"></a>EXPLAIN查询出来的字段</h4><ul>
-<li><strong>id</strong><ol>
-<li>id相同，执行顺序由上至下。</li>
-<li>id不同，id值越大优先级越高，越先被执行</li>
-</ol>
-</li>
-<li><strong>select_type</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">查询的类型，主要是用于区别普通的查询、联合查询、子查询等的复杂查询</span><br></pre></td></tr></table></figure></li>
-<li><strong>table</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">显示这行的数据是关于那张表的。</span><br></pre></td></tr></table></figure></li>
-<li><strong>type（最好到最差的顺序）</strong><ol>
-<li>system：表只有一行记录（等于系统表），这是const的特例，平时不会出现。</li>
-<li>const：表示通过索引一次就找到了，const用于比较primary key或者unique<br>索引。因为只匹配一行数据所以很快。如将主键置于where列表中，MySQL就能将该<br>查询转换为一个常量。</li>
-<li>eq_ref：唯一性索引扫描，对于每个索引建，表中只有一条记录与之匹配。常用<br>于主键或唯一索引扫描。</li>
-<li>ref：非唯一性索引扫描，返回匹配某个单独值的所有行，可能会找到多个符合条件的行。</li>
-<li>range：只检索给定范围的行，使用一个索引来选择行。key列显示使用了哪个索<br>引。一般是你的where语句中出现between，&lt;,&gt;,in等的查询，这种范围扫描索引扫<br>描比全表扫描要好。</li>
-<li>index：index与all的区别为index类型只遍历索引树，也就是说，虽然all和index<br>都是读全表，但index是从索引中读取的，而all是从硬盘中读取的。</li>
-<li>all：遍历全表</li>
-</ol>
-</li>
-</ul>
-<blockquote>
-<p>一般来说，得保证查询至少达到range级别，最好能达到ref</p>
-</blockquote>
-<ul>
-<li><strong>possible_keys</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可能应用到这张表的索引</span><br></pre></td></tr></table></figure></li>
-<li><strong>key</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">实际使用的索引</span><br></pre></td></tr></table></figure></li>
-<li><strong>key_len</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">索引使用的字节数，在不损失精确性的情况下，长度越短越好</span><br></pre></td></tr></table></figure></li>
-<li><strong>ref</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">显示索引的哪一列被使用了</span><br></pre></td></tr></table></figure></li>
-<li><strong>rows</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">大致估算出找到所需记录要读取的行数</span><br></pre></td></tr></table></figure></li>
-<li><strong>Extra</strong></li>
-<li>Using filesort：说明mysql会对数据使用一个外部的索引排序，而不是按照表内<br>的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序”</li>
-<li>Using temporary：使用了临时表保存中间结果，MySQL在对查询结构排序时使用<br>临时表，常见于排序order by和分组查询group by</li>
-<li>USING index：表示相应的select操作中使用了覆盖索引，避免访问了表的数据行</li>
-</ul>
-<h4 id="什么情况下索引会失效"><a href="#什么情况下索引会失效" class="headerlink" title="什么情况下索引会失效"></a>什么情况下索引会失效</h4><ul>
-<li>全值匹配</li>
-<li>最佳左前缀法则<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果索引了多列，要遵守最左前缀法则，指的是查询从索引的最左前列开始并且 不跳过索引中的列。</span><br></pre></td></tr></table></figure></li>
-<li>不在索引列上做任何操作（计算，函数，（手动或自动）类型转换），会导致索引失效而转向全表扫描</li>
-<li>存储引擎不能使用索引中范围条件右边的列</li>
-<li>尽量使用覆盖索引</li>
-<li>MySQL在使用不等于（！=或&lt;&gt;）的时候无法使用索引会导致全表扫描</li>
-<li>is null，is not null 也无法使用索引</li>
-<li>like以通配符开头（”%bac..”）MySQL索引失效会变成全表扫描的操作。</li>
-<li>字符串不加单引号索引失效（自动类型转换）</li>
-<li>or左边有索引、右边没索引也会失效</li>
-</ul>
-<h4 id="order-By关键字优化"><a href="#order-By关键字优化" class="headerlink" title="order By关键字优化"></a>order By关键字优化</h4><ul>
-<li>尽量使用index方式排序，避免使用filesort（文件排序）方式。</li>
-<li>order by满足两种情况会使用index排序：<br>① order by语句使用索引最左前列<br>② 使用where子句与order by子句条件列组合满足索引最左前列。</li>
-<li>双路排序：MySQL4.1之前，俩次扫描磁盘</li>
-<li>单路排序：从磁盘读取查询需要的所有列，按照order by列在buffer对它们进行排序<br>然后扫描排序后的列进行输出，效率更高一点，但是它会使用更多的空间，因为它每一<br>行都在内存中保存了。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">单路排序的缺点：因为单路是将所有的字段都放在内存中，假如，</span><br><span class="line">这张表实在太大，大的超过了sort_buffer这个值了，那么每次只</span><br><span class="line">能取sort_buffer的数据，来进行排序（会创建tmp文件，然后多路</span><br><span class="line">合并），相当于多路了，这样一来效率比双路还差。</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<blockquote>
-<p>优化策略：增大sort_buffer_size参数的设置，增大max_length_for_sort_data参数的设置。</p>
-</blockquote>
-<h4 id="group-By关键字优化"><a href="#group-By关键字优化" class="headerlink" title="group By关键字优化"></a>group By关键字优化</h4><ul>
-<li>实质是先后排序后进行分组，遵照索引的最佳左前缀，当无法使用索引列时，增大<br>sort_buffer_size + max_length_for_sort_data参数的设置</li>
-</ul>
-<h3 id="慢查询【重点】"><a href="#慢查询【重点】" class="headerlink" title="慢查询【重点】"></a>慢查询【重点】</h3><h4 id="慢查询日志是什么"><a href="#慢查询日志是什么" class="headerlink" title="慢查询日志是什么"></a>慢查询日志是什么</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MySQL的慢查询日志是MySQL提供的一种日志记录，它用来记录在MySQL中响应时间</span><br><span class="line">超过阀值的语句，具体运行时间超过long_query_time值的SQL，则会被记录到慢</span><br><span class="line">查询日志中。具体指运行时间超过long_query_time的SQL，则会被记录到慢查询</span><br><span class="line">日志中。long_query_time的默认值为10，意思是运行10秒以上的语句。由他来看</span><br><span class="line">那些SQL超出了我们的最大忍耐时间值，比如一条sql执行超过5秒钟，我们就算慢SQL</span><br><span class="line">希望能收集超过5秒的sql，结合之前explain进行全面分析。</span><br></pre></td></tr></table></figure>
-<h4 id="怎么用"><a href="#怎么用" class="headerlink" title="怎么用"></a>怎么用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">默认情况下，MySQL数据库没有开启慢查询日志，需要我们手动来设置这个参数。</span><br><span class="line">（当然，如果不是调优需要的话，一般不建议启动该参数，因为开启慢查询日志</span><br><span class="line">会或多或少带来一定的性能影响。慢查询日志支持将日志记录写入文件。）</span><br></pre></td></tr></table></figure>
-<h4 id="Show-Profile-【重点】"><a href="#Show-Profile-【重点】" class="headerlink" title="Show Profile 【重点】"></a>Show Profile 【重点】</h4><ul>
-<li>是什么<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql提供可以用来分析当前会话中语句执行的资源消耗情况，可以用于SQL的调优</span><br><span class="line">的测量，相比explain，show profile展示的数据更加详尽。</span><br></pre></td></tr></table></figure></li>
-<li>怎么用<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-- 查看是否开启</span><br><span class="line">show variables like &#39;profiling&#39;;</span><br><span class="line"></span><br><span class="line">-- 开启功能，默认是关闭 使用前需要开启</span><br><span class="line">set profiling &#x3D; 1；</span><br><span class="line"></span><br><span class="line">-- 诊断SQL</span><br><span class="line">show profile cpu,block io for query n;</span><br><span class="line">-- 还可以通过SELECT * FROM information_schema.profiling WHERE query_id &#x3D; n ORDER BY seq;获取</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%EF%BC%88Flyweight%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/14/%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%EF%BC%88Flyweight%EF%BC%89/" class="post-title-link" itemprop="url">享元模式（Flyweight）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">نُشر في</span>
-              
-
-              <time title="أُنشأ: 2020-04-14 16:22:32 / عُدل: 16:50:53" itemprop="dateCreated datePublished" datetime="2020-04-14T16:22:32+08:00">2020-04-14</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">享元模式（Flyweight Pattern）主要用于减少创建对象的数量，以减少内存的占</span><br><span class="line">用和提高性能。这种类型的设计模式属于结构型模式，它提供了减少对象数量从而改</span><br><span class="line">善应用所需的对象结构的方式。</span><br><span class="line">享元模式尝试重用现有的同类对象，如果未找到匹配的对象，则创建新对象。我们将</span><br><span class="line">通过创建5个对象来画出20个分布不同位置的圆来演示这种模式。由于只有五种可用</span><br><span class="line">的颜色，所以 color 属性被用来检查现有的 Circle 对象</span><br></pre></td></tr></table></figure>
-<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li>意图：运用共享技术有效地支持大量细粒度的对象。</li>
-<li>主要解决：在有大量对象时，有可能会造成内存溢出，我们把其中共同部分抽象出来，<br>如果有相同的业务请求，直接返回在内存中已有的对象，避免重新创建。</li>
-<li>何时使用：</li>
-</ul>
-<ol>
-<li>系统中有大量对象。</li>
-<li>这些对象消耗大量内存。</li>
-<li>这些对象的状态大部分可以外部化。</li>
-<li>这些对象可以按照内蕴状态分为很多组，当把外蕴对象从对象中剔除出来时，每一组<br>对象都可以用一个对象来代替。</li>
-<li>系统不依赖于这些对象身份，这些对象是不可分辨的。</li>
-</ol>
-<ul>
-<li>如何解决：用唯一标识判断，如果在内存中有，则返回这个唯一标识码所标识的对象。</li>
-<li>关键代码：用 <strong>HashMap</strong> 存储这些对象。</li>
-<li>简单来说<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">它用于通过尽可能多地与类似对象共享来最小化内存使用或计算开销。</span><br></pre></td></tr></table></figure></li>
-<li>百度上说<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">在计算机编程中，flyweight 是一种软件设计模式。flyweight 是一个通过与其他</span><br><span class="line">类似对象共享尽可能多的数据来最小化内存使用的对象；当简单的重复表示将使用不</span><br><span class="line">可接受的内存量时，它是一种大量使用对象的方法。</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="现实中的例子"><a href="#现实中的例子" class="headerlink" title="现实中的例子"></a>现实中的例子</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你有没有从一些摊位买到新鲜的茶？他们经常制作你需要的不止一个杯子，并为其他</span><br><span class="line">任何客户保存其余的，以节省资源，例如天然气等。Flyweight 模式就是那个即共享</span><br></pre></td></tr></table></figure>
-
-<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>从上面翻译我们的茶为例子。首先，我们有茶类和茶具</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class KarakTea</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class TeaMaker</span><br><span class="line">&#123;</span><br><span class="line">	protected $availableTea &#x3D; [];</span><br><span class="line"></span><br><span class="line">	public function make($preference)</span><br><span class="line">	&#123;</span><br><span class="line">		if (empty($this-&gt;availableTea[$preference]))&#123;</span><br><span class="line">			$this-&gt;availableTeap[$preference] &#x3D; new KarakTea();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return $this-&gt;availableTea[$preference];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后我们有 <strong>TeaShop</strong> 接受订单并为他们服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class TeaShop</span><br><span class="line">&#123;</span><br><span class="line">	protected $orders;</span><br><span class="line">	protected $teaMaker;</span><br><span class="line"></span><br><span class="line">	public function __construct(TeaMaker $teaMaker)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;teaMaker &#x3D; $teaMaker;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function takeOrder(string $teaType, int $table)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;orders[$table] &#x3D; $this-&gt;teaMaker-&gt;make($teaType);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function serve()</span><br><span class="line">	&#123;</span><br><span class="line">		foreach ($this-&gt;orders as $table &#x3D;&gt; $tea)&#123;</span><br><span class="line">			echo &quot;Serving tea to table#&quot;.$table;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>它可以如下使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$teaMaker &#x3D; new TeaMaker();</span><br><span class="line">$shop &#x3D; new TeaShop($teaMaker);</span><br><span class="line"></span><br><span class="line">$shop-&gt;takeOrder(&#39;less sugar&#39;,1);</span><br><span class="line">$shop-&gt;takeOrder(&#39;more milk&#39;, 2);</span><br><span class="line">$shop-&gt;takeOrder(&#39;without sugar&#39;, 5);</span><br><span class="line"></span><br><span class="line">$shop-&gt;serve();</span><br></pre></td></tr></table></figure>
-
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>大大减少对象的创建，降低系统的内存，使效率提高。</li>
-</ul>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li>提高了系统的复杂度，需要分离出外部状态和内部状态，而且外部状态具有固有化的<br>性质，不应该随着内部状态的变化而变化，否则会造成系统的混乱。</li>
-</ul>
-<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
-<li>系统有大量相似对象。</li>
-<li>需要缓冲池的场景。</li>
-</ol>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 注意划分外部状态和内部状态，否则可能会引起线程安全问题。</span><br><span class="line">2. 这些类必须有一个工厂对象加以控制。</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="الصفحة التالية"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Nächste Seite"></i></a>
   </nav>
 
 
@@ -1311,10 +1301,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          المحتويات
+          Inhaltsverzeichnis
         </li>
         <li class="sidebar-nav-overview">
-          عام
+          Übersicht
         </li>
       </ul>
 
@@ -1333,13 +1323,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
-          <span class="site-state-item-name">المقالات</span>
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">Artikel</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">8</span>
-        <span class="site-state-item-name">الوسوم</span>
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">schlagwörter</span>
       </div>
   </nav>
 </div>
@@ -1371,7 +1361,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">GIO</span>
 </div>
-  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">Erstellt mit  <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
         
