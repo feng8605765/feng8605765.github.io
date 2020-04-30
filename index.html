@@ -144,6 +144,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/30/hello-world/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/30/hello-world/" class="post-title-link" itemprop="url">hexo博客安装教程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+              
+
+              <time title="أُنشأ: 2020-04-30 10:21:12 / عُدل: 10:07:07" itemprop="dateCreated datePublished" datetime="2020-04-30T10:21:12+08:00">2020-04-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="新建仓库"><a href="#新建仓库" class="headerlink" title="新建仓库"></a>新建仓库</h3><p>github 新建一个仓库，仓库名必须为<user-name>.github.io格式，其中<user-name>是你github的<br>昵称。</p>
+<h3 id="全局安装hexo"><a href="#全局安装hexo" class="headerlink" title="全局安装hexo"></a>全局安装hexo</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 本地运行</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署到github上"><a href="#部署到github上" class="headerlink" title="部署到github上"></a>部署到github上</h3><p>项目根目录下找到_config.yml,找到deploy字段并填写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: &lt;你的仓库地址&gt; # https:&#x2F;&#x2F;github.com&#x2F;feng&#x2F;feng.github.io</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>填写完之后需要hexo-deployer-git推到仓库上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>执行下面两个命令,就可以自动部署到github上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看效果"><a href="#查看效果" class="headerlink" title="查看效果"></a>查看效果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">浏览器访问：https:&#x2F;&#x2F;feng.github.io&#x2F; 即可看到效果。</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建新文章"><a href="#创建新文章" class="headerlink" title="创建新文章"></a>创建新文章</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; [layout] 为布局，可选项为 &#96;post&#96;、&#96;page&#96;、&#96;draft&#96;，这将决定文章所在文件路径。</span><br><span class="line">&#x2F;&#x2F; &lt;title&gt; 为文章标题</span><br><span class="line">&#x2F;&#x2F; 如 hexo new post 除了帅气，我还有啥！</span><br><span class="line">hexo new [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="更换主题皮肤"><a href="#更换主题皮肤" class="headerlink" title="更换主题皮肤"></a>更换主题皮肤</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 下载到themes文件夹下</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;KevinOfNeu&#x2F;hexo-theme-xoxo xoxo</span><br><span class="line"></span><br><span class="line"># 修改 _config.yml 配置</span><br><span class="line">theme: xoxo</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署优化"><a href="#部署优化" class="headerlink" title="部署优化"></a>部署优化</h3><p>每次都要执行hexo clean 和 hexo deploy 不如写个新的脚本，修改package.json</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">	  &quot;scripts&quot;: &#123;</span><br><span class="line">	    &quot;rebuild&quot;: &quot;hexo clean &amp;&amp; hexo deploy&quot;</span><br><span class="line">	  &#125;</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">部署命令</span><br></pre></td></tr></table></figure>
+<pre><code>npm run rebuild</code></pre><pre><code></code></pre>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -760,90 +838,6 @@
 
 <p>我们需要做的就是对提供的服务进行维护。</p>
 
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/21/hello-world/" class="post-title-link" itemprop="url">hexo博客安装教程</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">نُشر في</span>
-
-              <time title="أُنشأ: 2020-04-21 10:21:12" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">عُدل في</span>
-                <time title="عُدل: 2020-04-30 10:04:49" itemprop="dateModified" datetime="2020-04-30T10:04:49+08:00">2020-04-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="新建仓库"><a href="#新建仓库" class="headerlink" title="新建仓库"></a>新建仓库</h3><p>github 新建一个仓库，仓库名必须为<user-name>.github.io格式，其中<user-name>是你github的<br>昵称。</p>
-<h3 id="全局安装hexo"><a href="#全局安装hexo" class="headerlink" title="全局安装hexo"></a>全局安装hexo</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure>
-
-<h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 本地运行</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署到github上"><a href="#部署到github上" class="headerlink" title="部署到github上"></a>部署到github上</h3><p>项目根目录下找到_config.yml,找到deploy字段并填写</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: &lt;你的仓库地址&gt; # https:&#x2F;&#x2F;github.com&#x2F;feng&#x2F;feng.github.io</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<p>填写完之后需要hexo-deployer-git推到仓库上。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-<p>执行下面两个命令,就可以自动部署到github上。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看效果"><a href="#查看效果" class="headerlink" title="查看效果"></a>查看效果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">浏览器访问：https:&#x2F;&#x2F;feng.github.io&#x2F; 即可看到效果。</span><br></pre></td></tr></table></figure>
-
-<h3 id="创建新文章"><a href="#创建新文章" class="headerlink" title="创建新文章"></a>创建新文章</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; [layout] 为布局，可选项为 &#96;post&#96;、&#96;page&#96;、&#96;draft&#96;，这将决定文章所在文件路径。</span><br><span class="line">&#x2F;&#x2F; &lt;title&gt; 为文章标题</span><br><span class="line">&#x2F;&#x2F; 如 hexo new post 除了帅气，我还有啥！</span><br><span class="line">hexo new [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="更换主题皮肤"><a href="#更换主题皮肤" class="headerlink" title="更换主题皮肤"></a>更换主题皮肤</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 下载到themes文件夹下</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;KevinOfNeu&#x2F;hexo-theme-xoxo xoxo</span><br><span class="line"></span><br><span class="line"># 修改 _config.yml 配置</span><br><span class="line">theme: xoxo</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署优化"><a href="#部署优化" class="headerlink" title="部署优化"></a>部署优化</h3><p>每次都要执行hexo clean 和 hexo deploy 不如写个新的脚本，修改package.json</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">	  &quot;scripts&quot;: &#123;</span><br><span class="line">	    &quot;rebuild&quot;: &quot;hexo clean &amp;&amp; hexo deploy&quot;</span><br><span class="line">	  &#125;</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">部署命令</span><br></pre></td></tr></table></figure>
-<pre><code>npm run rebuild</code></pre><pre><code></code></pre>
       
     </div>
 
