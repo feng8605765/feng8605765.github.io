@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="123456789101112131415nginx:	container_name: naginx	restart: always	image: &#x2F;&#x2F; 镜像名称	volumes:	- .&#x2F;config&#x2F;nginx&#x2F;$&amp;#123;DOCKER_ENV&amp;#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;o">
+  <meta name="description" content="1.消息基于什么传输？由于TCP连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶颈。RabbitMQ使用信道的方式来传输数据。信道是建立在真实的TCP连接内的虚拟连接，且每条TCP连接上的信道数量没有限制。 2.消息如何分布？若该队列至少有一个消费者订阅，消息将以循环(round-robin)的方式发送给消费者。每条消息只会分发给一个订阅的消费者（前提是消费者能够正常处理消息并进行确">
 <meta property="og:type" content="article">
-<meta property="og:title" content="docker配置">
-<meta property="og:url" content="http://yoursite.com/2020/04/16/docker%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:title" content="RabbitMQ的问题">
+<meta property="og:url" content="http://yoursite.com/2020/05/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="十二月的doge">
-<meta property="og:description" content="123456789101112131415nginx:	container_name: naginx	restart: always	image: &#x2F;&#x2F; 镜像名称	volumes:	- .&#x2F;config&#x2F;nginx&#x2F;$&amp;#123;DOCKER_ENV&amp;#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;o">
-<meta property="article:published_time" content="2020-04-16T08:50:43.000Z">
-<meta property="article:modified_time" content="2020-04-16T08:52:54.043Z">
+<meta property="og:description" content="1.消息基于什么传输？由于TCP连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶颈。RabbitMQ使用信道的方式来传输数据。信道是建立在真实的TCP连接内的虚拟连接，且每条TCP连接上的信道数量没有限制。 2.消息如何分布？若该队列至少有一个消费者订阅，消息将以循环(round-robin)的方式发送给消费者。每条消息只会分发给一个订阅的消费者（前提是消费者能够正常处理消息并进行确">
+<meta property="article:published_time" content="2020-05-11T00:46:21.000Z">
+<meta property="article:modified_time" content="2020-05-11T01:12:08.722Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/04/16/docker%E9%85%8D%E7%BD%AE/">
+<link rel="canonical" href="http://yoursite.com/2020/05/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/">
 
 
 <script id="page-configurations">
@@ -44,7 +44,7 @@
   };
 </script>
 
-  <title>docker配置 | 十二月的doge</title>
+  <title>RabbitMQ的问题 | 十二月的doge</title>
   
 
 
@@ -149,7 +149,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/16/docker%E9%85%8D%E7%BD%AE/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -162,7 +162,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          docker配置
+          RabbitMQ的问题
         </h1>
 
         <div class="post-meta">
@@ -173,7 +173,7 @@
               <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="أُنشأ: 2020-04-16 16:50:43 / عُدل: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
+              <time title="أُنشأ: 2020-05-11 08:46:21 / عُدل: 09:12:08" itemprop="dateCreated datePublished" datetime="2020-05-11T08:46:21+08:00">2020-05-11</time>
             </span>
 
           
@@ -187,8 +187,24 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">nginx:</span><br><span class="line">	container_name: naginx</span><br><span class="line">	restart: always</span><br><span class="line">	image: &#x2F;&#x2F; 镜像名称</span><br><span class="line">	volumes:</span><br><span class="line">	- .&#x2F;config&#x2F;nginx&#x2F;$&#123;DOCKER_ENV&#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;openresty&#x2F;nginx&#x2F;conf&#x2F;nginx.conf</span><br><span class="line">	networks:</span><br><span class="line">		- </span><br><span class="line">	expose:</span><br><span class="line">		-80</span><br><span class="line">		-443</span><br><span class="line">	ports:</span><br><span class="line">		-80:80</span><br><span class="line">		-443:443</span><br><span class="line">	command:</span><br></pre></td></tr></table></figure>
-
+        <h3 id="1-消息基于什么传输？"><a href="#1-消息基于什么传输？" class="headerlink" title="1.消息基于什么传输？"></a>1.消息基于什么传输？</h3><p>由于TCP连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶颈。RabbitMQ使用信道的<br>方式来传输数据。信道是建立在真实的TCP连接内的虚拟连接，且每条TCP连接上的信道数量没有限制。</p>
+<h3 id="2-消息如何分布？"><a href="#2-消息如何分布？" class="headerlink" title="2.消息如何分布？"></a>2.消息如何分布？</h3><p>若该队列至少有一个消费者订阅，消息将以循环(round-robin)的方式发送给消费者。每条消息只会分<br>发给一个订阅的消费者（前提是消费者能够正常处理消息并进行确认）。</p>
+<h3 id="3-如何确保消息正确地发送至RabbitMQ"><a href="#3-如何确保消息正确地发送至RabbitMQ" class="headerlink" title="3.如何确保消息正确地发送至RabbitMQ?"></a>3.如何确保消息正确地发送至RabbitMQ?</h3><p>RabbitMQ使用发送方确认模式，确保消息正确地发送到RabbitMQ。发送方确认模式：将信道设置成confirm<br>模式（发送方确认模式），则所有在信道上发布的消息都会被指派一个唯一的ID。一旦消息被投递到目<br>的队列后，或者消息被写入磁盘后（可持久化的消息），信道会发送一个确认给生产者（发送消息唯一<br>ID）。如果RabbitMQ发生内部错误从而导致消息丢失，会发送一条nack（not acknowledged，未确认<br>）消息。发送方确认模式是异步的，生产者应用程序在等待确认的同时，可以继续发送消息。当确认消息<br>到达生产者应用程序，生产者应用程序的回调方法就会被触发来处理确认消息。</p>
+<h3 id="4-如何确保消息接收方消费了消息？"><a href="#4-如何确保消息接收方消费了消息？" class="headerlink" title="4.如何确保消息接收方消费了消息？"></a>4.如何确保消息接收方消费了消息？</h3><p>接收方消息确认机制：消费者接收每一条消息后都必须进行确认（消息接收和消息确认是两个不同操作）<br>。只有消费者确认了消息，RabbitMQ才能安全地把消息从队列中删除。这里并没有用到超时机制，RabbitMQ<br>仅通过Consumer的连接中断来确认是否需要重新发送消息。也就是说，只要连接不中断，RabbitMQ给了<br>Consumer足够长的时间来处理消息。<br>会有以下几种特殊情况：</p>
+<ul>
+<li>如果消费者接收到消息，在确认之前断开了连接或取消订阅，RabbitMQ会认为消息没有被分发，然后<br>重新分发给下一个订阅的消费者。（可能存在消息重复消费的隐患，需要根据bizId去重）</li>
+<li>如果消费者接收到消息却没有确认消息，连接也未断开，则RabbitMQ认为该消费者繁忙，将不会给该<br>消费者分发更多的消息。</li>
+</ul>
+<h3 id="5-如何避免消息重复投递或重复消费？"><a href="#5-如何避免消息重复投递或重复消费？" class="headerlink" title="5. 如何避免消息重复投递或重复消费？"></a>5. 如何避免消息重复投递或重复消费？</h3><p>在消息生产时，MQ内部针对每条生产者发送的消息生成一个inner-msg-id，作为去重和幂等的依据（消息投递失败并重传），避免重复的消息进入队列；在消息消费时，要求消息体中必须要有一个bizId（对于同一业务全局唯一，如支付ID、订单ID、帖子ID等）作为去重和幂等的依据，避免同一条消息被重复消费。</p>
+<p>这个问题针对业务场景来答分以下几点：</p>
+<ul>
+<li><p>比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。</p>
+</li>
+<li><p>再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。</p>
+</li>
+<li><p>如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&lt;id,message&gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。</p>
+</li>
+</ul>
 
     </div>
 
@@ -204,13 +220,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/16/vagrant%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/" rel="prev" title="vagrant基本命令">
-      <i class="fa fa-chevron-left"></i> vagrant基本命令
+    <a href="/2020/04/30/%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F/" rel="prev" title="门面模式">
+      <i class="fa fa-chevron-left"></i> 门面模式
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/04/16/docker%E5%91%BD%E4%BB%A4/" rel="next" title="docker命令">
-      docker命令 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -269,6 +282,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-消息基于什么传输？"><span class="nav-number">1.</span> <span class="nav-text">1.消息基于什么传输？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-消息如何分布？"><span class="nav-number">2.</span> <span class="nav-text">2.消息如何分布？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-如何确保消息正确地发送至RabbitMQ"><span class="nav-number">3.</span> <span class="nav-text">3.如何确保消息正确地发送至RabbitMQ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-如何确保消息接收方消费了消息？"><span class="nav-number">4.</span> <span class="nav-text">4.如何确保消息接收方消费了消息？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-如何避免消息重复投递或重复消费？"><span class="nav-number">5.</span> <span class="nav-text">5. 如何避免消息重复投递或重复消费？</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
