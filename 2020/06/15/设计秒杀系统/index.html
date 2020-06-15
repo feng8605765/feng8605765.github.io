@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="十二月的doge">
 <meta property="og:description" content="秒杀其实主要解决两个问题并发读 并发读的核心优化理念是尽量减少用户到服务端来“读”数据，或者让他们读更少的数据；  并发写 并发写的处理原则也一样，它要求我们在数据库层面独立出来一个库，做一个库，做特殊处理。另外，我们还要针对秒杀系统做一些保护，针对意料之外的情况设计兜底方案，以防止最坏的情况发生。   设计秒杀系统关注的三点 稳，准，快高性能 秒杀及大量的并发读和并发写，因此支持高并发访问这点非">
 <meta property="article:published_time" content="2020-06-15T00:55:57.000Z">
-<meta property="article:modified_time" content="2020-06-15T03:45:08.889Z">
+<meta property="article:modified_time" content="2020-06-15T06:14:50.512Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
@@ -173,7 +173,7 @@
               <span class="post-meta-item-text">Veröffentlicht am</span>
               
 
-              <time title="Erstellt: 2020-06-15 08:55:57 / Geändert am: 11:45:08" itemprop="dateCreated datePublished" datetime="2020-06-15T08:55:57+08:00">2020-06-15</time>
+              <time title="Erstellt: 2020-06-15 08:55:57 / Geändert am: 14:14:50" itemprop="dateCreated datePublished" datetime="2020-06-15T08:55:57+08:00">2020-06-15</time>
             </span>
 
           
@@ -231,6 +231,24 @@
 <p>那如何避免单点呢？ 最重要的是避免将服务的状态和机器绑定，即把服务无状态化，这样服务就可以在机器中随意移动。</p>
 <p>如何把服务的状态和机器解耦呢？这里也有很多实现方式。例如把和机器相关的配置动态化，这些参数可以通过配置中心来动态推送，在服务启动时动态拉取下来，我们在这些配置中心设置一些规则来方便地改变这些映射关系。</p>
 <p>应用无状态化是有效避免单点的一种方式，但是像存储服务本身很难无状态化，因为数据要存储在磁盘上，本身就要和机器绑定，那么这种场景一般要通过冗余多个备份的方式来解决单点问题。</p>
+<h3 id="（1w-s-到了-10w-s-的量级）架构"><a href="#（1w-s-到了-10w-s-的量级）架构" class="headerlink" title="（1w/s 到了 10w/s 的量级）架构"></a>（1w/s 到了 10w/s 的量级）架构</h3><ol>
+<li><p>把秒杀系统独立出来单独打造个系统，这样就可以有针对性地做优化，例如这个独立出来的系统就减少了店铺装修的功能，减少了页面的复杂度。</p>
+</li>
+<li><p>在系统部署上也独立做一个机器集群，这样秒杀的大流量就不会影响到正常的商品购买集群的机器负载；</p>
+</li>
+<li><p>将热点数据（如库存数据）单独放到一个缓存系统中，以提高“读性能”；</p>
+</li>
+<li><p>增加秒杀答题，防止有秒杀器抢单。</p>
+</li>
+</ol>
+<h3 id="升级架构"><a href="#升级架构" class="headerlink" title="升级架构"></a>升级架构</h3><ol>
+<li><p>对页面进行彻底的动静分离，使得用户秒杀时不需要刷新整个页面，而只需要点击抢宝按钮，借此把页面刷新的数据降到最少；</p>
+</li>
+<li><p>在服务端对秒杀商品进行本地缓存，不需要再调用依赖系统的后台服务获取数据，甚至不需要去公共的缓存集群中查询数据，这样不仅可以减少系统调用，而且能够避免压垮公共缓存集群。</p>
+</li>
+<li><p>增加系统限流保护，防止最坏情况发生。</p>
+</li>
+</ol>
 
     </div>
 
@@ -308,7 +326,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#秒杀其实主要解决两个问题"><span class="nav-number">1.</span> <span class="nav-text">秒杀其实主要解决两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#并发读"><span class="nav-number">1.1.</span> <span class="nav-text">并发读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发写"><span class="nav-number">1.2.</span> <span class="nav-text">并发写</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计秒杀系统关注的三点-稳，准，快"><span class="nav-number">2.</span> <span class="nav-text">设计秒杀系统关注的三点 稳，准，快</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#高性能"><span class="nav-number">2.1.</span> <span class="nav-text">高性能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一致性"><span class="nav-number">2.2.</span> <span class="nav-text">一致性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#高可用"><span class="nav-number">2.3.</span> <span class="nav-text">高可用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#架构原则：”4-要-1-不要”"><span class="nav-number">3.</span> <span class="nav-text">架构原则：”4 要 1 不要”</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#秒杀其实主要解决两个问题"><span class="nav-number">1.</span> <span class="nav-text">秒杀其实主要解决两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#并发读"><span class="nav-number">1.1.</span> <span class="nav-text">并发读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发写"><span class="nav-number">1.2.</span> <span class="nav-text">并发写</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计秒杀系统关注的三点-稳，准，快"><span class="nav-number">2.</span> <span class="nav-text">设计秒杀系统关注的三点 稳，准，快</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#高性能"><span class="nav-number">2.1.</span> <span class="nav-text">高性能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一致性"><span class="nav-number">2.2.</span> <span class="nav-text">一致性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#高可用"><span class="nav-number">2.3.</span> <span class="nav-text">高可用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#架构原则：”4-要-1-不要”"><span class="nav-number">3.</span> <span class="nav-text">架构原则：”4 要 1 不要”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（1w-s-到了-10w-s-的量级）架构"><span class="nav-number">4.</span> <span class="nav-text">（1w&#x2F;s 到了 10w&#x2F;s 的量级）架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#升级架构"><span class="nav-number">5.</span> <span class="nav-text">升级架构</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
