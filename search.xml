@@ -1,34 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>索引的处理流程</title>
-    <url>/2020/05/11/InnoDB%E7%9A%84%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="基于主键索引和普通索引的查询有什么区别？"><a href="#基于主键索引和普通索引的查询有什么区别？" class="headerlink" title="基于主键索引和普通索引的查询有什么区别？"></a>基于主键索引和普通索引的查询有什么区别？</h3><ul>
-<li><p>如果语句是 select * from T where ID=500,即主键查询方式，则只需要搜索ID这颗树B+树；</p>
-</li>
-<li><p>如果语句是 select * from T where k=5，即普通索引查询方式，则需要先搜索 k 索引树，得到ID的值为500，再到 ID 索引树搜索一次。这个过程称为回表。 </p>
-</li>
-</ul>
-<p>也就是说，基于非主键索引的查询需要扫描一棵索引树。因此 我们在应用中应该尽量使用主键查询。</p>
-<h3 id="什么条件下可以使用-change-buffer-呢？"><a href="#什么条件下可以使用-change-buffer-呢？" class="headerlink" title="什么条件下可以使用 change buffer 呢？"></a>什么条件下可以使用 change buffer 呢？</h3><p>唯一索引的更新就不能使用change buffer,实际上也只有普通索引可以使用。</p>
-<p>change buffer用的是buffer pool里的内存，因此不能无限增大。change buffer的大小，可以通过参数innodb_change_buffer_max_size来动态设置。这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。</p>
-<h3 id="如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。"><a href="#如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。" class="headerlink" title="如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。"></a>如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。</h3><h4 id="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："><a href="#第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：" class="headerlink" title="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："></a>第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：</h4><ul>
-<li><p>对于唯一索引来说，找到3和5之间的位置，判断到没有冲突，插入这个值，语句执行结束；</p>
-</li>
-<li><p>对于普通索引来说，找到3和5之间的位置，插入这个值，语句执行结束。</p>
-</li>
-</ul>
-<p>这样看来，普通索引和唯一索引对更新语句性能影响的差别，只是一个判断，只会耗费微小的CPU时间。</p>
-<h4 id="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："><a href="#第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：" class="headerlink" title="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："></a>第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：</h4><ul>
-<li><p>对于唯一索引来说，需要将数据页读入内存，判断没有冲突，插入这个值，语句执行结束；</p>
-</li>
-<li><p>对于普通索引来说，则是将更新记录在 change buffer，语句执行就结束了。</p>
-</li>
-</ul>
-<p>将数据从磁盘读入内存及随机IO的访问，是数据库里面成本最高的操作之一。change buffer因为减少了随机磁盘访问，所以对更新性能的提升会很明显。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Join查询</title>
     <url>/2020/05/28/Join%E6%9F%A5%E8%AF%A2/</url>
     <content><![CDATA[<p>select * from t1 straight_join t2 on (t1.a=t2.a);</p>
@@ -48,90 +20,6 @@
 <li>如果使用join语句的话，需要让小表做驱动表。</li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>Laravel服务容器，Ioc，DI</title>
-    <url>/2020/04/21/Laravel%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%EF%BC%8CIoc%EF%BC%8CDI/</url>
-    <content><![CDATA[<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Laravel服务容器是用于管理类依赖关系和执行依赖关系注入的强大工具。依赖注入是一<br>个花哨的短语，从本质上讲是这样的：类依赖通过构造函数或在某些情况下通过”设置”方法<br>注入到”类”中。</p>
-<h3 id="DI"><a href="#DI" class="headerlink" title="DI"></a>DI</h3><p>DI就是常说的依赖注入，那么究竟什么是依赖注入呢？<br>打个比方，电脑需要键盘和鼠标我们才能进行操作，这个”需要”换句话说就是”依赖”键盘和<br>鼠标。那么相应的一个类需要另一个类才能进行作业，那么这也就是依赖。<br>如下示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的computer类依赖了键盘类，既然我们已经知道了什么是依赖，那么什么是注入呢？</p>
-<p>我们改造一下上面的代码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer&#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct(Keyboard $keyboard)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new Keyboard());</span><br></pre></td></tr></table></figure>
-
-<p>关于依赖注入，我的理解是：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">所需要的类通过参数的形式传入的就是依赖注入</span><br></pre></td></tr></table></figure>
-
-<h3 id="IOC"><a href="#IOC" class="headerlink" title="IOC"></a>IOC</h3><blockquote>
-<p>IOC是什么呢？<br>    控制容器的Laravel反转是用于管理依赖项的强大工具。依赖注入是一种删除硬编码类依赖的方法。<br>    而是在运行时注入依赖项，因为可以轻松交换依赖项实现，因此具有更大的灵活性。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">控制反转的意思是说将依赖类的控制权交出去，由主动变为被动。</span><br></pre></td></tr></table></figure>
-<p>代码示例如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">namespace App\Http\Controllerd;</span><br><span class="line"></span><br><span class="line">use Illuminate\Http\Request;</span><br><span class="line"></span><br><span class="line">class SessionController extends Controller</span><br><span class="line">&#123;</span><br><span class="line">	public function login(Request $request)</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 这就是IOC 我们不需要主动传入类。一切由laravel去实现</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="服务容器"><a href="#服务容器" class="headerlink" title="服务容器"></a>服务容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">它的目的就是解耦依赖</span><br></pre></td></tr></table></figure>
-<p>服务容器类似设计模式中的《享元模式》，区别在于服务容器解决了所有依赖的实现。<br>依然是电脑的例子，我们知道电脑依赖键盘鼠标，可是键盘鼠标也有很多种呀。<br>代码原始示例如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; null) &#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上出现的问题已经很明显了,如果我们需要增加另外一个键盘，我们又得对这个类进行修改。这样下去<br>这个类会变的庞大且耦合度过高。所以接下来我么可以使用工厂模式：</p>
-<ul>
-<li><p>简单工厂模式<br>这样我们就可以避免直接修改Computer 类。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Factory &#123;</span><br><span class="line"></span><br><span class="line">	public static function getinstance($type)&#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line"></span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; &#39;&#39;)&#123;</span><br><span class="line"></span><br><span class="line">		$this-&gt;keyboard &#x3D; Factory::getinstance($type);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样使用了简单工厂模式后，我们后续的修改可以不用对computer类进行操作而只要修改工厂类就行了。<br>这就相当于对Computer类进行了解耦。<br>Computer类虽不在依赖那些键盘类了，但是却变成了依赖工厂类了。<br>后续添加新类型的键盘就必须对工厂类进行修改。<br>所以这个工厂类还不能很好的满足要求，我们知道电脑对键盘的接口都是一致的，键盘必须实现这一接<br>口才能被电脑识别，那我们对Computer和Keyboard类进行修改。</p>
-</li>
-<li><p>DI(依赖注入)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Board &#123;</span><br><span class="line">	public function getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CommonKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()&#123;</span><br><span class="line">		echo &#39;普通键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class MechanicalKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;机械键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct (Board $keyboard) &#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new MechanicalKeyboard());</span><br></pre></td></tr></table></figure>
-<p>可是这样也有问题，如果我们后续对这台电脑使用的键盘不满意要进行替换呢？我们又回到了原点了，<br>必须去修改传入的键盘类。能不能做成可配置的呢？</p>
-</li>
-<li><p>IOC服务容器（超级工厂）</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Container</span><br><span class="line">&#123;</span><br><span class="line">	protected $binds;</span><br><span class="line"></span><br><span class="line">	protected $instances;</span><br><span class="line"></span><br><span class="line">	public function bind($abstract, $concrete)</span><br><span class="line">	&#123;</span><br><span class="line">		if($concrete instanceof Closure) &#123;</span><br><span class="line">			$this-&gt;binds[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$this-&gt;instances[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function make($abstract, $parameters &#x3D; [])</span><br><span class="line">	&#123;</span><br><span class="line">		if (isset($this-&gt;instances[$abstract]))&#123;</span><br><span class="line">			return $this-&gt;instances[$abstract];</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		array_unshift($parameters, $this);</span><br><span class="line"></span><br><span class="line">		return call_user_func_array($this-&gt;binds[$abstranct], $parameters);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>这就是一个简单的IOC服务容器。<br>这个要怎么解决我们上述的问题呢？</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container &#x3D; new Container();</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new CommonKeyboard();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container,$moudle)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($moudle));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
-
-<p>这里生产出来的Computer类就是一个使用普通键盘类了。<br>解释一下代码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bind(name, function($container)&#123;</span><br><span class="line">	return new Name();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">这里的name和Name之间的关系是：</span><br><span class="line">   当我需要name类的时候你就给我实例化Name类。</span><br><span class="line"></span><br><span class="line">   make(name)方法是对name进行生产返回一个实例。</span><br></pre></td></tr></table></figure>
-
-<p>如果我们要更换键盘怎么办呢？</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new MechanicalKeyboard();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container, $module)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($module));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
-
-<p>只要对bind绑定的Board类的实现进行修改，我们就可以很容易替换掉键盘了，这就是一个服务容器。<br>对服务容器进行一个理解：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">容器就是一个装东西的，好比碗。而服务就是这个碗要装的饭 菜等等东西。当我没需要饭时，</span><br><span class="line">我们就能从这个碗里拿到，如果你想要在饭里加点菜（也就是饭依赖注入了菜），我们从碗里</span><br><span class="line">直接拿饭就可以了，而这些依赖都由容器解决了（这也就是控制反转）。</span><br></pre></td></tr></table></figure>
-
-<p>我们需要做的就是对提供的服务进行维护。</p>
-]]></content>
-      <tags>
-        <tag>Laravel</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>单例模式</title>
-    <url>/2020/04/13/My-Gallery/</url>
-    <content><![CDATA[<h3 id="实际中的例子"><a href="#实际中的例子" class="headerlink" title="实际中的例子"></a>实际中的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">一个班只有一个班主任,班里所有的学生请假都需要班主任的签字才能通过。</span><br></pre></td></tr></table></figure>
-
-<h3 id="代码上来说"><a href="#代码上来说" class="headerlink" title="代码上来说"></a>代码上来说</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">就是简单的创建特定类的一个对象</span><br></pre></td></tr></table></figure>
-
-<h3 id="百度上的解释"><a href="#百度上的解释" class="headerlink" title="百度上的解释"></a>百度上的解释</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">在软件工程中，单例模式是一种软件设计模式，属于创建型设计模式。  </span><br><span class="line">它提供了一种创建对象的最佳方式。这种模式涉及到一个单一的类，  </span><br><span class="line">该类负责创建自己的对象，同时确保只有单个对象被创建。  </span><br><span class="line">这个类提供了一种访问其唯一的对象的方式，可以直接访问，  </span><br><span class="line">不需要实例化该类的对象。</span><br></pre></td></tr></table></figure>
-<h3 id="创建单例需注意"><a href="#创建单例需注意" class="headerlink" title="创建单例需注意"></a>创建单例需注意</h3><ul>
-<li>单例类只有一个实例。</li>
-<li>单例类必须自己创建自己的唯一实例。</li>
-<li>单例类必须给所有其他对象提供这一实例。</li>
-<li>构造函数设为私有，禁用克隆，禁用扩展并创建静态变量以容纳实例。</li>
-</ul>
-<h3 id="单例模式缺点"><a href="#单例模式缺点" class="headerlink" title="单例模式缺点"></a>单例模式缺点</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">单例模式实际上被认为是反模式，应谨慎使用。</span><br><span class="line">因为它在您的应用程序中引入了一个全局状态，并且在一个地方更改它</span><br><span class="line">可能会影响其他区域。并且它可能变的非常难以调试。</span><br></pre></td></tr></table></figure>
-<h3 id="程序中实际的例子"><a href="#程序中实际的例子" class="headerlink" title="程序中实际的例子"></a>程序中实际的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Singleton&#123;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 创建静态私有的变量保护该类对象</span><br><span class="line">	static private $instance;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 防止使用new直接创建对象</span><br><span class="line">	private function __construct()&#123;&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 防止使用clone克隆对象</span><br><span class="line">	static public function getInstance()</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 判断$instance是否是Singleton的对象,不是则创建</span><br><span class="line">		if(!self::$instance instanceof self)&#123;</span><br><span class="line">			self::$instance &#x3D; new self();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return self::$instance;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private function __clone()</span><br><span class="line">	&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private function __wakeup()</span><br><span class="line">	&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="单例模式的使用"><a href="#单例模式的使用" class="headerlink" title="单例模式的使用"></a>单例模式的使用</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$singleton1 &#x3D; Singleton::getInstance();</span><br><span class="line">$singleton2 &#x3D; Singleton::getInstance;</span><br><span class="line"></span><br><span class="line">print_r($singleton1 &#x3D;&#x3D;&#x3D; $singleton2); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <tags>
-        <tag>简单的模式</tag>
-      </tags>
   </entry>
   <entry>
     <title>Laravel跨域</title>
@@ -339,12 +227,116 @@
       </tags>
   </entry>
   <entry>
-    <title>Mysql的SQL分类</title>
-    <url>/2020/06/09/Mysql%E7%9A%84SQL%E5%88%86%E7%B1%BB/</url>
-    <content><![CDATA[<h3 id="SQL语句主要可以划分为以下3个类别。"><a href="#SQL语句主要可以划分为以下3个类别。" class="headerlink" title="SQL语句主要可以划分为以下3个类别。"></a>SQL语句主要可以划分为以下3个类别。</h3><h4 id="DDL语句："><a href="#DDL语句：" class="headerlink" title="DDL语句："></a>DDL语句：</h4><p>DDL是数据定义语言的缩写，数据定义语言，这些语句定义了不同的数据段，数据库、表、列、索引等数据库对象的定义。常用的语句关键字主要包括create、drop、alter等。简单来说，就是对数据库内部的对象进行创建、删除、修改的操作语言。它和DML语言的最大区别是DML只是对表内部数据的操作。而不涉及到表的定义，结构的修改，更不会涉及到其它对象。DDL语句更多的被数据库管理员（DBA）所使用。</p>
-<h4 id="DML语句："><a href="#DML语句：" class="headerlink" title="DML语句："></a>DML语句：</h4><p>数据操纵语句，用于添加、删除、更新和查询数据库记录、并检查数据完整性，常用的语句关键字主要包括insert、delete、update和select等。（增添改查）</p>
-<h4 id="DCL语句："><a href="#DCL语句：" class="headerlink" title="DCL语句："></a>DCL语句：</h4><p>数据库控制语句，用于控制不同数据段直接的许可和访问级别的语句。这些语句定义了数据库、表、字段、用户的访问权限和安全级别。主要的语句关键字包括grant,revoke等。</p>
+    <title>索引的处理流程</title>
+    <url>/2020/05/11/InnoDB%E7%9A%84%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="基于主键索引和普通索引的查询有什么区别？"><a href="#基于主键索引和普通索引的查询有什么区别？" class="headerlink" title="基于主键索引和普通索引的查询有什么区别？"></a>基于主键索引和普通索引的查询有什么区别？</h3><ul>
+<li><p>如果语句是 select * from T where ID=500,即主键查询方式，则只需要搜索ID这颗树B+树；</p>
+</li>
+<li><p>如果语句是 select * from T where k=5，即普通索引查询方式，则需要先搜索 k 索引树，得到ID的值为500，再到 ID 索引树搜索一次。这个过程称为回表。 </p>
+</li>
+</ul>
+<p>也就是说，基于非主键索引的查询需要扫描一棵索引树。因此 我们在应用中应该尽量使用主键查询。</p>
+<h3 id="什么条件下可以使用-change-buffer-呢？"><a href="#什么条件下可以使用-change-buffer-呢？" class="headerlink" title="什么条件下可以使用 change buffer 呢？"></a>什么条件下可以使用 change buffer 呢？</h3><p>唯一索引的更新就不能使用change buffer,实际上也只有普通索引可以使用。</p>
+<p>change buffer用的是buffer pool里的内存，因此不能无限增大。change buffer的大小，可以通过参数innodb_change_buffer_max_size来动态设置。这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。</p>
+<h3 id="如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。"><a href="#如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。" class="headerlink" title="如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。"></a>如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。</h3><h4 id="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："><a href="#第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：" class="headerlink" title="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："></a>第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：</h4><ul>
+<li><p>对于唯一索引来说，找到3和5之间的位置，判断到没有冲突，插入这个值，语句执行结束；</p>
+</li>
+<li><p>对于普通索引来说，找到3和5之间的位置，插入这个值，语句执行结束。</p>
+</li>
+</ul>
+<p>这样看来，普通索引和唯一索引对更新语句性能影响的差别，只是一个判断，只会耗费微小的CPU时间。</p>
+<h4 id="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："><a href="#第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：" class="headerlink" title="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："></a>第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：</h4><ul>
+<li><p>对于唯一索引来说，需要将数据页读入内存，判断没有冲突，插入这个值，语句执行结束；</p>
+</li>
+<li><p>对于普通索引来说，则是将更新记录在 change buffer，语句执行就结束了。</p>
+</li>
+</ul>
+<p>将数据从磁盘读入内存及随机IO的访问，是数据库里面成本最高的操作之一。change buffer因为减少了随机磁盘访问，所以对更新性能的提升会很明显。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Laravel服务容器，Ioc，DI</title>
+    <url>/2020/04/21/Laravel%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%EF%BC%8CIoc%EF%BC%8CDI/</url>
+    <content><![CDATA[<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Laravel服务容器是用于管理类依赖关系和执行依赖关系注入的强大工具。依赖注入是一<br>个花哨的短语，从本质上讲是这样的：类依赖通过构造函数或在某些情况下通过”设置”方法<br>注入到”类”中。</p>
+<h3 id="DI"><a href="#DI" class="headerlink" title="DI"></a>DI</h3><p>DI就是常说的依赖注入，那么究竟什么是依赖注入呢？<br>打个比方，电脑需要键盘和鼠标我们才能进行操作，这个”需要”换句话说就是”依赖”键盘和<br>鼠标。那么相应的一个类需要另一个类才能进行作业，那么这也就是依赖。<br>如下示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的computer类依赖了键盘类，既然我们已经知道了什么是依赖，那么什么是注入呢？</p>
+<p>我们改造一下上面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer&#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct(Keyboard $keyboard)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new Keyboard());</span><br></pre></td></tr></table></figure>
+
+<p>关于依赖注入，我的理解是：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">所需要的类通过参数的形式传入的就是依赖注入</span><br></pre></td></tr></table></figure>
+
+<h3 id="IOC"><a href="#IOC" class="headerlink" title="IOC"></a>IOC</h3><blockquote>
+<p>IOC是什么呢？<br>    控制容器的Laravel反转是用于管理依赖项的强大工具。依赖注入是一种删除硬编码类依赖的方法。<br>    而是在运行时注入依赖项，因为可以轻松交换依赖项实现，因此具有更大的灵活性。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">控制反转的意思是说将依赖类的控制权交出去，由主动变为被动。</span><br></pre></td></tr></table></figure>
+<p>代码示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">namespace App\Http\Controllerd;</span><br><span class="line"></span><br><span class="line">use Illuminate\Http\Request;</span><br><span class="line"></span><br><span class="line">class SessionController extends Controller</span><br><span class="line">&#123;</span><br><span class="line">	public function login(Request $request)</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 这就是IOC 我们不需要主动传入类。一切由laravel去实现</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务容器"><a href="#服务容器" class="headerlink" title="服务容器"></a>服务容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">它的目的就是解耦依赖</span><br></pre></td></tr></table></figure>
+<p>服务容器类似设计模式中的《享元模式》，区别在于服务容器解决了所有依赖的实现。<br>依然是电脑的例子，我们知道电脑依赖键盘鼠标，可是键盘鼠标也有很多种呀。<br>代码原始示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; null) &#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上出现的问题已经很明显了,如果我们需要增加另外一个键盘，我们又得对这个类进行修改。这样下去<br>这个类会变的庞大且耦合度过高。所以接下来我么可以使用工厂模式：</p>
+<ul>
+<li><p>简单工厂模式<br>这样我们就可以避免直接修改Computer 类。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Factory &#123;</span><br><span class="line"></span><br><span class="line">	public static function getinstance($type)&#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line"></span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; &#39;&#39;)&#123;</span><br><span class="line"></span><br><span class="line">		$this-&gt;keyboard &#x3D; Factory::getinstance($type);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样使用了简单工厂模式后，我们后续的修改可以不用对computer类进行操作而只要修改工厂类就行了。<br>这就相当于对Computer类进行了解耦。<br>Computer类虽不在依赖那些键盘类了，但是却变成了依赖工厂类了。<br>后续添加新类型的键盘就必须对工厂类进行修改。<br>所以这个工厂类还不能很好的满足要求，我们知道电脑对键盘的接口都是一致的，键盘必须实现这一接<br>口才能被电脑识别，那我们对Computer和Keyboard类进行修改。</p>
+</li>
+<li><p>DI(依赖注入)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Board &#123;</span><br><span class="line">	public function getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CommonKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()&#123;</span><br><span class="line">		echo &#39;普通键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class MechanicalKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;机械键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct (Board $keyboard) &#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new MechanicalKeyboard());</span><br></pre></td></tr></table></figure>
+<p>可是这样也有问题，如果我们后续对这台电脑使用的键盘不满意要进行替换呢？我们又回到了原点了，<br>必须去修改传入的键盘类。能不能做成可配置的呢？</p>
+</li>
+<li><p>IOC服务容器（超级工厂）</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Container</span><br><span class="line">&#123;</span><br><span class="line">	protected $binds;</span><br><span class="line"></span><br><span class="line">	protected $instances;</span><br><span class="line"></span><br><span class="line">	public function bind($abstract, $concrete)</span><br><span class="line">	&#123;</span><br><span class="line">		if($concrete instanceof Closure) &#123;</span><br><span class="line">			$this-&gt;binds[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$this-&gt;instances[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function make($abstract, $parameters &#x3D; [])</span><br><span class="line">	&#123;</span><br><span class="line">		if (isset($this-&gt;instances[$abstract]))&#123;</span><br><span class="line">			return $this-&gt;instances[$abstract];</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		array_unshift($parameters, $this);</span><br><span class="line"></span><br><span class="line">		return call_user_func_array($this-&gt;binds[$abstranct], $parameters);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这就是一个简单的IOC服务容器。<br>这个要怎么解决我们上述的问题呢？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container &#x3D; new Container();</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new CommonKeyboard();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container,$moudle)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($moudle));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
+
+<p>这里生产出来的Computer类就是一个使用普通键盘类了。<br>解释一下代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bind(name, function($container)&#123;</span><br><span class="line">	return new Name();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">这里的name和Name之间的关系是：</span><br><span class="line">   当我需要name类的时候你就给我实例化Name类。</span><br><span class="line"></span><br><span class="line">   make(name)方法是对name进行生产返回一个实例。</span><br></pre></td></tr></table></figure>
+
+<p>如果我们要更换键盘怎么办呢？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new MechanicalKeyboard();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container, $module)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($module));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
+
+<p>只要对bind绑定的Board类的实现进行修改，我们就可以很容易替换掉键盘了，这就是一个服务容器。<br>对服务容器进行一个理解：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">容器就是一个装东西的，好比碗。而服务就是这个碗要装的饭 菜等等东西。当我没需要饭时，</span><br><span class="line">我们就能从这个碗里拿到，如果你想要在饭里加点菜（也就是饭依赖注入了菜），我们从碗里</span><br><span class="line">直接拿饭就可以了，而这些依赖都由容器解决了（这也就是控制反转）。</span><br></pre></td></tr></table></figure>
+
+<p>我们需要做的就是对提供的服务进行维护。</p>
+]]></content>
+      <tags>
+        <tag>Laravel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>单例模式</title>
+    <url>/2020/04/13/My-Gallery/</url>
+    <content><![CDATA[<h3 id="实际中的例子"><a href="#实际中的例子" class="headerlink" title="实际中的例子"></a>实际中的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">一个班只有一个班主任,班里所有的学生请假都需要班主任的签字才能通过。</span><br></pre></td></tr></table></figure>
+
+<h3 id="代码上来说"><a href="#代码上来说" class="headerlink" title="代码上来说"></a>代码上来说</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">就是简单的创建特定类的一个对象</span><br></pre></td></tr></table></figure>
+
+<h3 id="百度上的解释"><a href="#百度上的解释" class="headerlink" title="百度上的解释"></a>百度上的解释</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">在软件工程中，单例模式是一种软件设计模式，属于创建型设计模式。  </span><br><span class="line">它提供了一种创建对象的最佳方式。这种模式涉及到一个单一的类，  </span><br><span class="line">该类负责创建自己的对象，同时确保只有单个对象被创建。  </span><br><span class="line">这个类提供了一种访问其唯一的对象的方式，可以直接访问，  </span><br><span class="line">不需要实例化该类的对象。</span><br></pre></td></tr></table></figure>
+<h3 id="创建单例需注意"><a href="#创建单例需注意" class="headerlink" title="创建单例需注意"></a>创建单例需注意</h3><ul>
+<li>单例类只有一个实例。</li>
+<li>单例类必须自己创建自己的唯一实例。</li>
+<li>单例类必须给所有其他对象提供这一实例。</li>
+<li>构造函数设为私有，禁用克隆，禁用扩展并创建静态变量以容纳实例。</li>
+</ul>
+<h3 id="单例模式缺点"><a href="#单例模式缺点" class="headerlink" title="单例模式缺点"></a>单例模式缺点</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">单例模式实际上被认为是反模式，应谨慎使用。</span><br><span class="line">因为它在您的应用程序中引入了一个全局状态，并且在一个地方更改它</span><br><span class="line">可能会影响其他区域。并且它可能变的非常难以调试。</span><br></pre></td></tr></table></figure>
+<h3 id="程序中实际的例子"><a href="#程序中实际的例子" class="headerlink" title="程序中实际的例子"></a>程序中实际的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Singleton&#123;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 创建静态私有的变量保护该类对象</span><br><span class="line">	static private $instance;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 防止使用new直接创建对象</span><br><span class="line">	private function __construct()&#123;&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 防止使用clone克隆对象</span><br><span class="line">	static public function getInstance()</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 判断$instance是否是Singleton的对象,不是则创建</span><br><span class="line">		if(!self::$instance instanceof self)&#123;</span><br><span class="line">			self::$instance &#x3D; new self();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return self::$instance;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private function __clone()</span><br><span class="line">	&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private function __wakeup()</span><br><span class="line">	&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="单例模式的使用"><a href="#单例模式的使用" class="headerlink" title="单例模式的使用"></a>单例模式的使用</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$singleton1 &#x3D; Singleton::getInstance();</span><br><span class="line">$singleton2 &#x3D; Singleton::getInstance;</span><br><span class="line"></span><br><span class="line">print_r($singleton1 &#x3D;&#x3D;&#x3D; $singleton2); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <tags>
+        <tag>简单的模式</tag>
+      </tags>
   </entry>
   <entry>
     <title>Mysql高级查询优化</title>
@@ -469,6 +461,36 @@
       </tags>
   </entry>
   <entry>
+    <title>Mysql的SQL分类</title>
+    <url>/2020/06/09/Mysql%E7%9A%84SQL%E5%88%86%E7%B1%BB/</url>
+    <content><![CDATA[<h3 id="SQL语句主要可以划分为以下3个类别。"><a href="#SQL语句主要可以划分为以下3个类别。" class="headerlink" title="SQL语句主要可以划分为以下3个类别。"></a>SQL语句主要可以划分为以下3个类别。</h3><h4 id="DDL语句："><a href="#DDL语句：" class="headerlink" title="DDL语句："></a>DDL语句：</h4><p>DDL是数据定义语言的缩写，数据定义语言，这些语句定义了不同的数据段，数据库、表、列、索引等数据库对象的定义。常用的语句关键字主要包括create、drop、alter等。简单来说，就是对数据库内部的对象进行创建、删除、修改的操作语言。它和DML语言的最大区别是DML只是对表内部数据的操作。而不涉及到表的定义，结构的修改，更不会涉及到其它对象。DDL语句更多的被数据库管理员（DBA）所使用。</p>
+<h4 id="DML语句："><a href="#DML语句：" class="headerlink" title="DML语句："></a>DML语句：</h4><p>数据操纵语句，用于添加、删除、更新和查询数据库记录、并检查数据完整性，常用的语句关键字主要包括insert、delete、update和select等。（增添改查）</p>
+<h4 id="DCL语句："><a href="#DCL语句：" class="headerlink" title="DCL语句："></a>DCL语句：</h4><p>数据库控制语句，用于控制不同数据段直接的许可和访问级别的语句。这些语句定义了数据库、表、字段、用户的访问权限和安全级别。主要的语句关键字包括grant,revoke等。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>docker配置</title>
+    <url>/2020/04/16/docker%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx:</span><br><span class="line">	container_name: naginx</span><br><span class="line">	restart: always</span><br><span class="line">	image: &#x2F;&#x2F; 镜像名称</span><br><span class="line">	volumes:</span><br><span class="line">	- .&#x2F;config&#x2F;nginx&#x2F;$&#123;DOCKER_ENV&#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;openresty&#x2F;nginx&#x2F;conf&#x2F;nginx.conf</span><br><span class="line">	networks:</span><br><span class="line">		- </span><br><span class="line">	expose:</span><br><span class="line">		-80</span><br><span class="line">		-443</span><br><span class="line">	ports:</span><br><span class="line">		-80:80</span><br><span class="line">		-443:443</span><br><span class="line">	command:</span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
+    <title>docker命令</title>
+    <url>/2020/04/16/docker%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h3 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker version 查看docker版本</span><br><span class="line"></span><br><span class="line">docker info 查看docker详细信息</span><br><span class="line"></span><br><span class="line">docker --help 查看docker命令</span><br></pre></td></tr></table></figure>
+
+<h3 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker images 查看docker镜像</span><br><span class="line">1. PEPOSITORY：镜像的仓库源</span><br><span class="line">2. TAG：镜像的标签</span><br><span class="line">3. IMAGE ID：镜像ID</span><br><span class="line">4. CREATED：镜像创建时间</span><br><span class="line">5. SIZE：镜像大小</span><br><span class="line"></span><br><span class="line">docker images -a 列出本地所有的镜像</span><br><span class="line">docker imags -p 只显示镜像ID</span><br><span class="line">docker images --digests 显示镜像的摘要信息</span><br><span class="line">docker images --no-trunc 显示完整的镜像信息</span><br><span class="line">docker search tomcat 从Docker Hub上查找tomacat镜像</span><br><span class="line"></span><br><span class="line">**STARS:关注度**</span><br><span class="line">docker serch -s 30 tomcat 从Docker Hub上查找关注度大于30的tomact镜像。</span><br><span class="line">docker pull tomcat 从Docker Hub上下载tomact镜像。等价于：docker pull tomcat:latest</span><br><span class="line">docker commit -m &quot;提交的描述信息&quot; -a &quot;作者&quot; 容器ID 要创建的目标镜像名称:[标签名]提交容器使之</span><br><span class="line">成为一个新的镜像。</span><br><span class="line">如：docker commit -m &quot;新的tomcat&quot; -a &quot;lizq&quot; f9e29e8455a5 mytomcat:1.2</span><br><span class="line">docker rmi hello-world 从Docker中删除hello-world镜像</span><br><span class="line">docker rmi -f hello-world 从Docker中强制删除hello-world镜像</span><br><span class="line">docker rmi -f hello-world nginx 从Docker中强制删除hello-world镜像和nginx镜像</span><br><span class="line">docker rmi -f $(docker images -p) 通过docker images -p 查询到的镜像ID来删除所有镜像。</span><br></pre></td></tr></table></figure>
+
+<h3 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run [OPTIONS] IMAGE 根据镜像新建并启动容器。IMAGE是镜像ID或镜像名称</span><br><span class="line">OPTIONS说明：</span><br><span class="line">	--name &#x3D; &quot;容器新名字&quot;：为容器指定一个名称</span><br><span class="line">	-d：后台运行容器，并返回容器ID，也即启动守护式容器</span><br><span class="line">	-i：以交互模式运行容器，通常与 -t 同时使用</span><br><span class="line">	-t：为容器重新分配一个伪输入终端，通常与-i同时使用</span><br><span class="line">	-p：随机端口映射</span><br><span class="line">	-P：指定端口映射，有以下四种格式：</span><br><span class="line">		ip:hostPort:containerPort</span><br><span class="line">		ip::containerPort</span><br><span class="line">		hostPort:containerPort</span><br><span class="line">		containerPort</span><br><span class="line">docker ps 列出当前所有正在运行的容器</span><br><span class="line">docker ps -a 列出所有的容器</span><br><span class="line">docker ps -l 列出最近创建的容器</span><br><span class="line">docker ps -n 3 列出最近创建的三个容器</span><br><span class="line">docker ps --no-trunc 显示当前所有正在运行的容器完整信息</span><br><span class="line">exit 退出并停止容器</span><br><span class="line">Ctrl+p+q 只退出容器，不停止容器</span><br><span class="line">docker start 容器ID或容器名称 启动容器</span><br><span class="line">docker restart 容器ID或容器名称 重新启动容器</span><br><span class="line">docker stop 容器ID或容器名称 停止容器</span><br><span class="line">docker kill 容器ID或容器名称 强制停止容器</span><br><span class="line">docker rm 容器ID或容器名称 删除容器</span><br><span class="line">docker rm -f 容器ID或容器名称 强制删除容器</span><br><span class="line">docker rm -f $(docker ps -a -q) 删除多个容器</span><br><span class="line">docker logs -f -t --since --tail 容器ID或容器名称 查看容器日志</span><br><span class="line">如：docker logs -f -t --since&#x3D;”2018-09-10” --tail&#x3D;10 f9e29e8455a5</span><br><span class="line">	-f:查看实时日志</span><br><span class="line">	-t:查看日志产生的日期</span><br><span class="line">	--since:此参数指定了输出日志开始日期，即只输出指定日期之后的日志</span><br><span class="line">	--tail&#x3D;10:查看最后的10条日志</span><br><span class="line">docker top 容器ID或容器名称 查看容器内允许的进程</span><br><span class="line">docker inspect 容器ID或容器名称 查看容器内部细节</span><br><span class="line">docker attach 容器ID 进到容器内</span><br><span class="line">docker exec 容器ID 进到容器内</span><br><span class="line">docker cp 容器ID：容器内的文件路径 宿主机路径 从容器内拷贝文件到宿主机</span><br><span class="line">如：docker cp f9e29e8455a5:&#x2F;tmp&#x2F;yum.log &#x2F;root</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>RabbitMQ的问题</title>
     <url>/2020/05/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h3 id="1-消息基于什么传输？"><a href="#1-消息基于什么传输？" class="headerlink" title="1.消息基于什么传输？"></a>1.消息基于什么传输？</h3><p>由于TCP连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶颈。RabbitMQ使用信道的<br>方式来传输数据。信道是建立在真实的TCP连接内的虚拟连接，且每条TCP连接上的信道数量没有限制。</p>
@@ -511,21 +533,6 @@
 </li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>docker命令</title>
-    <url>/2020/04/16/docker%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h3 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker version 查看docker版本</span><br><span class="line"></span><br><span class="line">docker info 查看docker详细信息</span><br><span class="line"></span><br><span class="line">docker --help 查看docker命令</span><br></pre></td></tr></table></figure>
-
-<h3 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker images 查看docker镜像</span><br><span class="line">1. PEPOSITORY：镜像的仓库源</span><br><span class="line">2. TAG：镜像的标签</span><br><span class="line">3. IMAGE ID：镜像ID</span><br><span class="line">4. CREATED：镜像创建时间</span><br><span class="line">5. SIZE：镜像大小</span><br><span class="line"></span><br><span class="line">docker images -a 列出本地所有的镜像</span><br><span class="line">docker imags -p 只显示镜像ID</span><br><span class="line">docker images --digests 显示镜像的摘要信息</span><br><span class="line">docker images --no-trunc 显示完整的镜像信息</span><br><span class="line">docker search tomcat 从Docker Hub上查找tomacat镜像</span><br><span class="line"></span><br><span class="line">**STARS:关注度**</span><br><span class="line">docker serch -s 30 tomcat 从Docker Hub上查找关注度大于30的tomact镜像。</span><br><span class="line">docker pull tomcat 从Docker Hub上下载tomact镜像。等价于：docker pull tomcat:latest</span><br><span class="line">docker commit -m &quot;提交的描述信息&quot; -a &quot;作者&quot; 容器ID 要创建的目标镜像名称:[标签名]提交容器使之</span><br><span class="line">成为一个新的镜像。</span><br><span class="line">如：docker commit -m &quot;新的tomcat&quot; -a &quot;lizq&quot; f9e29e8455a5 mytomcat:1.2</span><br><span class="line">docker rmi hello-world 从Docker中删除hello-world镜像</span><br><span class="line">docker rmi -f hello-world 从Docker中强制删除hello-world镜像</span><br><span class="line">docker rmi -f hello-world nginx 从Docker中强制删除hello-world镜像和nginx镜像</span><br><span class="line">docker rmi -f $(docker images -p) 通过docker images -p 查询到的镜像ID来删除所有镜像。</span><br></pre></td></tr></table></figure>
-
-<h3 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run [OPTIONS] IMAGE 根据镜像新建并启动容器。IMAGE是镜像ID或镜像名称</span><br><span class="line">OPTIONS说明：</span><br><span class="line">	--name &#x3D; &quot;容器新名字&quot;：为容器指定一个名称</span><br><span class="line">	-d：后台运行容器，并返回容器ID，也即启动守护式容器</span><br><span class="line">	-i：以交互模式运行容器，通常与 -t 同时使用</span><br><span class="line">	-t：为容器重新分配一个伪输入终端，通常与-i同时使用</span><br><span class="line">	-p：随机端口映射</span><br><span class="line">	-P：指定端口映射，有以下四种格式：</span><br><span class="line">		ip:hostPort:containerPort</span><br><span class="line">		ip::containerPort</span><br><span class="line">		hostPort:containerPort</span><br><span class="line">		containerPort</span><br><span class="line">docker ps 列出当前所有正在运行的容器</span><br><span class="line">docker ps -a 列出所有的容器</span><br><span class="line">docker ps -l 列出最近创建的容器</span><br><span class="line">docker ps -n 3 列出最近创建的三个容器</span><br><span class="line">docker ps --no-trunc 显示当前所有正在运行的容器完整信息</span><br><span class="line">exit 退出并停止容器</span><br><span class="line">Ctrl+p+q 只退出容器，不停止容器</span><br><span class="line">docker start 容器ID或容器名称 启动容器</span><br><span class="line">docker restart 容器ID或容器名称 重新启动容器</span><br><span class="line">docker stop 容器ID或容器名称 停止容器</span><br><span class="line">docker kill 容器ID或容器名称 强制停止容器</span><br><span class="line">docker rm 容器ID或容器名称 删除容器</span><br><span class="line">docker rm -f 容器ID或容器名称 强制删除容器</span><br><span class="line">docker rm -f $(docker ps -a -q) 删除多个容器</span><br><span class="line">docker logs -f -t --since --tail 容器ID或容器名称 查看容器日志</span><br><span class="line">如：docker logs -f -t --since&#x3D;”2018-09-10” --tail&#x3D;10 f9e29e8455a5</span><br><span class="line">	-f:查看实时日志</span><br><span class="line">	-t:查看日志产生的日期</span><br><span class="line">	--since:此参数指定了输出日志开始日期，即只输出指定日期之后的日志</span><br><span class="line">	--tail&#x3D;10:查看最后的10条日志</span><br><span class="line">docker top 容器ID或容器名称 查看容器内允许的进程</span><br><span class="line">docker inspect 容器ID或容器名称 查看容器内部细节</span><br><span class="line">docker attach 容器ID 进到容器内</span><br><span class="line">docker exec 容器ID 进到容器内</span><br><span class="line">docker cp 容器ID：容器内的文件路径 宿主机路径 从容器内拷贝文件到宿主机</span><br><span class="line">如：docker cp f9e29e8455a5:&#x2F;tmp&#x2F;yum.log &#x2F;root</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <tags>
-        <tag>docker</tag>
-      </tags>
   </entry>
   <entry>
     <title>redis高级特性</title>
@@ -668,63 +675,6 @@
       </tags>
   </entry>
   <entry>
-    <title>docker配置</title>
-    <url>/2020/04/16/docker%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx:</span><br><span class="line">	container_name: naginx</span><br><span class="line">	restart: always</span><br><span class="line">	image: &#x2F;&#x2F; 镜像名称</span><br><span class="line">	volumes:</span><br><span class="line">	- .&#x2F;config&#x2F;nginx&#x2F;$&#123;DOCKER_ENV&#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;openresty&#x2F;nginx&#x2F;conf&#x2F;nginx.conf</span><br><span class="line">	networks:</span><br><span class="line">		- </span><br><span class="line">	expose:</span><br><span class="line">		-80</span><br><span class="line">		-443</span><br><span class="line">	ports:</span><br><span class="line">		-80:80</span><br><span class="line">		-443:443</span><br><span class="line">	command:</span><br></pre></td></tr></table></figure>
-
-]]></content>
-  </entry>
-  <entry>
-    <title>redis三种集群模式</title>
-    <url>/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="Redis发展过程中的三种模式：主从，哨兵，集群"><a href="#Redis发展过程中的三种模式：主从，哨兵，集群" class="headerlink" title="Redis发展过程中的三种模式：主从，哨兵，集群"></a>Redis发展过程中的三种模式：主从，哨兵，集群</h3><h4 id="主从模式"><a href="#主从模式" class="headerlink" title="主从模式"></a>主从模式</h4><p>Redis早期用于保证数据可靠性的一种简单方式，具体来说，Master可用于写，读，而Slave一般只用于读。</p>
-<p><strong>优点</strong><br>读写分离，提高效率<br>数据热备份，提供多个副本</p>
-<p><strong>缺点</strong><br>主节点故障，集群则无法进行工作，可用性比较低，从节点升主节点需要人工手动干预。<br>单点容易造成性能低下<br>主节点的存储能力受到限制<br>主节点的写受到限制（只有一个主节点）<br>全量同步可能会造成毫秒或者秒级的卡顿现象</p>
-<p><strong>特点</strong><br>只能master到slave 单向的；</p>
-<h4 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h4><h5 id="1-哨兵模式介绍"><a href="#1-哨兵模式介绍" class="headerlink" title="1.哨兵模式介绍"></a>1.哨兵模式介绍</h5><ul>
-<li>Sentinel(哨兵)进程是用于监控Redis集群中Master主服务器工作的状态。</li>
-<li>在Master主服务器发生故障的时候，可以实现Master和Slave服务器的切换,保证系统的高可用（HA）</li>
-<li>其已经被集成在redis2.6+的版本中，Redis的哨兵模式到2.8版本之后就稳定了下来。</li>
-</ul>
-<h5 id="2-哨兵进程的作用"><a href="#2-哨兵进程的作用" class="headerlink" title="2.哨兵进程的作用"></a>2.哨兵进程的作用</h5><ul>
-<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器。</li>
-<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其它的从服务<br>器，修改配置文件，让它们切换主机。</li>
-</ul>
-<p><strong>优点</strong></p>
-<ul>
-<li>Redis Sentinel 集群部署简单</li>
-<li>可以实现一套Sentinel监控一组 Redis数据节点或多组数据节点</li>
-<li>有效解决主从模式主库异常手动主从切换的问题。</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>运维复杂，哨兵选举期间，不能对外提供服务。</li>
-<li>部署相对Redis主从模式要复杂一些，原理理解更繁琐；</li>
-<li>不能解决读写分离问题，实现起来相对复杂</li>
-</ul>
-<h3 id="集群模式-Redis-Cluster"><a href="#集群模式-Redis-Cluster" class="headerlink" title="集群模式(Redis Cluster)"></a>集群模式(Redis Cluster)</h3><p>Redis Cluster 是社区版推出的Redis分布式集群解决方案，主要解决Redis分布式方面的需求，比如<br>当遇到单机内存，并发和流量等瓶颈的时候，Redis Cluster能起到很好的负载均衡的目的。</p>
-<p><strong>优点</strong></p>
-<ul>
-<li>无中心架构</li>
-<li>数据按照slot存储分布在多个节点，节点间数据共享，可动态调整数据分布；</li>
-<li>可扩展性：可线扩展到1000多个节点，节点可动态添加或删除；</li>
-<li>高可用性：部分节点不可用时，集群仍可用，通过增加Slave或standby数据副本，能够实现故障自动<br>failover，节点之间通过gossip协议交换状态信息，用投票机制完成Slave到Master的角色提升；</li>
-<li>降低运维成本，提高系统的扩展性和可用性。</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>Client实现复杂，驱动要求实现Smart Client，缓存slots mapping信息并及时更新，提高了开发<br>难度，客户端的不成熟影响业务的稳定性。目前仅JedisCluster相对成熟，异常处理部分还不完善，<br>比如常见的 “max redirect exception”.</li>
-<li>数据通过异步复制，不保证数据的强一致性。</li>
-</ul>
-<blockquote>
-<p>参考的文档：<a href="https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ</a></p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu 安装 docker</title>
     <url>/2020/04/16/ubuntu-install-docker/</url>
     <content><![CDATA[<h3 id="Ubuntu安装国内镜像"><a href="#Ubuntu安装国内镜像" class="headerlink" title="Ubuntu安装国内镜像"></a>Ubuntu安装国内镜像</h3><ul>
@@ -796,6 +746,56 @@
 <p>使用navicat 工具链接测试是否有用。</p>
 </blockquote>
 ]]></content>
+  </entry>
+  <entry>
+    <title>redis三种集群模式</title>
+    <url>/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="Redis发展过程中的三种模式：主从，哨兵，集群"><a href="#Redis发展过程中的三种模式：主从，哨兵，集群" class="headerlink" title="Redis发展过程中的三种模式：主从，哨兵，集群"></a>Redis发展过程中的三种模式：主从，哨兵，集群</h3><h4 id="主从模式"><a href="#主从模式" class="headerlink" title="主从模式"></a>主从模式</h4><p>Redis早期用于保证数据可靠性的一种简单方式，具体来说，Master可用于写，读，而Slave一般只用于读。</p>
+<p><strong>优点</strong><br>读写分离，提高效率<br>数据热备份，提供多个副本</p>
+<p><strong>缺点</strong><br>主节点故障，集群则无法进行工作，可用性比较低，从节点升主节点需要人工手动干预。<br>单点容易造成性能低下<br>主节点的存储能力受到限制<br>主节点的写受到限制（只有一个主节点）<br>全量同步可能会造成毫秒或者秒级的卡顿现象</p>
+<p><strong>特点</strong><br>只能master到slave 单向的；</p>
+<h4 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h4><h5 id="1-哨兵模式介绍"><a href="#1-哨兵模式介绍" class="headerlink" title="1.哨兵模式介绍"></a>1.哨兵模式介绍</h5><ul>
+<li>Sentinel(哨兵)进程是用于监控Redis集群中Master主服务器工作的状态。</li>
+<li>在Master主服务器发生故障的时候，可以实现Master和Slave服务器的切换,保证系统的高可用（HA）</li>
+<li>其已经被集成在redis2.6+的版本中，Redis的哨兵模式到2.8版本之后就稳定了下来。</li>
+</ul>
+<h5 id="2-哨兵进程的作用"><a href="#2-哨兵进程的作用" class="headerlink" title="2.哨兵进程的作用"></a>2.哨兵进程的作用</h5><ul>
+<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器。</li>
+<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其它的从服务<br>器，修改配置文件，让它们切换主机。</li>
+</ul>
+<p><strong>优点</strong></p>
+<ul>
+<li>Redis Sentinel 集群部署简单</li>
+<li>可以实现一套Sentinel监控一组 Redis数据节点或多组数据节点</li>
+<li>有效解决主从模式主库异常手动主从切换的问题。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>运维复杂，哨兵选举期间，不能对外提供服务。</li>
+<li>部署相对Redis主从模式要复杂一些，原理理解更繁琐；</li>
+<li>不能解决读写分离问题，实现起来相对复杂</li>
+</ul>
+<h3 id="集群模式-Redis-Cluster"><a href="#集群模式-Redis-Cluster" class="headerlink" title="集群模式(Redis Cluster)"></a>集群模式(Redis Cluster)</h3><p>Redis Cluster 是社区版推出的Redis分布式集群解决方案，主要解决Redis分布式方面的需求，比如<br>当遇到单机内存，并发和流量等瓶颈的时候，Redis Cluster能起到很好的负载均衡的目的。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>无中心架构</li>
+<li>数据按照slot存储分布在多个节点，节点间数据共享，可动态调整数据分布；</li>
+<li>可扩展性：可线扩展到1000多个节点，节点可动态添加或删除；</li>
+<li>高可用性：部分节点不可用时，集群仍可用，通过增加Slave或standby数据副本，能够实现故障自动<br>failover，节点之间通过gossip协议交换状态信息，用投票机制完成Slave到Master的角色提升；</li>
+<li>降低运维成本，提高系统的扩展性和可用性。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>Client实现复杂，驱动要求实现Smart Client，缓存slots mapping信息并及时更新，提高了开发<br>难度，客户端的不成熟影响业务的稳定性。目前仅JedisCluster相对成熟，异常处理部分还不完善，<br>比如常见的 “max redirect exception”.</li>
+<li>数据通过异步复制，不保证数据的强一致性。</li>
+</ul>
+<blockquote>
+<p>参考的文档：<a href="https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ</a></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>redis</tag>
+      </tags>
   </entry>
   <entry>
     <title>vagrant基本命令</title>
@@ -927,6 +927,44 @@
       </tags>
   </entry>
   <entry>
+    <title>工厂模式（Factory）</title>
+    <url>/2020/04/14/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h3><ul>
+<li>定义: 工厂模式(Factory Pattern)最常用的设计模式之一。这种类型的设计模式<br>数据创建型模式，提供了一种创建对象的最佳方式。</li>
+<li>意图： 定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式<br>使其创建过程延迟到子类进行。</li>
+<li>主要解决： 接口选择的问题。</li>
+<li>何时使用： 明确地计划不同条件下创建不同实例时。</li>
+<li>如何解决： 让其子类实现工厂接口，返回的也是一个抽象的产品。</li>
+<li>关键代码： 创建过程在其子类执行。</li>
+<li>简单来说： 简单工厂只是为客户端生成一个实例，而不会向客户端公开任何实例化逻辑。</li>
+</ul>
+<h3 id="现实场景的例子"><a href="#现实场景的例子" class="headerlink" title="现实场景的例子"></a>现实场景的例子</h3><ul>
+<li>你再造一辆车，而你需要一个引擎。这时你可以带上工具，材料及所需要的工具。<br>或者你可以简单的打个电话给工厂让他们给你送过来。而你不需要知道引擎制作的复杂工序。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>我们需要个引擎和实现工序</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Engine</span><br><span class="line">&#123;</span><br><span class="line">	public function getSteel():float;</span><br><span class="line"></span><br><span class="line">	public function getGasoline():float;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CarEngine implements Engine</span><br><span class="line">&#123;</span><br><span class="line">	protected $steel;  &#x2F;&#x2F; 钢铁</span><br><span class="line"></span><br><span class="line">	protected $gasoline; &#x2F;&#x2F; 汽油</span><br><span class="line"></span><br><span class="line">	public function __construct(float $steel, float $gasoline)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;steel &#x3D; $steel;</span><br><span class="line">		$this-&gt;gasoline &#x3D; $gasoline;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getSteel():float</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;steel;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getGasoline():float</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;gasoline;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们有自己的工厂去制造它</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class EngineFactory</span><br><span class="line">&#123;</span><br><span class="line">	public static function makeEngine($steel, $gasoline): Engine</span><br><span class="line">	&#123;</span><br><span class="line">		return new CarEngine($steel, $gasoline);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们就需要开始制作它。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$engine &#x3D; EngineFactory::makeEngine(100, 100);</span><br><span class="line"></span><br><span class="line">echo &#39;steel: &#39;.$engine-&gt;getSteel();</span><br><span class="line">echo &#39;gasoline: &#39;.$engine-&gt;getGasoline();</span><br><span class="line"></span><br><span class="line">$engine2 &#x3D; EngineFactory::makeEngine(100, 200);</span><br></pre></td></tr></table></figure>
+<p>需要采用工厂模式的时机</p>
+<ul>
+<li>当创建对象不仅仅是一些分配而且涉及一些逻辑时，将它放在专用的工厂中而不是在任何<br>地方重复相同的代码。</li>
+</ul>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>一个调用者想创建一个对象，只要知道其名称就可以了。</li>
+<li>扩展性搞，如果想增加一个产品，只要扩展一个工厂类就可以了。</li>
+<li>屏蔽产品的具体实现，调用者只关心产品的接口。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>每次增加一个产品时，都需要增加一个具体类和对象实现工厂，使得系统中类的个数成<br>倍增加，在一定程度上增加了系统的复杂度，同时增加了系统具体类的依赖。</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>简单的工厂模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>建造者模式（Builder）</title>
     <url>/2020/04/14/%E6%9E%84%E5%BB%BA%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<hr>
@@ -978,44 +1016,6 @@
 ]]></content>
       <tags>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>工厂模式（Factory）</title>
-    <url>/2020/04/14/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h3><ul>
-<li>定义: 工厂模式(Factory Pattern)最常用的设计模式之一。这种类型的设计模式<br>数据创建型模式，提供了一种创建对象的最佳方式。</li>
-<li>意图： 定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式<br>使其创建过程延迟到子类进行。</li>
-<li>主要解决： 接口选择的问题。</li>
-<li>何时使用： 明确地计划不同条件下创建不同实例时。</li>
-<li>如何解决： 让其子类实现工厂接口，返回的也是一个抽象的产品。</li>
-<li>关键代码： 创建过程在其子类执行。</li>
-<li>简单来说： 简单工厂只是为客户端生成一个实例，而不会向客户端公开任何实例化逻辑。</li>
-</ul>
-<h3 id="现实场景的例子"><a href="#现实场景的例子" class="headerlink" title="现实场景的例子"></a>现实场景的例子</h3><ul>
-<li>你再造一辆车，而你需要一个引擎。这时你可以带上工具，材料及所需要的工具。<br>或者你可以简单的打个电话给工厂让他们给你送过来。而你不需要知道引擎制作的复杂工序。</li>
-</ul>
-<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>我们需要个引擎和实现工序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Engine</span><br><span class="line">&#123;</span><br><span class="line">	public function getSteel():float;</span><br><span class="line"></span><br><span class="line">	public function getGasoline():float;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CarEngine implements Engine</span><br><span class="line">&#123;</span><br><span class="line">	protected $steel;  &#x2F;&#x2F; 钢铁</span><br><span class="line"></span><br><span class="line">	protected $gasoline; &#x2F;&#x2F; 汽油</span><br><span class="line"></span><br><span class="line">	public function __construct(float $steel, float $gasoline)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;steel &#x3D; $steel;</span><br><span class="line">		$this-&gt;gasoline &#x3D; $gasoline;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getSteel():float</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;steel;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getGasoline():float</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;gasoline;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们有自己的工厂去制造它</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class EngineFactory</span><br><span class="line">&#123;</span><br><span class="line">	public static function makeEngine($steel, $gasoline): Engine</span><br><span class="line">	&#123;</span><br><span class="line">		return new CarEngine($steel, $gasoline);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后我们就需要开始制作它。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$engine &#x3D; EngineFactory::makeEngine(100, 100);</span><br><span class="line"></span><br><span class="line">echo &#39;steel: &#39;.$engine-&gt;getSteel();</span><br><span class="line">echo &#39;gasoline: &#39;.$engine-&gt;getGasoline();</span><br><span class="line"></span><br><span class="line">$engine2 &#x3D; EngineFactory::makeEngine(100, 200);</span><br></pre></td></tr></table></figure>
-<p>需要采用工厂模式的时机</p>
-<ul>
-<li>当创建对象不仅仅是一些分配而且涉及一些逻辑时，将它放在专用的工厂中而不是在任何<br>地方重复相同的代码。</li>
-</ul>
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>一个调用者想创建一个对象，只要知道其名称就可以了。</li>
-<li>扩展性搞，如果想增加一个产品，只要扩展一个工厂类就可以了。</li>
-<li>屏蔽产品的具体实现，调用者只关心产品的接口。</li>
-</ul>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li>每次增加一个产品时，都需要增加一个具体类和对象实现工厂，使得系统中类的个数成<br>倍增加，在一定程度上增加了系统的复杂度，同时增加了系统具体类的依赖。</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>简单的工厂模式</tag>
       </tags>
   </entry>
   <entry>
@@ -1175,12 +1175,12 @@
   <entry>
     <title>设计秒杀系统</title>
     <url>/2020/06/15/%E8%AE%BE%E8%AE%A1%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F/</url>
-    <content><![CDATA[<h3 id="秒杀其实主要解决两个问题"><a href="#秒杀其实主要解决两个问题" class="headerlink" title="秒杀其实主要解决两个问题"></a>秒杀其实主要解决两个问题</h3><h4 id="并发读"><a href="#并发读" class="headerlink" title="并发读"></a>并发读</h4><ol>
+    <content><![CDATA[<h3 id="秒杀其实主要解决两个问题"><a href="#秒杀其实主要解决两个问题" class="headerlink" title="秒杀其实主要解决两个问题"></a>秒杀其实主要解决两个问题</h3><h4 id="并发读"><a href="#并发读" class="headerlink" title="并发读"></a>并发读</h4><ul>
 <li>并发读的核心优化理念是尽量减少用户到服务端来“读”数据，或者让他们读更少的数据；</li>
-</ol>
-<h4 id="并发写"><a href="#并发写" class="headerlink" title="并发写"></a>并发写</h4><ol>
+</ul>
+<h4 id="并发写"><a href="#并发写" class="headerlink" title="并发写"></a>并发写</h4><ul>
 <li>并发写的处理原则也一样，它要求我们在数据库层面独立出来一个库，做一个库，做特殊处理。另外，我们还要针对秒杀系统做一些保护，针对意料之外的情况设计兜底方案，以防止最坏的情况发生。 </li>
-</ol>
+</ul>
 <h3 id="设计秒杀系统关注的三点-稳，准，快"><a href="#设计秒杀系统关注的三点-稳，准，快" class="headerlink" title="设计秒杀系统关注的三点 稳，准，快"></a>设计秒杀系统关注的三点 稳，准，快</h3><ol>
 <li><p>高性能：秒杀及大量的并发读和并发写，因此支持高并发访问这点非常关键</p>
 </li>
@@ -1190,6 +1190,31 @@
 </li>
 </ol>
 ]]></content>
+  </entry>
+  <entry>
+    <title>门面模式</title>
+    <url>/2020/04/30/%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h3><blockquote>
+<p>门面模式（Facade）又称外观模式，用于为子系统中的一组接口提供一个一致的界面。门面模式定义<br>了一个高层接口，这个接口使得子系统更加容易使用；引入门面角色之后，用户只需要直接与门面角色<br>交互，用户与子系统之间的复杂关系由门面角色来实现，从而降低系统的耦合度。</p>
+</blockquote>
+<p><strong>示例代码</strong><br>Facade.php</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace DesignPatterns\Structural\Facade;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 门面类</span><br><span class="line"> *&#x2F;</span><br><span class="line">class Facade</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * @var OsInterface</span><br><span class="line">     *&#x2F;</span><br><span class="line">    protected $os;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * @var BiosInterface</span><br><span class="line">     *&#x2F;</span><br><span class="line">    protected $bios;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * This is the perfect time to use a dependency injection container</span><br><span class="line">     * to create an instance of this class</span><br><span class="line">     *</span><br><span class="line">     * @param BiosInterface $bios</span><br><span class="line">     * @param OsInterface   $os</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function __construct(BiosInterface $bios, OsInterface $os)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;bios &#x3D; $bios;</span><br><span class="line">        $this-&gt;os &#x3D; $os;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * turn on the system</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function turnOn()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;bios-&gt;execute();</span><br><span class="line">        $this-&gt;bios-&gt;waitForKeyPress();</span><br><span class="line">        $this-&gt;bios-&gt;launch($this-&gt;os);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * turn off the system</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function turnOff()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;os-&gt;halt();</span><br><span class="line">        $this-&gt;bios-&gt;powerDown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>OsInterface.php</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">namespace DesignPatterns\Structural\Facade;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * OsInterface接口</span><br><span class="line"> *&#x2F;</span><br><span class="line">interface OsInterface</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * halt the OS</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function halt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>BiosInterface.php</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace DesignPatterns\Structural\Facade;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * BiosInterface接口</span><br><span class="line"> *&#x2F;</span><br><span class="line">interface BiosInterface</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * execute the BIOS</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function execute();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * wait for halt</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function waitForKeyPress();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * launches the OS</span><br><span class="line">     *</span><br><span class="line">     * @param OsInterface $os</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function launch(OsInterface $os);</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * power down BIOS</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function powerDown();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h4><p>Tests/FacadeTest.php</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace DesignPatterns\Structural\Facade\Tests;</span><br><span class="line"></span><br><span class="line">use DesignPatterns\Structural\Facade\Facade as Computer;</span><br><span class="line">use DesignPatterns\Structural\Facade\OsInterface;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * FacadeTest用于测试门面模式</span><br><span class="line"> *&#x2F;</span><br><span class="line">class FacadeTest extends \PHPUnit_Framework_TestCase</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    public function getComputer()</span><br><span class="line">    &#123;</span><br><span class="line">        $bios &#x3D; $this-&gt;getMockBuilder(&#39;DesignPatterns\Structural\Facade\BiosInterface&#39;)</span><br><span class="line">                -&gt;setMethods(array(&#39;launch&#39;, &#39;execute&#39;, &#39;waitForKeyPress&#39;))</span><br><span class="line">                -&gt;disableAutoload()</span><br><span class="line">                -&gt;getMock();</span><br><span class="line">        $os &#x3D; $this-&gt;getMockBuilder(&#39;DesignPatterns\Structural\Facade\OsInterface&#39;)</span><br><span class="line">                -&gt;setMethods(array(&#39;getName&#39;))</span><br><span class="line">                -&gt;disableAutoload()</span><br><span class="line">                -&gt;getMock();</span><br><span class="line">            </span><br><span class="line">        $bios-&gt;expects($this-&gt;once())</span><br><span class="line">                -&gt;method(&#39;launch&#39;)</span><br><span class="line">                -&gt;with($os);</span><br><span class="line">        $os-&gt;expects($this-&gt;once())</span><br><span class="line">                -&gt;method(&#39;getName&#39;)</span><br><span class="line">                -&gt;will($this-&gt;returnValue(&#39;Linux&#39;));</span><br><span class="line"></span><br><span class="line">        $facade &#x3D; new Computer($bios, $os);</span><br><span class="line">        return array(array($facade, $os));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * @dataProvider getComputer</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function testComputerOn(Computer $facade, OsInterface $os)</span><br><span class="line">    &#123;</span><br><span class="line">        &#x2F;&#x2F; interface is simpler :</span><br><span class="line">        $facade-&gt;turnOn();</span><br><span class="line">        &#x2F;&#x2F; but I can access to lower component</span><br><span class="line">        $this-&gt;assertEquals(&#39;Linux&#39;, $os-&gt;getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>优势</strong></p>
+<ul>
+<li>它可以对客户屏蔽子系统组件，因而减少了客户处理的对象的数目并使得子系统使用起来更加方便。</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
   </entry>
   <entry>
     <title>适配器模式（Adapter）</title>
@@ -1239,31 +1264,6 @@
 <li>有动机地修改一个正常运行的系统的接口，这时应该考虑使用适配器模式。</li>
 </ul>
 <h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">适配器不是在详细设计时添加的，而是解决正在服役的项目的问题。</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>门面模式</title>
-    <url>/2020/04/30/%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h3><blockquote>
-<p>门面模式（Facade）又称外观模式，用于为子系统中的一组接口提供一个一致的界面。门面模式定义<br>了一个高层接口，这个接口使得子系统更加容易使用；引入门面角色之后，用户只需要直接与门面角色<br>交互，用户与子系统之间的复杂关系由门面角色来实现，从而降低系统的耦合度。</p>
-</blockquote>
-<p><strong>示例代码</strong><br>Facade.php</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace DesignPatterns\Structural\Facade;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 门面类</span><br><span class="line"> *&#x2F;</span><br><span class="line">class Facade</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * @var OsInterface</span><br><span class="line">     *&#x2F;</span><br><span class="line">    protected $os;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * @var BiosInterface</span><br><span class="line">     *&#x2F;</span><br><span class="line">    protected $bios;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * This is the perfect time to use a dependency injection container</span><br><span class="line">     * to create an instance of this class</span><br><span class="line">     *</span><br><span class="line">     * @param BiosInterface $bios</span><br><span class="line">     * @param OsInterface   $os</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function __construct(BiosInterface $bios, OsInterface $os)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;bios &#x3D; $bios;</span><br><span class="line">        $this-&gt;os &#x3D; $os;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * turn on the system</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function turnOn()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;bios-&gt;execute();</span><br><span class="line">        $this-&gt;bios-&gt;waitForKeyPress();</span><br><span class="line">        $this-&gt;bios-&gt;launch($this-&gt;os);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * turn off the system</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function turnOff()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;os-&gt;halt();</span><br><span class="line">        $this-&gt;bios-&gt;powerDown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>OsInterface.php</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">namespace DesignPatterns\Structural\Facade;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * OsInterface接口</span><br><span class="line"> *&#x2F;</span><br><span class="line">interface OsInterface</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * halt the OS</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function halt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>BiosInterface.php</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace DesignPatterns\Structural\Facade;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * BiosInterface接口</span><br><span class="line"> *&#x2F;</span><br><span class="line">interface BiosInterface</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * execute the BIOS</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function execute();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * wait for halt</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function waitForKeyPress();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * launches the OS</span><br><span class="line">     *</span><br><span class="line">     * @param OsInterface $os</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function launch(OsInterface $os);</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * power down BIOS</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function powerDown();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h4><p>Tests/FacadeTest.php</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace DesignPatterns\Structural\Facade\Tests;</span><br><span class="line"></span><br><span class="line">use DesignPatterns\Structural\Facade\Facade as Computer;</span><br><span class="line">use DesignPatterns\Structural\Facade\OsInterface;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * FacadeTest用于测试门面模式</span><br><span class="line"> *&#x2F;</span><br><span class="line">class FacadeTest extends \PHPUnit_Framework_TestCase</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    public function getComputer()</span><br><span class="line">    &#123;</span><br><span class="line">        $bios &#x3D; $this-&gt;getMockBuilder(&#39;DesignPatterns\Structural\Facade\BiosInterface&#39;)</span><br><span class="line">                -&gt;setMethods(array(&#39;launch&#39;, &#39;execute&#39;, &#39;waitForKeyPress&#39;))</span><br><span class="line">                -&gt;disableAutoload()</span><br><span class="line">                -&gt;getMock();</span><br><span class="line">        $os &#x3D; $this-&gt;getMockBuilder(&#39;DesignPatterns\Structural\Facade\OsInterface&#39;)</span><br><span class="line">                -&gt;setMethods(array(&#39;getName&#39;))</span><br><span class="line">                -&gt;disableAutoload()</span><br><span class="line">                -&gt;getMock();</span><br><span class="line">            </span><br><span class="line">        $bios-&gt;expects($this-&gt;once())</span><br><span class="line">                -&gt;method(&#39;launch&#39;)</span><br><span class="line">                -&gt;with($os);</span><br><span class="line">        $os-&gt;expects($this-&gt;once())</span><br><span class="line">                -&gt;method(&#39;getName&#39;)</span><br><span class="line">                -&gt;will($this-&gt;returnValue(&#39;Linux&#39;));</span><br><span class="line"></span><br><span class="line">        $facade &#x3D; new Computer($bios, $os);</span><br><span class="line">        return array(array($facade, $os));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * @dataProvider getComputer</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public function testComputerOn(Computer $facade, OsInterface $os)</span><br><span class="line">    &#123;</span><br><span class="line">        &#x2F;&#x2F; interface is simpler :</span><br><span class="line">        $facade-&gt;turnOn();</span><br><span class="line">        &#x2F;&#x2F; but I can access to lower component</span><br><span class="line">        $this-&gt;assertEquals(&#39;Linux&#39;, $os-&gt;getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>优势</strong></p>
-<ul>
-<li>它可以对客户屏蔽子系统组件，因而减少了客户处理的对象的数目并使得子系统使用起来更加方便。</li>
-</ul>
-]]></content>
       <tags>
         <tag>设计模式</tag>
       </tags>
