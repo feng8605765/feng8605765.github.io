@@ -80,7 +80,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="تشغيل شريط التصفح">
+    <div class="toggle" aria-label="Toggle navigation bar">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -114,7 +114,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
 
   </li>
   </ul>
@@ -144,6 +144,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">redis三种集群模式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-04-23 14:34:01 / Modified: 14:43:51" itemprop="dateCreated datePublished" datetime="2020-04-23T14:34:01+08:00">2020-04-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Redis发展过程中的三种模式：主从，哨兵，集群"><a href="#Redis发展过程中的三种模式：主从，哨兵，集群" class="headerlink" title="Redis发展过程中的三种模式：主从，哨兵，集群"></a>Redis发展过程中的三种模式：主从，哨兵，集群</h3><h4 id="主从模式"><a href="#主从模式" class="headerlink" title="主从模式"></a>主从模式</h4><p>Redis早期用于保证数据可靠性的一种简单方式，具体来说，Master可用于写，读，而Slave一般只用于读。</p>
+<p><strong>优点</strong><br>读写分离，提高效率<br>数据热备份，提供多个副本</p>
+<p><strong>缺点</strong><br>主节点故障，集群则无法进行工作，可用性比较低，从节点升主节点需要人工手动干预。<br>单点容易造成性能低下<br>主节点的存储能力受到限制<br>主节点的写受到限制（只有一个主节点）<br>全量同步可能会造成毫秒或者秒级的卡顿现象</p>
+<p><strong>特点</strong><br>只能master到slave 单向的；</p>
+<h4 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h4><h5 id="1-哨兵模式介绍"><a href="#1-哨兵模式介绍" class="headerlink" title="1.哨兵模式介绍"></a>1.哨兵模式介绍</h5><ul>
+<li>Sentinel(哨兵)进程是用于监控Redis集群中Master主服务器工作的状态。</li>
+<li>在Master主服务器发生故障的时候，可以实现Master和Slave服务器的切换,保证系统的高可用（HA）</li>
+<li>其已经被集成在redis2.6+的版本中，Redis的哨兵模式到2.8版本之后就稳定了下来。</li>
+</ul>
+<h5 id="2-哨兵进程的作用"><a href="#2-哨兵进程的作用" class="headerlink" title="2.哨兵进程的作用"></a>2.哨兵进程的作用</h5><ul>
+<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器。</li>
+<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其它的从服务<br>器，修改配置文件，让它们切换主机。</li>
+</ul>
+<p><strong>优点</strong></p>
+<ul>
+<li>Redis Sentinel 集群部署简单</li>
+<li>可以实现一套Sentinel监控一组 Redis数据节点或多组数据节点</li>
+<li>有效解决主从模式主库异常手动主从切换的问题。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>运维复杂，哨兵选举期间，不能对外提供服务。</li>
+<li>部署相对Redis主从模式要复杂一些，原理理解更繁琐；</li>
+<li>不能解决读写分离问题，实现起来相对复杂</li>
+</ul>
+<h3 id="集群模式-Redis-Cluster"><a href="#集群模式-Redis-Cluster" class="headerlink" title="集群模式(Redis Cluster)"></a>集群模式(Redis Cluster)</h3><p>Redis Cluster 是社区版推出的Redis分布式集群解决方案，主要解决Redis分布式方面的需求，比如<br>当遇到单机内存，并发和流量等瓶颈的时候，Redis Cluster能起到很好的负载均衡的目的。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>无中心架构</li>
+<li>数据按照slot存储分布在多个节点，节点间数据共享，可动态调整数据分布；</li>
+<li>可扩展性：可线扩展到1000多个节点，节点可动态添加或删除；</li>
+<li>高可用性：部分节点不可用时，集群仍可用，通过增加Slave或standby数据副本，能够实现故障自动<br>failover，节点之间通过gossip协议交换状态信息，用投票机制完成Slave到Master的角色提升；</li>
+<li>降低运维成本，提高系统的扩展性和可用性。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>Client实现复杂，驱动要求实现Smart Client，缓存slots mapping信息并及时更新，提高了开发<br>难度，客户端的不成熟影响业务的稳定性。目前仅JedisCluster相对成熟，异常处理部分还不完善，<br>比如常见的 “max redirect exception”.</li>
+<li>数据通过异步复制，不保证数据的强一致性。</li>
+</ul>
+<blockquote>
+<p>参考的文档：<a href="https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ</a></p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/redis%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -166,10 +266,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-23 13:54:50 / عُدل: 16:10:40" itemprop="dateCreated datePublished" datetime="2020-04-23T13:54:50+08:00">2020-04-23</time>
+              <time title="Created: 2020-04-23 13:54:50 / Modified: 16:10:40" itemprop="dateCreated datePublished" datetime="2020-04-23T13:54:50+08:00">2020-04-23</time>
             </span>
 
           
@@ -328,10 +428,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-23 09:59:34 / عُدل: 13:51:16" itemprop="dateCreated datePublished" datetime="2020-04-23T09:59:34+08:00">2020-04-23</time>
+              <time title="Created: 2020-04-23 09:59:34 / Modified: 13:51:16" itemprop="dateCreated datePublished" datetime="2020-04-23T09:59:34+08:00">2020-04-23</time>
             </span>
 
           
@@ -438,10 +538,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-21 14:06:01 / عُدل: 14:55:12" itemprop="dateCreated datePublished" datetime="2020-04-21T14:06:01+08:00">2020-04-21</time>
+              <time title="Created: 2020-04-21 14:06:01 / Modified: 14:55:12" itemprop="dateCreated datePublished" datetime="2020-04-21T14:06:01+08:00">2020-04-21</time>
             </span>
 
           
@@ -591,10 +691,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-21 10:21:12 / عُدل: 14:04:17" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
+              <time title="Created: 2020-04-21 10:21:12 / Modified: 14:04:17" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
             </span>
 
           
@@ -700,10 +800,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-16 17:14:37 / عُدل: 17:54:30" itemprop="dateCreated datePublished" datetime="2020-04-16T17:14:37+08:00">2020-04-16</time>
+              <time title="Created: 2020-04-16 17:14:37 / Modified: 17:54:30" itemprop="dateCreated datePublished" datetime="2020-04-16T17:14:37+08:00">2020-04-16</time>
             </span>
 
           
@@ -765,10 +865,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-16 16:50:43 / عُدل: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
+              <time title="Created: 2020-04-16 16:50:43 / Modified: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
             </span>
 
           
@@ -825,10 +925,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-16 14:11:52 / عُدل: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
+              <time title="Created: 2020-04-16 14:11:52 / Modified: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
             </span>
 
           
@@ -902,10 +1002,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-16 10:12:06 / عُدل: 17:14:03" itemprop="dateCreated datePublished" datetime="2020-04-16T10:12:06+08:00">2020-04-16</time>
+              <time title="Created: 2020-04-16 10:12:06 / Modified: 17:14:03" itemprop="dateCreated datePublished" datetime="2020-04-16T10:12:06+08:00">2020-04-16</time>
             </span>
 
           
@@ -1028,10 +1128,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-15 14:15:34 / عُدل: 15:33:42" itemprop="dateCreated datePublished" datetime="2020-04-15T14:15:34+08:00">2020-04-15</time>
+              <time title="Created: 2020-04-15 14:15:34 / Modified: 15:33:42" itemprop="dateCreated datePublished" datetime="2020-04-15T14:15:34+08:00">2020-04-15</time>
             </span>
 
           
@@ -1154,192 +1254,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/15/Mysql%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/15/Mysql%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">Mysql高级查询优化</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">نُشر في</span>
-
-              <time title="أُنشأ: 2020-04-15 08:56:50" itemprop="dateCreated datePublished" datetime="2020-04-15T08:56:50+08:00">2020-04-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">عُدل في</span>
-                <time title="عُدل: 2020-06-18 09:57:04" itemprop="dateModified" datetime="2020-06-18T09:57:04+08:00">2020-06-18</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="数据库事务"><a href="#数据库事务" class="headerlink" title="数据库事务"></a>数据库事务</h3><h4 id="ACID特性"><a href="#ACID特性" class="headerlink" title="ACID特性"></a>ACID特性</h4><ul>
-<li>原子性：事务是最小的执行单位，不允许分割。事务的原子性确保动作要么全部完成，<br>要么完全不起作用。</li>
-<li>一致性：执行事务前后，数据库从一个一致性状态转换到另一个一致性状态。</li>
-<li>隔离性：并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数<br>据库是独立的。</li>
-<li>持久性：一个事务被提交后，它对数据库中数据的改变是持久的，即使数据库发生故障<br>也不应该对其有任何影响。</li>
-</ul>
-<h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><ul>
-<li><p>READ_UNCOMMITTED（未提交读）：一个事务还没提交时，它做的变更就能被别的事务看到。最低的隔离级别，允许读取尚未提交的数据，可能会导致脏读、幻读或不可重复读。</p>
-</li>
-<li><p>READ_COMMITTED（提交读）：一个事务提交之后，它做的变更才会被其他事务看到。允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复读扔有可能发生。</p>
-</li>
-<li><p>REPEATABLE_READ（可重复读）：一个事务执行过程中看到的数据，总是跟这个事务在启动时看到的数据是一致的。当然在可重复读隔离级别下，未提交变更对其他事务也是不可见的。对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。</p>
-</li>
-<li><p>SERIALIZABLE（串行）：顾名思义是对于同一行记录，“写”会加“写锁”，“读”会加“读锁”。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。最高的隔离级别，完全服从ACID的隔离级别，所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会用到该级别。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mysql默认采用的REPEATABLE_READ（可重复读）隔离级别</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="了解索引"><a href="#了解索引" class="headerlink" title="了解索引"></a>了解索引</h3><h4 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h4><ul>
-<li>索引是一种帮助MySQL高效获取数据的数据结构。</li>
-</ul>
-<h4 id="优势和劣势"><a href="#优势和劣势" class="headerlink" title="优势和劣势"></a>优势和劣势</h4><ul>
-<li><strong>优势</strong><ol>
-<li>提高数据检索的效率，降低数据库的IO成本</li>
-<li>降低数据排序的成本，降低了CPU的消耗</li>
-</ol>
-</li>
-<li><strong>劣势</strong><ol>
-<li>索引列要占用空间</li>
-<li>降低了更新表的速度（INSERT、UPDATE）</li>
-<li>建立优秀索引的时间成本</li>
-</ol>
-</li>
-</ul>
-<h4 id="那些情况需要创建索引"><a href="#那些情况需要创建索引" class="headerlink" title="那些情况需要创建索引"></a>那些情况需要创建索引</h4><ul>
-<li>主键自动建立唯一索引</li>
-<li>频繁作为查询条件的字段应该创建索引</li>
-<li>查询中与其他表关联的字段，外键关系建立索引</li>
-<li>where条件里用不到的字段不创建索引</li>
-<li>单间/组合索引的选择问题，在高并发倾向创建组合索引</li>
-<li>查询中排序的字段，排序字段若通过索引去访问将大大提高排序速度</li>
-<li>查询中统计或分组字段</li>
-</ul>
-<h4 id="那些情况下不需要创建索引"><a href="#那些情况下不需要创建索引" class="headerlink" title="那些情况下不需要创建索引"></a>那些情况下不需要创建索引</h4><ul>
-<li>表记录太少</li>
-<li>频繁更新的字段不适合创建索引，因为每次更新不单单是更新了记录还会更新索引，加重了IO负担。</li>
-<li>数据重复且分布平均的表字段（若某个数据列包含许多重复的内容，为它建立索引就<br>没有太大的实际效果，即过滤性不好的字段）</li>
-</ul>
-<h3 id="EXPLAIN【重点】"><a href="#EXPLAIN【重点】" class="headerlink" title="EXPLAIN【重点】"></a>EXPLAIN【重点】</h3><blockquote>
-<p>使用EXPLAIN关键字可以模拟优化器执行SQL查询语句，从而知道MYSQL是如何处理你<br>的SQL语句，分析你的查询语句或是表结构的性能瓶颈。</p>
-</blockquote>
-<h4 id="EXPLAIN查询出来的字段"><a href="#EXPLAIN查询出来的字段" class="headerlink" title="EXPLAIN查询出来的字段"></a>EXPLAIN查询出来的字段</h4><ul>
-<li><strong>id</strong><ol>
-<li>id相同，执行顺序由上至下。</li>
-<li>id不同，id值越大优先级越高，越先被执行</li>
-</ol>
-</li>
-<li><strong>select_type</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">查询的类型，主要是用于区别普通的查询、联合查询、子查询等的复杂查询</span><br></pre></td></tr></table></figure></li>
-<li><strong>table</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">显示这行的数据是关于那张表的。</span><br></pre></td></tr></table></figure></li>
-<li><strong>type（最好到最差的顺序）</strong><ol>
-<li>system：表只有一行记录（等于系统表），这是const的特例，平时不会出现。</li>
-<li>const：表示通过索引一次就找到了，const用于比较primary key或者unique<br>索引。因为只匹配一行数据所以很快。如将主键置于where列表中，MySQL就能将该<br>查询转换为一个常量。</li>
-<li>eq_ref：唯一性索引扫描，对于每个索引建，表中只有一条记录与之匹配。常用<br>于主键或唯一索引扫描。</li>
-<li>ref：非唯一性索引扫描，返回匹配某个单独值的所有行，可能会找到多个符合条件的行。</li>
-<li>range：只检索给定范围的行，使用一个索引来选择行。key列显示使用了哪个索<br>引。一般是你的where语句中出现between，&lt;,&gt;,in等的查询，这种范围扫描索引扫<br>描比全表扫描要好。</li>
-<li>index：index与all的区别为index类型只遍历索引树，也就是说，虽然all和index<br>都是读全表，但index是从索引中读取的，而all是从硬盘中读取的。</li>
-<li>all：遍历全表</li>
-</ol>
-</li>
-</ul>
-<blockquote>
-<p>一般来说，得保证查询至少达到range级别，最好能达到ref</p>
-</blockquote>
-<ul>
-<li><strong>possible_keys</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可能应用到这张表的索引</span><br></pre></td></tr></table></figure></li>
-<li><strong>key</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">实际使用的索引</span><br></pre></td></tr></table></figure></li>
-<li><strong>key_len</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">索引使用的字节数，在不损失精确性的情况下，长度越短越好</span><br></pre></td></tr></table></figure></li>
-<li><strong>ref</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">显示索引的哪一列被使用了</span><br></pre></td></tr></table></figure></li>
-<li><strong>rows</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">大致估算出找到所需记录要读取的行数</span><br></pre></td></tr></table></figure></li>
-<li><strong>Extra</strong></li>
-<li>Using filesort：说明mysql会对数据使用一个外部的索引排序，而不是按照表内<br>的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序”</li>
-<li>Using temporary：使用了临时表保存中间结果，MySQL在对查询结构排序时使用<br>临时表，常见于排序order by和分组查询group by</li>
-<li>USING index：表示相应的select操作中使用了覆盖索引，避免访问了表的数据行</li>
-</ul>
-<h4 id="什么情况下索引会失效"><a href="#什么情况下索引会失效" class="headerlink" title="什么情况下索引会失效"></a>什么情况下索引会失效</h4><ul>
-<li>全值匹配</li>
-<li>最佳左前缀法则<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果索引了多列，要遵守最左前缀法则，指的是查询从索引的最左前列开始并且 不跳过索引中的列。</span><br></pre></td></tr></table></figure></li>
-<li>不在索引列上做任何操作（计算，函数，（手动或自动）类型转换），会导致索引失效而转向全表扫描</li>
-<li>存储引擎不能使用索引中范围条件右边的列</li>
-<li>尽量使用覆盖索引</li>
-<li>MySQL在使用不等于（！=或&lt;&gt;）的时候无法使用索引会导致全表扫描</li>
-<li>is null，is not null 也无法使用索引</li>
-<li>like以通配符开头（”%bac..”）MySQL索引失效会变成全表扫描的操作。</li>
-<li>字符串不加单引号索引失效（自动类型转换）</li>
-<li>or左边有索引、右边没索引也会失效</li>
-</ul>
-<h4 id="order-By关键字优化"><a href="#order-By关键字优化" class="headerlink" title="order By关键字优化"></a>order By关键字优化</h4><ul>
-<li>尽量使用index方式排序，避免使用filesort（文件排序）方式。</li>
-<li>order by满足两种情况会使用index排序：<br>① order by语句使用索引最左前列<br>② 使用where子句与order by子句条件列组合满足索引最左前列。</li>
-<li>双路排序：MySQL4.1之前，俩次扫描磁盘</li>
-<li>单路排序：从磁盘读取查询需要的所有列，按照order by列在buffer对它们进行排序<br>然后扫描排序后的列进行输出，效率更高一点，但是它会使用更多的空间，因为它每一<br>行都在内存中保存了。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">单路排序的缺点：因为单路是将所有的字段都放在内存中，假如，</span><br><span class="line">这张表实在太大，大的超过了sort_buffer这个值了，那么每次只</span><br><span class="line">能取sort_buffer的数据，来进行排序（会创建tmp文件，然后多路</span><br><span class="line">合并），相当于多路了，这样一来效率比双路还差。</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<blockquote>
-<p>优化策略：增大sort_buffer_size参数的设置，增大max_length_for_sort_data参数的设置。</p>
-</blockquote>
-<h4 id="group-By关键字优化"><a href="#group-By关键字优化" class="headerlink" title="group By关键字优化"></a>group By关键字优化</h4><ul>
-<li>实质是先后排序后进行分组，遵照索引的最佳左前缀，当无法使用索引列时，增大<br>sort_buffer_size + max_length_for_sort_data参数的设置</li>
-</ul>
-<h3 id="慢查询【重点】"><a href="#慢查询【重点】" class="headerlink" title="慢查询【重点】"></a>慢查询【重点】</h3><h4 id="慢查询日志是什么"><a href="#慢查询日志是什么" class="headerlink" title="慢查询日志是什么"></a>慢查询日志是什么</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MySQL的慢查询日志是MySQL提供的一种日志记录，它用来记录在MySQL中响应时间</span><br><span class="line">超过阀值的语句，具体运行时间超过long_query_time值的SQL，则会被记录到慢</span><br><span class="line">查询日志中。具体指运行时间超过long_query_time的SQL，则会被记录到慢查询</span><br><span class="line">日志中。long_query_time的默认值为10，意思是运行10秒以上的语句。由他来看</span><br><span class="line">那些SQL超出了我们的最大忍耐时间值，比如一条sql执行超过5秒钟，我们就算慢SQL</span><br><span class="line">希望能收集超过5秒的sql，结合之前explain进行全面分析。</span><br></pre></td></tr></table></figure>
-<h4 id="怎么用"><a href="#怎么用" class="headerlink" title="怎么用"></a>怎么用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">默认情况下，MySQL数据库没有开启慢查询日志，需要我们手动来设置这个参数。</span><br><span class="line">（当然，如果不是调优需要的话，一般不建议启动该参数，因为开启慢查询日志</span><br><span class="line">会或多或少带来一定的性能影响。慢查询日志支持将日志记录写入文件。）</span><br></pre></td></tr></table></figure>
-<h4 id="Show-Profile-【重点】"><a href="#Show-Profile-【重点】" class="headerlink" title="Show Profile 【重点】"></a>Show Profile 【重点】</h4><ul>
-<li>是什么<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql提供可以用来分析当前会话中语句执行的资源消耗情况，可以用于SQL的调优</span><br><span class="line">的测量，相比explain，show profile展示的数据更加详尽。</span><br></pre></td></tr></table></figure></li>
-<li>怎么用<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-- 查看是否开启</span><br><span class="line">show variables like &#39;profiling&#39;;</span><br><span class="line"></span><br><span class="line">-- 开启功能，默认是关闭 使用前需要开启</span><br><span class="line">set profiling &#x3D; 1；</span><br><span class="line"></span><br><span class="line">-- 诊断SQL</span><br><span class="line">show profile cpu,block io for query n;</span><br><span class="line">-- 还可以通过SELECT * FROM information_schema.profiling WHERE query_id &#x3D; n ORDER BY seq;获取</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="الصفحة السابقة"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="الصفحة التالية"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1383,10 +1301,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          المحتويات
+          Table of Contents
         </li>
         <li class="sidebar-nav-overview">
-          عام
+          Overview
         </li>
       </ul>
 
@@ -1405,13 +1323,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
-          <span class="site-state-item-name">المقالات</span>
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">11</span>
-        <span class="site-state-item-name">الوسوم</span>
+        <span class="site-state-item-name">tags</span>
       </div>
   </nav>
 </div>
@@ -1443,7 +1361,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">GIO</span>
 </div>
-  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
         
