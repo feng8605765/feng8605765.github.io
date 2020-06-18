@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="十二月的doge">
 <meta property="og:description" content="在建立联合索引的时候，如何安排索引内的字段顺序？第一考虑的是：索引的复用能力，因为可以支持最左前缀，所以当已经有了（a,b）联合索引后，一般就不需要单独在a上简历索引了。因此，第一原则是如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。 第二考虑的原则是空间：例如a字段是比b字段大的，那么我就建议创建一个(a,b)的联合索引和一个(b)的单字段索引。 count这么慢的">
 <meta property="article:published_time" content="2020-06-18T03:55:58.000Z">
-<meta property="article:modified_time" content="2020-06-18T09:18:21.733Z">
+<meta property="article:modified_time" content="2020-06-18T09:19:54.773Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
@@ -173,7 +173,7 @@
               <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="أُنشأ: 2020-06-18 11:55:58 / عُدل: 17:18:21" itemprop="dateCreated datePublished" datetime="2020-06-18T11:55:58+08:00">2020-06-18</time>
+              <time title="أُنشأ: 2020-06-18 11:55:58 / عُدل: 17:19:54" itemprop="dateCreated datePublished" datetime="2020-06-18T11:55:58+08:00">2020-06-18</time>
             </span>
 
           
@@ -197,18 +197,12 @@
 <li><p>现在的优化器只优化了count(<em>)的语义为“取行数”,其他“显而易见”的优化并没有做。Mysql已经优化过count(</em>)了，直接使用这种用法就可以了。</p>
 </li>
 </ol>
-<ul>
-<li><p><strong>对于count(主键ID)</strong>来说，InnoDB引擎会遍历整张表，把每一行的ID值都取出来，返回给server层。server层拿到ID后，判断是不可能为空，就按行累加。</p>
-</li>
-<li><p>对于count(1)来说，InnoDB引擎遍历整张表，但不取值。server层对于返回的每一个行，放一个数字“1”进去，判断是不可能为空的，按行累加。</p>
-</li>
-</ul>
+<p><strong>对于count(主键ID)</strong>来说，InnoDB引擎会遍历整张表，把每一行的ID值都取出来，返回给server层。server层拿到ID后，判断是不可能为空，就按行累加。</p>
+<p><strong>对于count(1)</strong>来说，InnoDB引擎遍历整张表，但不取值。server层对于返回的每一个行，放一个数字“1”进去，判断是不可能为空的，按行累加。</p>
 <blockquote>
 <p>单看这两个用法的差别的话，你能对比出来，count(1)执行得要比count(主键ID)快。因为从引擎返回id会涉及到解析数据行，以及拷贝字段值的操作。</p>
 </blockquote>
-<ul>
-<li>对于count(字段)来说：</li>
-</ul>
+<p><strong>对于count(字段)</strong>来说：</p>
 <ol>
 <li><p>如果这个“字段”是定义为not null 的话，一行行地从记录里面读出这个字段，判断不能为null，按行累加；</p>
 </li>
