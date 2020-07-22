@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="十二月的doge">
 <meta property="og:description" content="数据库事务ACID特性 原子性：事务是最小的执行单位，不允许分割。事务的原子性确保动作要么全部完成，要么完全不起作用。 一致性：执行事务前后，数据库从一个一致性状态转换到另一个一致性状态。 隔离性：并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数据库是独立的。 持久性：一个事务被提交后，它对数据库中数据的改变是持久的，即使数据库发生故障也不应该对其有任何影响。  事务隔离级别">
 <meta property="article:published_time" content="2020-04-15T00:56:50.000Z">
-<meta property="article:modified_time" content="2020-06-18T01:57:04.254Z">
+<meta property="article:modified_time" content="2020-07-22T08:19:17.664Z">
 <meta property="article:author" content="GIO">
 <meta property="article:tag" content="数据库的优化">
 <meta name="twitter:card" content="summary">
@@ -180,7 +180,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">عُدل في</span>
-                <time title="عُدل: 2020-06-18 09:57:04" itemprop="dateModified" datetime="2020-06-18T09:57:04+08:00">2020-06-18</time>
+                <time title="عُدل: 2020-07-22 16:19:17" itemprop="dateModified" datetime="2020-07-22T16:19:17+08:00">2020-07-22</time>
               </span>
 
           
@@ -208,10 +208,10 @@
 <li><p>REPEATABLE_READ（可重复读）：一个事务执行过程中看到的数据，总是跟这个事务在启动时看到的数据是一致的。当然在可重复读隔离级别下，未提交变更对其他事务也是不可见的。对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。</p>
 </li>
 <li><p>SERIALIZABLE（串行）：顾名思义是对于同一行记录，“写”会加“写锁”，“读”会加“读锁”。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。最高的隔离级别，完全服从ACID的隔离级别，所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会用到该级别。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mysql默认采用的REPEATABLE_READ（可重复读）隔离级别</span><br></pre></td></tr></table></figure>
-
 </li>
 </ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mysql默认采用的REPEATABLE_READ（可重复读）隔离级别</span><br></pre></td></tr></table></figure>
+
 <h3 id="了解索引"><a href="#了解索引" class="headerlink" title="了解索引"></a>了解索引</h3><h4 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h4><ul>
 <li>索引是一种帮助MySQL高效获取数据的数据结构。</li>
 </ul>
@@ -409,7 +409,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">المقالات</span>
         </a>
       </div>

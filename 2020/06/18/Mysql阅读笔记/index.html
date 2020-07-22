@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="十二月的doge">
 <meta property="og:description" content="在建立联合索引的时候，如何安排索引内的字段顺序？第一考虑的是：索引的复用能力，因为可以支持最左前缀，所以当已经有了（a,b）联合索引后，一般就不需要单独在a上简历索引了。因此，第一原则是如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。 第二考虑的原则是空间：例如a字段是比b字段大的，那么我就建议创建一个(a,b)的联合索引和一个(b)的单字段索引。 count这么慢的">
 <meta property="article:published_time" content="2020-06-18T03:55:58.000Z">
-<meta property="article:modified_time" content="2020-06-18T09:19:54.773Z">
+<meta property="article:modified_time" content="2020-06-22T13:42:32.840Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
@@ -171,10 +171,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">نُشر في</span>
-              
 
-              <time title="أُنشأ: 2020-06-18 11:55:58 / عُدل: 17:19:54" itemprop="dateCreated datePublished" datetime="2020-06-18T11:55:58+08:00">2020-06-18</time>
+              <time title="أُنشأ: 2020-06-18 11:55:58" itemprop="dateCreated datePublished" datetime="2020-06-18T11:55:58+08:00">2020-06-18</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-06-22 21:42:32" itemprop="dateModified" datetime="2020-06-22T21:42:32+08:00">2020-06-22</time>
+              </span>
 
           
 
@@ -234,7 +240,10 @@
     <a href="/2020/06/15/%E8%AE%BE%E8%AE%A1%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F/" rel="prev" title="设计秒杀系统">
       <i class="fa fa-chevron-left"></i> 设计秒杀系统
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/22/%E6%8E%92%E9%98%9F%E6%96%B9%E5%BC%8F/" rel="next" title="排队方式">
+      排队方式 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -307,7 +316,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">المقالات</span>
         </a>
       </div>
