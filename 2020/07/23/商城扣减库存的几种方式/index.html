@@ -20,14 +20,18 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="十二月的doge">
-<meta property="og:url" content="http://yoursite.com/archives/2020/05/index.html">
+  <meta name="description" content="下单扣减库存 买家下单后，在商品的总库存中减去买家购买数量。下单减库存时最简单的减库存的方式，也是控制最精确的一种，下单时直接通过数据库的事务机制控制商品库存，这样一定不会出现超卖的情况。但是你要知道，有些人下完单可能并不会付款。  付款减库存 买家下单后，并不立即减库存，而是等到有用户付款后才真正减库存，否则库存一直保留给其他买家。但因为付款时才减库存，如果并发比较高，有可能出现买家下单后付不了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="商城扣减库存的几种方式">
+<meta property="og:url" content="http://yoursite.com/2020/07/23/%E5%95%86%E5%9F%8E%E6%89%A3%E5%87%8F%E5%BA%93%E5%AD%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/index.html">
 <meta property="og:site_name" content="十二月的doge">
+<meta property="og:description" content="下单扣减库存 买家下单后，在商品的总库存中减去买家购买数量。下单减库存时最简单的减库存的方式，也是控制最精确的一种，下单时直接通过数据库的事务机制控制商品库存，这样一定不会出现超卖的情况。但是你要知道，有些人下完单可能并不会付款。  付款减库存 买家下单后，并不立即减库存，而是等到有用户付款后才真正减库存，否则库存一直保留给其他买家。但因为付款时才减库存，如果并发比较高，有可能出现买家下单后付不了">
+<meta property="article:published_time" content="2020-07-23T08:14:32.000Z">
+<meta property="article:modified_time" content="2020-07-23T08:20:30.844Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/archives/2020/05/">
+<link rel="canonical" href="http://yoursite.com/2020/07/23/%E5%95%86%E5%9F%8E%E6%89%A3%E5%87%8F%E5%BA%93%E5%AD%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/">
 
 
 <script id="page-configurations">
@@ -35,12 +39,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'default'
   };
 </script>
 
-  <title>الأرشيف | 十二月的doge</title>
+  <title>商城扣减库存的几种方式 | 十二月的doge</title>
   
 
 
@@ -138,90 +142,85 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">هِم..! 30 مقالاً بالمُجمل. واصل الكتابة.</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/23/%E5%95%86%E5%9F%8E%E6%89%A3%E5%87%8F%E5%BA%93%E5%AD%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          商城扣减库存的几种方式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+              
+
+              <time title="أُنشأ: 2020-07-23 16:14:32 / عُدل: 16:20:30" itemprop="dateCreated datePublished" datetime="2020-07-23T16:14:32+08:00">2020-07-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-28T19:47:32+08:00"
-              content="2020-05-28">
-          05-28
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/28/Join%E6%9F%A5%E8%AF%A2/" itemprop="url">
-            <span itemprop="name">Join查询</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T16:06:36+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/InnoDB%E7%9A%84%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/" itemprop="url">
-            <span itemprop="name">索引的处理流程</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-11T08:46:21+08:00"
-              content="2020-05-11">
-          05-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/" itemprop="url">
-            <span itemprop="name">RabbitMQ的问题</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <h3 id="下单扣减库存"><a href="#下单扣减库存" class="headerlink" title="下单扣减库存"></a>下单扣减库存</h3><blockquote>
+<p>买家下单后，在商品的总库存中减去买家购买数量。下单减库存时最简单的减库存的方式，也是控制最精确的一种，下单时直接通过数据库的事务机制控制商品库存，这样一定不会出现超卖的情况。但是你要知道，有些人下完单可能并不会付款。</p>
+</blockquote>
+<h3 id="付款减库存"><a href="#付款减库存" class="headerlink" title="付款减库存"></a>付款减库存</h3><blockquote>
+<p>买家下单后，并不立即减库存，而是等到有用户付款后才真正减库存，否则库存一直保留给其他买家。但因为付款时才减库存，如果并发比较高，有可能出现买家下单后付不了款的情况，因为可能商品已经被其他人买走了。</p>
+</blockquote>
+<h3 id="预扣库存"><a href="#预扣库存" class="headerlink" title="预扣库存"></a>预扣库存</h3><blockquote>
+<p>这种方式相对复杂一些，买家下单后，库存为其保留一定的时间(如10分钟),超过这个时间，库存将会自动释放，释放后其他买家就继续购买，在买家付款前，系统会校验该订单的库存是否还有保留，如果没有保留，则再次尝试预扣；如果库存不足（也就是预扣失败）则不允许继续付款；如果预扣成功，则完成付款并实际地减去库存。</p>
+</blockquote>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/22/%E9%92%88%E5%AF%B9%E7%A7%92%E6%9D%80%E5%9C%BA%E6%99%AF%E7%9A%84%E6%96%B9%E6%B3%95/" rel="prev" title="针对秒杀场景的方法">
+      <i class="fa fa-chevron-left"></i> 针对秒杀场景的方法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
@@ -274,6 +273,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#下单扣减库存"><span class="nav-number">1.</span> <span class="nav-text">下单扣减库存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#付款减库存"><span class="nav-number">2.</span> <span class="nav-text">付款减库存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预扣库存"><span class="nav-number">3.</span> <span class="nav-text">预扣库存</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

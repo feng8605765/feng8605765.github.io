@@ -80,7 +80,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Navigationsleiste an/ausschalten">
+    <div class="toggle" aria-label="تشغيل شريط التصفح">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -109,12 +109,12 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Startseite</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archiv</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
 
   </li>
   </ul>
@@ -144,6 +144,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/30/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/30/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/" class="post-title-link" itemprop="url">hexo博客安装教程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+              
+
+              <time title="أُنشأ: 2020-04-30 10:21:12 / عُدل: 10:33:25" itemprop="dateCreated datePublished" datetime="2020-04-30T10:21:12+08:00">2020-04-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="新建仓库"><a href="#新建仓库" class="headerlink" title="新建仓库"></a>新建仓库</h3><p>github 新建一个仓库，仓库名必须为<user-name>.github.io格式，其中<user-name>是你github的昵称。</p>
+<h3 id="全局安装hexo"><a href="#全局安装hexo" class="headerlink" title="全局安装hexo"></a>全局安装hexo</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 本地运行</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署到github上"><a href="#部署到github上" class="headerlink" title="部署到github上"></a>部署到github上</h3><p>项目根目录下找到_config.yml,找到deploy字段并填写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: &lt;你的仓库地址&gt; # https:&#x2F;&#x2F;github.com&#x2F;feng&#x2F;feng.github.io</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>填写完之后需要hexo-deployer-git推到仓库上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>执行下面两个命令,就可以自动部署到github上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看效果"><a href="#查看效果" class="headerlink" title="查看效果"></a>查看效果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">浏览器访问：https:&#x2F;&#x2F;feng.github.io&#x2F; 即可看到效果。</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建新文章"><a href="#创建新文章" class="headerlink" title="创建新文章"></a>创建新文章</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; [layout] 为布局，可选项为 &#96;post&#96;、&#96;page&#96;、&#96;draft&#96;，这将决定文章所在文件路径。</span><br><span class="line">&#x2F;&#x2F; &lt;title&gt; 为文章标题</span><br><span class="line">&#x2F;&#x2F; 如 hexo new post 除了帅气，我还有啥！</span><br><span class="line">hexo new [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="更换主题皮肤"><a href="#更换主题皮肤" class="headerlink" title="更换主题皮肤"></a>更换主题皮肤</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 下载到themes文件夹下</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;KevinOfNeu&#x2F;hexo-theme-xoxo xoxo</span><br><span class="line"></span><br><span class="line"># 修改 _config.yml 配置</span><br><span class="line">theme: xoxo</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署优化"><a href="#部署优化" class="headerlink" title="部署优化"></a>部署优化</h3><p>每次都要执行hexo clean 和 hexo deploy 不如写个新的脚本，修改package.json</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">	  &quot;scripts&quot;: &#123;</span><br><span class="line">	    &quot;rebuild&quot;: &quot;hexo clean &amp;&amp; hexo deploy&quot;</span><br><span class="line">	  &#125;</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">部署命令</span><br></pre></td></tr></table></figure>
+<pre><code>npm run rebuild</code></pre><pre><code></code></pre>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/30/%E5%A4%9A%E5%8F%B0%E7%94%B5%E8%84%91%E9%83%A8%E7%BD%B2hexo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -166,10 +244,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-30 10:08:45 / Geändert am: 10:50:28" itemprop="dateCreated datePublished" datetime="2020-04-30T10:08:45+08:00">2020-04-30</time>
+              <time title="أُنشأ: 2020-04-30 10:08:45 / عُدل: 10:50:28" itemprop="dateCreated datePublished" datetime="2020-04-30T10:08:45+08:00">2020-04-30</time>
             </span>
 
           
@@ -271,10 +349,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-23 14:34:01 / Geändert am: 14:43:51" itemprop="dateCreated datePublished" datetime="2020-04-23T14:34:01+08:00">2020-04-23</time>
+              <time title="أُنشأ: 2020-04-23 14:34:01 / عُدل: 14:43:51" itemprop="dateCreated datePublished" datetime="2020-04-23T14:34:01+08:00">2020-04-23</time>
             </span>
 
           
@@ -371,10 +449,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-23 13:54:50 / Geändert am: 16:10:40" itemprop="dateCreated datePublished" datetime="2020-04-23T13:54:50+08:00">2020-04-23</time>
+              <time title="أُنشأ: 2020-04-23 13:54:50 / عُدل: 16:10:40" itemprop="dateCreated datePublished" datetime="2020-04-23T13:54:50+08:00">2020-04-23</time>
             </span>
 
           
@@ -533,10 +611,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-23 09:59:34 / Geändert am: 13:51:16" itemprop="dateCreated datePublished" datetime="2020-04-23T09:59:34+08:00">2020-04-23</time>
+              <time title="أُنشأ: 2020-04-23 09:59:34 / عُدل: 13:51:16" itemprop="dateCreated datePublished" datetime="2020-04-23T09:59:34+08:00">2020-04-23</time>
             </span>
 
           
@@ -643,10 +721,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-21 14:06:01 / Geändert am: 14:55:12" itemprop="dateCreated datePublished" datetime="2020-04-21T14:06:01+08:00">2020-04-21</time>
+              <time title="أُنشأ: 2020-04-21 14:06:01 / عُدل: 14:55:12" itemprop="dateCreated datePublished" datetime="2020-04-21T14:06:01+08:00">2020-04-21</time>
             </span>
 
           
@@ -796,10 +874,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-21 10:21:12 / Geändert am: 14:04:17" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
+              <time title="أُنشأ: 2020-04-21 10:21:12 / عُدل: 14:04:17" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
             </span>
 
           
@@ -905,10 +983,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-16 17:14:37 / Geändert am: 17:54:30" itemprop="dateCreated datePublished" datetime="2020-04-16T17:14:37+08:00">2020-04-16</time>
+              <time title="أُنشأ: 2020-04-16 17:14:37 / عُدل: 17:54:30" itemprop="dateCreated datePublished" datetime="2020-04-16T17:14:37+08:00">2020-04-16</time>
             </span>
 
           
@@ -970,10 +1048,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-16 16:50:43 / Geändert am: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
+              <time title="أُنشأ: 2020-04-16 16:50:43 / عُدل: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
             </span>
 
           
@@ -1030,10 +1108,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-16 14:11:52 / Geändert am: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
+              <time title="أُنشأ: 2020-04-16 14:11:52 / عُدل: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
             </span>
 
           
@@ -1081,136 +1159,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/16/ubuntu-install-docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/16/ubuntu-install-docker/" class="post-title-link" itemprop="url">Ubuntu 安装 docker</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              <time title="Erstellt: 2020-04-16 10:12:06 / Geändert am: 17:14:03" itemprop="dateCreated datePublished" datetime="2020-04-16T10:12:06+08:00">2020-04-16</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="Ubuntu安装国内镜像"><a href="#Ubuntu安装国内镜像" class="headerlink" title="Ubuntu安装国内镜像"></a>Ubuntu安装国内镜像</h3><ul>
-<li>buntu 的软件源配置文件是 /etc/apt/sources.list。将系统自带的该文件做个备份，将该文件替换为下面内容，即可使用 TUNA 的软件源镜像。</li>
-</ul>
-<p>当前选择16.04版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial main restricted universe multiverse</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-updates main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-updates main restricted universe multiverse</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-backports main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-backports main restricted universe multiverse</span><br><span class="line">deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-security main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line"># 预发布软件源，不建议启用</span><br><span class="line"># deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-proposed main restricted universe multiverse</span><br><span class="line"># deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; xenial-proposed main restricted universe multiverse</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>如果需要其它镜像可参考链接：<a href="https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/</a></p>
-</blockquote>
-<h3 id="Ubuntu上安装Docker-Engine"><a href="#Ubuntu上安装Docker-Engine" class="headerlink" title="Ubuntu上安装Docker Engine"></a>Ubuntu上安装Docker Engine</h3><h5 id="文档参考：https-docs-docker-com-engine-install-ubuntu"><a href="#文档参考：https-docs-docker-com-engine-install-ubuntu" class="headerlink" title="文档参考：https://docs.docker.com/engine/install/ubuntu/"></a>文档参考：<a href="https://docs.docker.com/engine/install/ubuntu/" target="_blank" rel="noopener">https://docs.docker.com/engine/install/ubuntu/</a></h5><h4 id="操作系统要求"><a href="#操作系统要求" class="headerlink" title="操作系统要求"></a>操作系统要求</h4><p>要安装Docker Engine，您需要以下Ubuntu版本之一的64位版本：</p>
-<ul>
-<li>Ubuntu Eoan 19.10</li>
-<li>Ubuntu Bionic 18.04（LTS）</li>
-<li>Ubuntu Xenial 16.04（LTS）</li>
-</ul>
-<h4 id="卸载旧版本"><a href="#卸载旧版本" class="headerlink" title="卸载旧版本"></a>卸载旧版本</h4><p>旧的Docker版本被称为 docker，docker.io or docker-engine.如果你已安装，请先卸载。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
-<p>如果apt-get提示没有安装这些软件包，则允许/var/lib/docker/中的内容包括（images，containers，<br>volumes 和 networks）保留。Docker Engine包现在被称为Docker ce。</p>
-<h4 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h4><p>您可以根据需要不同的方式安装Docker Engine:</p>
-<ul>
-<li>大多数用户会 设置Docker的存储库并从中进行安装，以简化安装和升级任务，推荐方法。（以下会采用）</li>
-<li>一些用户下载并 手动安装 DEB软件包，并完全手动管理升级。这在无法访问互联网的空白<br>系统上安装Docker的情况下很有用。</li>
-<li>在测试和开发环境中，一些用户选择使用自动 便利脚本 来安装Docker.</li>
-</ul>
-<h5 id="使用储存库安装（推荐）"><a href="#使用储存库安装（推荐）" class="headerlink" title="使用储存库安装（推荐）"></a>使用储存库安装（推荐）</h5><p>在新的系统上首次安装Docker Engine之前，需要设置Docker存储库，之后您可以从存储库安装<br>和更新Docker。</p>
-<p>** SET UP THE REPOSITORY (设置存储库) **</p>
-<ol>
-<li><p>更新apt 软件包索引并安装软件包以允许apt通过HTTPS使用存储库：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure></li>
-<li><p>添加Docker的官方GPG秘钥：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -fsSL https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu&#x2F;gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88通过搜索指纹的后8个字符，验证您现在是否拥有带有指纹的密钥 。</p>
-</blockquote>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-key fingerprint 0EBFCD88 </span><br><span class="line">pub   rsa4096 2017-02-22 [SCEA]</span><br><span class="line">     9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid           [ unknown] Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   rsa4096 2017-02-22 [S]</span><br></pre></td></tr></table></figure></li>
-<li><p>使用以下命令来设置稳定的存储库，要添加 nightly(每晚) or test(测试) repository(存储库)<br>。请在以下命令中最后添加上 nightly 或 test（两者）stable.了解nightly和test <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener">频道链接</a>：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">x86_64 &#x2F; amd64</span><br><span class="line">$ sudo add-apt-repository \</span><br><span class="line">   &quot;deb [arch&#x3D;amd64] https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu \</span><br><span class="line">   $(lsb_release -cs) \</span><br><span class="line">   stable&quot;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h4 id="安装-Docker-ENGINE-引擎"><a href="#安装-Docker-ENGINE-引擎" class="headerlink" title="安装 Docker ENGINE 引擎"></a>安装 Docker ENGINE 引擎</h4><ol>
-<li><p>更新<strong>apt</strong>程序包索引，并安装最新版本的<strong>Docker Engine</strong>和<strong>containerd</strong>(容器)，<br>或转到下一步安装特定的版本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>如果你启用了多个Docker存储库，则在末尾<strong>apt-get install</strong> or <strong>apt-get update</strong> 命<br>令中指定版本的情况进行安装或更新将始终安装可能的最高版本，这可能不适合您的稳定性的需求。</p>
-</blockquote>
-</li>
-<li><p>要安装特定版本的<strong>Docker Engine</strong>，请在存储库中列出可用版本，然后选择并安装一种：<br>列出您的仓库可用的版本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ apt-cache madison docker-ce</span><br><span class="line">  docker-ce | 5:18.09.1~3-0~ubuntu-xenial | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line">  docker-ce | 5:18.09.0~3-0~ubuntu-xenial | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line">  docker-ce | 18.06.1~ce~3-0~ubuntu       | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line">  docker-ce | 18.06.0~ce~3-0~ubuntu       | https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu  xenial&#x2F;stable amd64 Packages</span><br><span class="line"> ...</span><br></pre></td></tr></table></figure>
-<p> ② 使用第二列中的版本字符串安装特定版本，例如<code>5:18.09.1~3-0~ubuntu-xenial</code>.(不指定则直接默认)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install docker-ce&#x3D;&lt;VERSION_STRING&gt; docker-ce-cli&#x3D;&lt;VERSION_STRING&gt; containerd.io</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>通过允许<code>hello-world</code>映像来验证是否正确安装了Docker Engine。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<blockquote>
-<p>Docker Engine已安装并正在运行。该<code>docker</code>已创建，但未添加任何用户，需要使用<code>sudo</code><br>来运行Docker命令。继续执行<a href="https://docs.docker.com/engine/install/linux-postinstall/" target="_blank" rel="noopener">Linux的安装后步骤</a>,以允许非特权用户允许Docker命令以及其他<br>可选配置步骤。</p>
-</blockquote>
-<h3 id="映射mysql端口"><a href="#映射mysql端口" class="headerlink" title="映射mysql端口"></a>映射mysql端口</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config.vm.network &quot;forwarded_port&quot;, [guest][3]: 3306, [host][4]: 13306</span><br></pre></td></tr></table></figure>
-<p>启动一个Mysql实例映射到镜像mysql端口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run -p 13306[5]:3306[6] -e MYSQL_ROOT_PASSWORD&#x3D;root -d mysql:5.7.29</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>使用navicat 工具链接测试是否有用。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Vorherige Seite"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Nächste Seite"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="الصفحة السابقة"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="الصفحة التالية"></i></a>
   </nav>
 
 
@@ -1254,10 +1206,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Inhaltsverzeichnis
+          المحتويات
         </li>
         <li class="sidebar-nav-overview">
-          Übersicht
+          عام
         </li>
       </ul>
 
@@ -1276,13 +1228,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">29</span>
-          <span class="site-state-item-name">Artikel</span>
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">المقالات</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">11</span>
-        <span class="site-state-item-name">schlagwörter</span>
+        <span class="site-state-item-name">الوسوم</span>
       </div>
   </nav>
 </div>
@@ -1314,7 +1266,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">GIO</span>
 </div>
-  <div class="powered-by">Erstellt mit  <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
         
