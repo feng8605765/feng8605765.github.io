@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="十二月的doge">
 <meta property="og:description" content="match查询和”我的php学习生涯”这个查询语句匹配的文档. 1234567891011&amp;#123;	&quot;query&quot;: &amp;#123;		&quot;bool&quot;: &amp;#123;			&quot;must&quot;: [&amp;#123;				&quot;match&quot;: &amp;#123;					&quot;standard_name&quot;: &quot;初级">
 <meta property="article:published_time" content="2020-08-05T06:14:40.000Z">
-<meta property="article:modified_time" content="2020-08-05T08:37:36.663Z">
+<meta property="article:modified_time" content="2020-08-05T08:58:42.655Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
@@ -84,7 +84,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Navigationsleiste an/ausschalten">
+    <div class="toggle" aria-label="تشغيل شريط التصفح">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -113,12 +113,12 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Startseite</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archiv</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
 
   </li>
   </ul>
@@ -170,10 +170,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-08-05 14:14:40 / Geändert am: 16:37:36" itemprop="dateCreated datePublished" datetime="2020-08-05T14:14:40+08:00">2020-08-05</time>
+              <time title="أُنشأ: 2020-08-05 14:14:40 / عُدل: 16:58:42" itemprop="dateCreated datePublished" datetime="2020-08-05T14:14:40+08:00">2020-08-05</time>
             </span>
 
           
@@ -219,10 +219,18 @@
 <li>must_not 所有的语句都不能（must not）匹配, 与 NOT 等价。</li>
 <li>should 至少有一个语句要匹配,与OR等价</li>
 </ul>
+<h4 id="一个-bool-查询包含一个-filter-过滤器和一个普通查询。"><a href="#一个-bool-查询包含一个-filter-过滤器和一个普通查询。" class="headerlink" title="一个 bool 查询包含一个 filter 过滤器和一个普通查询。"></a>一个 bool 查询包含一个 filter 过滤器和一个普通查询。</h4><p>一个查询语句究竟具有什么样的行为和得到什么结果,主要取决于它到底是处Query还是Filter,两者有很大区别，例如：</p>
+<ul>
+<li>① Query context 查询上下文 这种语句在执行时既要计算文档是否匹配,还要计算文档相对于其他文档的匹配度有多高,匹配度越高，score分数就越高。 </li>
+<li>② Filter context 过滤上下文，过滤上下文中的语句在执行时只关心文档是否和查询匹配，不会计算匹配度，也就是得分。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;query&quot;: &#123;</span><br><span class="line">		&quot;bool&quot;: &#123;</span><br><span class="line">			&quot;must&quot;: [&#123;</span><br><span class="line">				&quot;match&quot;: &#123;</span><br><span class="line">					&quot;standard_name&quot;: &quot;我爱口服液&quot;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;],</span><br><span class="line">			&quot;filter&quot;: &#123;</span><br><span class="line">				&quot;match&quot;: &#123;</span><br><span class="line">					&quot;product_name&quot;: &quot;口服液&quot;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对上面的例子分析如下：</p>
 <ol>
-<li>一个 bool 查询包含一个 filter 过滤器和一个普通查询。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">	</span><br></pre></td></tr></table></figure>
-
-</li>
+<li><strong>query</strong> 参数表示整个语句是处于query context中。</li>
+<li><strong>bool</strong> 和 <strong>match</strong>语句被用在query context中，也就是说它们会计算每个文档的匹配度(score).</li>
+<li><strong>filter</strong>参数则表示这个子查询处于filter context中。</li>
+<li><strong>filter</strong>语句中的<strong>term</strong>和<strong>range</strong>语句用在filter context中，它们只起到过滤的作用，并不会计算文档的得分。</li>
 </ol>
 
     </div>
@@ -292,16 +300,16 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Inhaltsverzeichnis
+          المحتويات
         </li>
         <li class="sidebar-nav-overview">
-          Übersicht
+          عام
         </li>
       </ul>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#match"><span class="nav-number">1.</span> <span class="nav-text">match</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#match-phrase-精确查询"><span class="nav-number">2.</span> <span class="nav-text">match_phrase 精确查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multi-match"><span class="nav-number">3.</span> <span class="nav-text">multi_match</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#term-精确查询"><span class="nav-number">4.</span> <span class="nav-text">term 精确查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#布尔查询"><span class="nav-number">5.</span> <span class="nav-text">布尔查询</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#match"><span class="nav-number">1.</span> <span class="nav-text">match</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#match-phrase-精确查询"><span class="nav-number">2.</span> <span class="nav-text">match_phrase 精确查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multi-match"><span class="nav-number">3.</span> <span class="nav-text">multi_match</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#term-精确查询"><span class="nav-number">4.</span> <span class="nav-text">term 精确查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#布尔查询"><span class="nav-number">5.</span> <span class="nav-text">布尔查询</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一个-bool-查询包含一个-filter-过滤器和一个普通查询。"><span class="nav-number">5.1.</span> <span class="nav-text">一个 bool 查询包含一个 filter 过滤器和一个普通查询。</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -316,12 +324,12 @@
           <a href="/archives/">
         
           <span class="site-state-item-count">31</span>
-          <span class="site-state-item-name">Artikel</span>
+          <span class="site-state-item-name">المقالات</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">11</span>
-        <span class="site-state-item-name">schlagwörter</span>
+        <span class="site-state-item-name">الوسوم</span>
       </div>
   </nav>
 </div>
@@ -353,7 +361,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">GIO</span>
 </div>
-  <div class="powered-by">Erstellt mit  <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
         
