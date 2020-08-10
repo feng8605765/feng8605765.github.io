@@ -1,6 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Join查询</title>
+    <url>/2020/05/28/Join%E6%9F%A5%E8%AF%A2/</url>
+    <content><![CDATA[<p>select * from t1 straight_join t2 on (t1.a=t2.a);</p>
+<h3 id="join执行的流程"><a href="#join执行的流程" class="headerlink" title="join执行的流程"></a>join执行的流程</h3><ol>
+<li><p>从表t1中读入一行数据R；</p>
+</li>
+<li><p>从数据行R中,取出a字段到表t2里去查找；</p>
+</li>
+<li><p>取出表t2中满足条件的行，跟R组成一行，作为结果集的一部分；</p>
+</li>
+<li><p>重复执行步骤1到3，直到表t1的末尾循环结束。</p>
+</li>
+</ol>
+<p>这个过程是先遍历表t1，然后根据从表t1中取出的每行数据中的a值，去表t2中查找满足条件的记录。在形式上，这个过程就跟我们写程序的嵌套查询类似，并且可以用上被驱动表的索引，所以我们称之为“Index Nested-Loop Join”,简称NLJ.</p>
+<h3 id="怎么选择驱动表？"><a href="#怎么选择驱动表？" class="headerlink" title="怎么选择驱动表？"></a>怎么选择驱动表？</h3><ol>
+<li>使用join语句，性能比强行拆成多个单表执行SQl语句的性能要好；</li>
+<li>如果使用join语句的话，需要让小表做驱动表。</li>
+</ol>
+]]></content>
+  </entry>
+  <entry>
+    <title>Laravel服务容器，Ioc，DI</title>
+    <url>/2020/04/21/Laravel%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%EF%BC%8CIoc%EF%BC%8CDI/</url>
+    <content><![CDATA[<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Laravel服务容器是用于管理类依赖关系和执行依赖关系注入的强大工具。依赖注入是一<br>个花哨的短语，从本质上讲是这样的：类依赖通过构造函数或在某些情况下通过”设置”方法<br>注入到”类”中。</p>
+<h3 id="DI"><a href="#DI" class="headerlink" title="DI"></a>DI</h3><p>DI就是常说的依赖注入，那么究竟什么是依赖注入呢？<br>打个比方，电脑需要键盘和鼠标我们才能进行操作，这个”需要”换句话说就是”依赖”键盘和<br>鼠标。那么相应的一个类需要另一个类才能进行作业，那么这也就是依赖。<br>如下示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的computer类依赖了键盘类，既然我们已经知道了什么是依赖，那么什么是注入呢？</p>
+<p>我们改造一下上面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer&#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct(Keyboard $keyboard)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new Keyboard());</span><br></pre></td></tr></table></figure>
+
+<p>关于依赖注入，我的理解是：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">所需要的类通过参数的形式传入的就是依赖注入</span><br></pre></td></tr></table></figure>
+
+<h3 id="IOC"><a href="#IOC" class="headerlink" title="IOC"></a>IOC</h3><blockquote>
+<p>IOC是什么呢？<br>    控制容器的Laravel反转是用于管理依赖项的强大工具。依赖注入是一种删除硬编码类依赖的方法。<br>    而是在运行时注入依赖项，因为可以轻松交换依赖项实现，因此具有更大的灵活性。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">控制反转的意思是说将依赖类的控制权交出去，由主动变为被动。</span><br></pre></td></tr></table></figure>
+<p>代码示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">namespace App\Http\Controllerd;</span><br><span class="line"></span><br><span class="line">use Illuminate\Http\Request;</span><br><span class="line"></span><br><span class="line">class SessionController extends Controller</span><br><span class="line">&#123;</span><br><span class="line">	public function login(Request $request)</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 这就是IOC 我们不需要主动传入类。一切由laravel去实现</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务容器"><a href="#服务容器" class="headerlink" title="服务容器"></a>服务容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">它的目的就是解耦依赖</span><br></pre></td></tr></table></figure>
+<p>服务容器类似设计模式中的《享元模式》，区别在于服务容器解决了所有依赖的实现。<br>依然是电脑的例子，我们知道电脑依赖键盘鼠标，可是键盘鼠标也有很多种呀。<br>代码原始示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; null) &#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上出现的问题已经很明显了,如果我们需要增加另外一个键盘，我们又得对这个类进行修改。这样下去<br>这个类会变的庞大且耦合度过高。所以接下来我么可以使用工厂模式：</p>
+<ul>
+<li><p>简单工厂模式<br>这样我们就可以避免直接修改Computer 类。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Factory &#123;</span><br><span class="line"></span><br><span class="line">	public static function getinstance($type)&#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line"></span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; &#39;&#39;)&#123;</span><br><span class="line"></span><br><span class="line">		$this-&gt;keyboard &#x3D; Factory::getinstance($type);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样使用了简单工厂模式后，我们后续的修改可以不用对computer类进行操作而只要修改工厂类就行了。<br>这就相当于对Computer类进行了解耦。<br>Computer类虽不在依赖那些键盘类了，但是却变成了依赖工厂类了。<br>后续添加新类型的键盘就必须对工厂类进行修改。<br>所以这个工厂类还不能很好的满足要求，我们知道电脑对键盘的接口都是一致的，键盘必须实现这一接<br>口才能被电脑识别，那我们对Computer和Keyboard类进行修改。</p>
+</li>
+<li><p>DI(依赖注入)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Board &#123;</span><br><span class="line">	public function getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CommonKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()&#123;</span><br><span class="line">		echo &#39;普通键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class MechanicalKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;机械键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct (Board $keyboard) &#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new MechanicalKeyboard());</span><br></pre></td></tr></table></figure>
+<p>可是这样也有问题，如果我们后续对这台电脑使用的键盘不满意要进行替换呢？我们又回到了原点了，<br>必须去修改传入的键盘类。能不能做成可配置的呢？</p>
+</li>
+<li><p>IOC服务容器（超级工厂）</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Container</span><br><span class="line">&#123;</span><br><span class="line">	protected $binds;</span><br><span class="line"></span><br><span class="line">	protected $instances;</span><br><span class="line"></span><br><span class="line">	public function bind($abstract, $concrete)</span><br><span class="line">	&#123;</span><br><span class="line">		if($concrete instanceof Closure) &#123;</span><br><span class="line">			$this-&gt;binds[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$this-&gt;instances[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function make($abstract, $parameters &#x3D; [])</span><br><span class="line">	&#123;</span><br><span class="line">		if (isset($this-&gt;instances[$abstract]))&#123;</span><br><span class="line">			return $this-&gt;instances[$abstract];</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		array_unshift($parameters, $this);</span><br><span class="line"></span><br><span class="line">		return call_user_func_array($this-&gt;binds[$abstranct], $parameters);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这就是一个简单的IOC服务容器。<br>这个要怎么解决我们上述的问题呢？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container &#x3D; new Container();</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new CommonKeyboard();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container,$moudle)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($moudle));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
+
+<p>这里生产出来的Computer类就是一个使用普通键盘类了。<br>解释一下代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bind(name, function($container)&#123;</span><br><span class="line">	return new Name();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">这里的name和Name之间的关系是：</span><br><span class="line">   当我需要name类的时候你就给我实例化Name类。</span><br><span class="line"></span><br><span class="line">   make(name)方法是对name进行生产返回一个实例。</span><br></pre></td></tr></table></figure>
+
+<p>如果我们要更换键盘怎么办呢？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new MechanicalKeyboard();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container, $module)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($module));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
+
+<p>只要对bind绑定的Board类的实现进行修改，我们就可以很容易替换掉键盘了，这就是一个服务容器。<br>对服务容器进行一个理解：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">容器就是一个装东西的，好比碗。而服务就是这个碗要装的饭 菜等等东西。当我没需要饭时，</span><br><span class="line">我们就能从这个碗里拿到，如果你想要在饭里加点菜（也就是饭依赖注入了菜），我们从碗里</span><br><span class="line">直接拿饭就可以了，而这些依赖都由容器解决了（这也就是控制反转）。</span><br></pre></td></tr></table></figure>
+
+<p>我们需要做的就是对提供的服务进行维护。</p>
+]]></content>
+      <tags>
+        <tag>Laravel</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Laravel跨域</title>
     <url>/2020/04/21/Laravel%E8%B7%A8%E5%9F%9F/</url>
     <content><![CDATA[<h3 id="跨域的请求"><a href="#跨域的请求" class="headerlink" title="跨域的请求"></a>跨域的请求</h3><p>出于安全性的原因，浏览器会限制Script中的跨域请求。由于XMLHttpRequest遵循同源策略，所有使用<br>XMLHttpRequest构造HTTP请求的应用只能访问自己的域名，如果需要构造跨域的请求，那么开发者需要<br>配合浏览器出一些跨域的配置。</p>
@@ -102,114 +182,6 @@
       <tags>
         <tag>Laravel</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Join查询</title>
-    <url>/2020/05/28/Join%E6%9F%A5%E8%AF%A2/</url>
-    <content><![CDATA[<p>select * from t1 straight_join t2 on (t1.a=t2.a);</p>
-<h3 id="join执行的流程"><a href="#join执行的流程" class="headerlink" title="join执行的流程"></a>join执行的流程</h3><ol>
-<li><p>从表t1中读入一行数据R；</p>
-</li>
-<li><p>从数据行R中,取出a字段到表t2里去查找；</p>
-</li>
-<li><p>取出表t2中满足条件的行，跟R组成一行，作为结果集的一部分；</p>
-</li>
-<li><p>重复执行步骤1到3，直到表t1的末尾循环结束。</p>
-</li>
-</ol>
-<p>这个过程是先遍历表t1，然后根据从表t1中取出的每行数据中的a值，去表t2中查找满足条件的记录。在形式上，这个过程就跟我们写程序的嵌套查询类似，并且可以用上被驱动表的索引，所以我们称之为“Index Nested-Loop Join”,简称NLJ.</p>
-<h3 id="怎么选择驱动表？"><a href="#怎么选择驱动表？" class="headerlink" title="怎么选择驱动表？"></a>怎么选择驱动表？</h3><ol>
-<li>使用join语句，性能比强行拆成多个单表执行SQl语句的性能要好；</li>
-<li>如果使用join语句的话，需要让小表做驱动表。</li>
-</ol>
-]]></content>
-  </entry>
-  <entry>
-    <title>Laravel服务容器，Ioc，DI</title>
-    <url>/2020/04/21/Laravel%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%EF%BC%8CIoc%EF%BC%8CDI/</url>
-    <content><![CDATA[<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Laravel服务容器是用于管理类依赖关系和执行依赖关系注入的强大工具。依赖注入是一<br>个花哨的短语，从本质上讲是这样的：类依赖通过构造函数或在某些情况下通过”设置”方法<br>注入到”类”中。</p>
-<h3 id="DI"><a href="#DI" class="headerlink" title="DI"></a>DI</h3><p>DI就是常说的依赖注入，那么究竟什么是依赖注入呢？<br>打个比方，电脑需要键盘和鼠标我们才能进行操作，这个”需要”换句话说就是”依赖”键盘和<br>鼠标。那么相应的一个类需要另一个类才能进行作业，那么这也就是依赖。<br>如下示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的computer类依赖了键盘类，既然我们已经知道了什么是依赖，那么什么是注入呢？</p>
-<p>我们改造一下上面的代码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer&#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct(Keyboard $keyboard)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new Keyboard());</span><br></pre></td></tr></table></figure>
-
-<p>关于依赖注入，我的理解是：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">所需要的类通过参数的形式传入的就是依赖注入</span><br></pre></td></tr></table></figure>
-
-<h3 id="IOC"><a href="#IOC" class="headerlink" title="IOC"></a>IOC</h3><blockquote>
-<p>IOC是什么呢？<br>    控制容器的Laravel反转是用于管理依赖项的强大工具。依赖注入是一种删除硬编码类依赖的方法。<br>    而是在运行时注入依赖项，因为可以轻松交换依赖项实现，因此具有更大的灵活性。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">控制反转的意思是说将依赖类的控制权交出去，由主动变为被动。</span><br></pre></td></tr></table></figure>
-<p>代码示例如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">namespace App\Http\Controllerd;</span><br><span class="line"></span><br><span class="line">use Illuminate\Http\Request;</span><br><span class="line"></span><br><span class="line">class SessionController extends Controller</span><br><span class="line">&#123;</span><br><span class="line">	public function login(Request $request)</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 这就是IOC 我们不需要主动传入类。一切由laravel去实现</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="服务容器"><a href="#服务容器" class="headerlink" title="服务容器"></a>服务容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">它的目的就是解耦依赖</span><br></pre></td></tr></table></figure>
-<p>服务容器类似设计模式中的《享元模式》，区别在于服务容器解决了所有依赖的实现。<br>依然是电脑的例子，我们知道电脑依赖键盘鼠标，可是键盘鼠标也有很多种呀。<br>代码原始示例如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; null) &#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上出现的问题已经很明显了,如果我们需要增加另外一个键盘，我们又得对这个类进行修改。这样下去<br>这个类会变的庞大且耦合度过高。所以接下来我么可以使用工厂模式：</p>
-<ul>
-<li><p>简单工厂模式<br>这样我们就可以避免直接修改Computer 类。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Factory &#123;</span><br><span class="line"></span><br><span class="line">	public static function getinstance($type)&#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line"></span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; &#39;&#39;)&#123;</span><br><span class="line"></span><br><span class="line">		$this-&gt;keyboard &#x3D; Factory::getinstance($type);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样使用了简单工厂模式后，我们后续的修改可以不用对computer类进行操作而只要修改工厂类就行了。<br>这就相当于对Computer类进行了解耦。<br>Computer类虽不在依赖那些键盘类了，但是却变成了依赖工厂类了。<br>后续添加新类型的键盘就必须对工厂类进行修改。<br>所以这个工厂类还不能很好的满足要求，我们知道电脑对键盘的接口都是一致的，键盘必须实现这一接<br>口才能被电脑识别，那我们对Computer和Keyboard类进行修改。</p>
-</li>
-<li><p>DI(依赖注入)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Board &#123;</span><br><span class="line">	public function getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CommonKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()&#123;</span><br><span class="line">		echo &#39;普通键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class MechanicalKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;机械键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct (Board $keyboard) &#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new MechanicalKeyboard());</span><br></pre></td></tr></table></figure>
-<p>可是这样也有问题，如果我们后续对这台电脑使用的键盘不满意要进行替换呢？我们又回到了原点了，<br>必须去修改传入的键盘类。能不能做成可配置的呢？</p>
-</li>
-<li><p>IOC服务容器（超级工厂）</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Container</span><br><span class="line">&#123;</span><br><span class="line">	protected $binds;</span><br><span class="line"></span><br><span class="line">	protected $instances;</span><br><span class="line"></span><br><span class="line">	public function bind($abstract, $concrete)</span><br><span class="line">	&#123;</span><br><span class="line">		if($concrete instanceof Closure) &#123;</span><br><span class="line">			$this-&gt;binds[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$this-&gt;instances[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function make($abstract, $parameters &#x3D; [])</span><br><span class="line">	&#123;</span><br><span class="line">		if (isset($this-&gt;instances[$abstract]))&#123;</span><br><span class="line">			return $this-&gt;instances[$abstract];</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		array_unshift($parameters, $this);</span><br><span class="line"></span><br><span class="line">		return call_user_func_array($this-&gt;binds[$abstranct], $parameters);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>这就是一个简单的IOC服务容器。<br>这个要怎么解决我们上述的问题呢？</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container &#x3D; new Container();</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new CommonKeyboard();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container,$moudle)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($moudle));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
-
-<p>这里生产出来的Computer类就是一个使用普通键盘类了。<br>解释一下代码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bind(name, function($container)&#123;</span><br><span class="line">	return new Name();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">这里的name和Name之间的关系是：</span><br><span class="line">   当我需要name类的时候你就给我实例化Name类。</span><br><span class="line"></span><br><span class="line">   make(name)方法是对name进行生产返回一个实例。</span><br></pre></td></tr></table></figure>
-
-<p>如果我们要更换键盘怎么办呢？</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new MechanicalKeyboard();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container, $module)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($module));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
-
-<p>只要对bind绑定的Board类的实现进行修改，我们就可以很容易替换掉键盘了，这就是一个服务容器。<br>对服务容器进行一个理解：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">容器就是一个装东西的，好比碗。而服务就是这个碗要装的饭 菜等等东西。当我没需要饭时，</span><br><span class="line">我们就能从这个碗里拿到，如果你想要在饭里加点菜（也就是饭依赖注入了菜），我们从碗里</span><br><span class="line">直接拿饭就可以了，而这些依赖都由容器解决了（这也就是控制反转）。</span><br></pre></td></tr></table></figure>
-
-<p>我们需要做的就是对提供的服务进行维护。</p>
-]]></content>
-      <tags>
-        <tag>Laravel</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>索引的处理流程</title>
-    <url>/2020/05/11/InnoDB%E7%9A%84%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="基于主键索引和普通索引的查询有什么区别？"><a href="#基于主键索引和普通索引的查询有什么区别？" class="headerlink" title="基于主键索引和普通索引的查询有什么区别？"></a>基于主键索引和普通索引的查询有什么区别？</h3><ul>
-<li><p>如果语句是 select * from T where ID=500,即主键查询方式，则只需要搜索ID这颗树B+树；</p>
-</li>
-<li><p>如果语句是 select * from T where k=5，即普通索引查询方式，则需要先搜索 k 索引树，得到ID的值为500，再到 ID 索引树搜索一次。这个过程称为回表。 </p>
-</li>
-</ul>
-<p>也就是说，基于非主键索引的查询需要扫描一棵索引树。因此 我们在应用中应该尽量使用主键查询。</p>
-<h3 id="什么条件下可以使用-change-buffer-呢？"><a href="#什么条件下可以使用-change-buffer-呢？" class="headerlink" title="什么条件下可以使用 change buffer 呢？"></a>什么条件下可以使用 change buffer 呢？</h3><p>唯一索引的更新就不能使用change buffer,实际上也只有普通索引可以使用。</p>
-<p>change buffer用的是buffer pool里的内存，因此不能无限增大。change buffer的大小，可以通过参数innodb_change_buffer_max_size来动态设置。这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。</p>
-<h3 id="如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。"><a href="#如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。" class="headerlink" title="如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。"></a>如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。</h3><h4 id="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："><a href="#第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：" class="headerlink" title="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："></a>第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：</h4><ul>
-<li><p>对于唯一索引来说，找到3和5之间的位置，判断到没有冲突，插入这个值，语句执行结束；</p>
-</li>
-<li><p>对于普通索引来说，找到3和5之间的位置，插入这个值，语句执行结束。</p>
-</li>
-</ul>
-<p>这样看来，普通索引和唯一索引对更新语句性能影响的差别，只是一个判断，只会耗费微小的CPU时间。</p>
-<h4 id="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："><a href="#第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：" class="headerlink" title="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："></a>第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：</h4><ul>
-<li><p>对于唯一索引来说，需要将数据页读入内存，判断没有冲突，插入这个值，语句执行结束；</p>
-</li>
-<li><p>对于普通索引来说，则是将更新记录在 change buffer，语句执行就结束了。</p>
-</li>
-</ul>
-<p>将数据从磁盘读入内存及随机IO的访问，是数据库里面成本最高的操作之一。change buffer因为减少了随机磁盘访问，所以对更新性能的提升会很明显。</p>
-]]></content>
   </entry>
   <entry>
     <title>单例模式</title>
@@ -371,6 +343,34 @@
       </tags>
   </entry>
   <entry>
+    <title>索引的处理流程</title>
+    <url>/2020/05/11/InnoDB%E7%9A%84%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="基于主键索引和普通索引的查询有什么区别？"><a href="#基于主键索引和普通索引的查询有什么区别？" class="headerlink" title="基于主键索引和普通索引的查询有什么区别？"></a>基于主键索引和普通索引的查询有什么区别？</h3><ul>
+<li><p>如果语句是 select * from T where ID=500,即主键查询方式，则只需要搜索ID这颗树B+树；</p>
+</li>
+<li><p>如果语句是 select * from T where k=5，即普通索引查询方式，则需要先搜索 k 索引树，得到ID的值为500，再到 ID 索引树搜索一次。这个过程称为回表。 </p>
+</li>
+</ul>
+<p>也就是说，基于非主键索引的查询需要扫描一棵索引树。因此 我们在应用中应该尽量使用主键查询。</p>
+<h3 id="什么条件下可以使用-change-buffer-呢？"><a href="#什么条件下可以使用-change-buffer-呢？" class="headerlink" title="什么条件下可以使用 change buffer 呢？"></a>什么条件下可以使用 change buffer 呢？</h3><p>唯一索引的更新就不能使用change buffer,实际上也只有普通索引可以使用。</p>
+<p>change buffer用的是buffer pool里的内存，因此不能无限增大。change buffer的大小，可以通过参数innodb_change_buffer_max_size来动态设置。这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。</p>
+<h3 id="如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。"><a href="#如果要在这张表中插入一个新记录-4-400-的话，InnoDB-的处理流程是怎样的。" class="headerlink" title="如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。"></a>如果要在这张表中插入一个新记录 (4,400) 的话，InnoDB 的处理流程是怎样的。</h3><h4 id="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："><a href="#第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：" class="headerlink" title="第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下："></a>第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：</h4><ul>
+<li><p>对于唯一索引来说，找到3和5之间的位置，判断到没有冲突，插入这个值，语句执行结束；</p>
+</li>
+<li><p>对于普通索引来说，找到3和5之间的位置，插入这个值，语句执行结束。</p>
+</li>
+</ul>
+<p>这样看来，普通索引和唯一索引对更新语句性能影响的差别，只是一个判断，只会耗费微小的CPU时间。</p>
+<h4 id="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："><a href="#第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：" class="headerlink" title="第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下："></a>第二种情况是，这个记录要更新的目标页不在内存中。这时InnoDB的处理流程如下：</h4><ul>
+<li><p>对于唯一索引来说，需要将数据页读入内存，判断没有冲突，插入这个值，语句执行结束；</p>
+</li>
+<li><p>对于普通索引来说，则是将更新记录在 change buffer，语句执行就结束了。</p>
+</li>
+</ul>
+<p>将数据从磁盘读入内存及随机IO的访问，是数据库里面成本最高的操作之一。change buffer因为减少了随机磁盘访问，所以对更新性能的提升会很明显。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>docker命令</title>
     <url>/2020/04/16/docker%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h3 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker version 查看docker版本</span><br><span class="line"></span><br><span class="line">docker info 查看docker详细信息</span><br><span class="line"></span><br><span class="line">docker --help 查看docker命令</span><br></pre></td></tr></table></figure>
@@ -384,6 +384,50 @@
       <tags>
         <tag>docker</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>RabbitMQ的问题</title>
+    <url>/2020/05/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h3 id="1-消息基于什么传输？"><a href="#1-消息基于什么传输？" class="headerlink" title="1.消息基于什么传输？"></a>1.消息基于什么传输？</h3><p>由于TCP连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶颈。RabbitMQ使用信道的<br>方式来传输数据。信道是建立在真实的TCP连接内的虚拟连接，且每条TCP连接上的信道数量没有限制。</p>
+<h3 id="2-消息如何分布？"><a href="#2-消息如何分布？" class="headerlink" title="2.消息如何分布？"></a>2.消息如何分布？</h3><p>若该队列至少有一个消费者订阅，消息将以循环(round-robin)的方式发送给消费者。每条消息只会分<br>发给一个订阅的消费者（前提是消费者能够正常处理消息并进行确认）。</p>
+<h3 id="3-如何确保消息正确地发送至RabbitMQ"><a href="#3-如何确保消息正确地发送至RabbitMQ" class="headerlink" title="3.如何确保消息正确地发送至RabbitMQ?"></a>3.如何确保消息正确地发送至RabbitMQ?</h3><p>RabbitMQ使用发送方确认模式，确保消息正确地发送到RabbitMQ。发送方确认模式：将信道设置成confirm<br>模式（发送方确认模式），则所有在信道上发布的消息都会被指派一个唯一的ID。一旦消息被投递到目<br>的队列后，或者消息被写入磁盘后（可持久化的消息），信道会发送一个确认给生产者（发送消息唯一<br>ID）。如果RabbitMQ发生内部错误从而导致消息丢失，会发送一条nack（not acknowledged，未确认<br>）消息。发送方确认模式是异步的，生产者应用程序在等待确认的同时，可以继续发送消息。当确认消息<br>到达生产者应用程序，生产者应用程序的回调方法就会被触发来处理确认消息。</p>
+<h3 id="4-如何确保消息接收方消费了消息？"><a href="#4-如何确保消息接收方消费了消息？" class="headerlink" title="4.如何确保消息接收方消费了消息？"></a>4.如何确保消息接收方消费了消息？</h3><p>接收方消息确认机制：消费者接收每一条消息后都必须进行确认（消息接收和消息确认是两个不同操作）<br>。只有消费者确认了消息，RabbitMQ才能安全地把消息从队列中删除。这里并没有用到超时机制，RabbitMQ<br>仅通过Consumer的连接中断来确认是否需要重新发送消息。也就是说，只要连接不中断，RabbitMQ给了<br>Consumer足够长的时间来处理消息。<br>会有以下几种特殊情况：</p>
+<ul>
+<li>如果消费者接收到消息，在确认之前断开了连接或取消订阅，RabbitMQ会认为消息没有被分发，然后<br>重新分发给下一个订阅的消费者。（可能存在消息重复消费的隐患，需要根据bizId去重）</li>
+<li>如果消费者接收到消息却没有确认消息，连接也未断开，则RabbitMQ认为该消费者繁忙，将不会给该<br>消费者分发更多的消息。</li>
+</ul>
+<h3 id="5-如何避免消息重复投递或重复消费？"><a href="#5-如何避免消息重复投递或重复消费？" class="headerlink" title="5. 如何避免消息重复投递或重复消费？"></a>5. 如何避免消息重复投递或重复消费？</h3><p>在消息生产时，MQ内部针对每条生产者发送的消息生成一个inner-msg-id，作为去重和幂等的依据（消息投递失败并重传），避免重复的消息进入队列；在消息消费时，要求消息体中必须要有一个bizId（对于同一业务全局唯一，如支付ID、订单ID、帖子ID等）作为去重和幂等的依据，避免同一条消息被重复消费。</p>
+<p>这个问题针对业务场景来答分以下几点：</p>
+<ul>
+<li><p>比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。</p>
+</li>
+<li><p>再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。</p>
+</li>
+<li><p>如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&lt;id,message&gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。</p>
+</li>
+</ul>
+<h3 id="6-生产者丢数据"><a href="#6-生产者丢数据" class="headerlink" title="6.生产者丢数据"></a>6.生产者丢数据</h3><p>生产者的消息没有投递到MQ中怎么办？从生产者弄丢数据这个角度来看，RabbitMQ提供transaction和confirm模式来确保生产者不丢消息。</p>
+<p>transaction机制就是说，发送消息前，开启事物(channel.txSelect())，然后发送消息，如果发送过程中出现什么异常，事物就会回滚(channel.txRollback())，如果发送成功则提交事物(channel.txCommit())。</p>
+<p>然而缺点就是吞吐量下降了。因此，按照博主的经验，生产上用confirm模式的居多。一旦channel进入confirm模式，所有在该信道上面发布的消息都将会被指派一个唯一的ID(从1开始)，一旦消息被投递到所有匹配的队列之后，rabbitMQ就会发送一个Ack给生产者(包含消息的唯一ID)，这就使得生产者知道消息已经正确到达目的队列了.如果rabiitMQ没能处理该消息，则会发送一个Nack消息给你，你可以进行重试操作</p>
+<h3 id="7-消息队列丢数据"><a href="#7-消息队列丢数据" class="headerlink" title="7.消息队列丢数据"></a>7.消息队列丢数据</h3><p>处理消息队列丢数据的情况，一般是开启持久化磁盘的配置。这个持久化配置可以和confirm机制配合使用，你可以在消息持久化磁盘后，再给生产者发送一个Ack信号。这样，如果消息持久化磁盘之前，rabbitMQ阵亡了，那么生产者收不到Ack信号，生产者会自动重发。</p>
+<p>那么如何持久化呢？<br>①、将queue的持久化标识durable设置为true,则代表是一个持久的队列.<br>②、发送消息的时候将deliveryMode=2</p>
+<p>这样设置以后，rabbitMQ就算挂了，重启后也能恢复数据。在消息还没有持久化到硬盘时，可能服务已经死掉，这种情况可以通过引入mirrored-queue即镜像队列，但也不能保证消息百分百不丢失（整个集群都挂掉）</p>
+<h3 id="8-消费者丢数据"><a href="#8-消费者丢数据" class="headerlink" title="8.消费者丢数据"></a>8.消费者丢数据</h3><p>启用手动确认模式可以解决这个问题</p>
+<ul>
+<li><p>自动确认模式，消费者挂掉，待ack的消息回归到队列中。消费者抛出异常，消息会不断的被重发，直到处理成功。不会丢失消息，即便服务挂掉，没有处理完成的消息会重回队列，但是异常会让消息不断重试。</p>
+</li>
+<li><p>手动确认模式，如果消费者来不及处理就死掉时，没有响应ack时会重复发送一条信息给其他消费者；如果监听程序处理异常了，且未对异常进行捕获，会一直重复接收消息，然后一直抛异常；如果对异常进行了捕获，但是没有在finally里ack，也会一直重复发送消息(重试机制)。</p>
+</li>
+<li><p>不确认模式，acknowledge=”none” 不使用确认机制，只要消息发送完成会立即在队列移除，无论客户端异常还是断开，只要发送完就移除，不会重发。</p>
+</li>
+</ul>
+<h3 id="使用消息队列会有什么缺点？"><a href="#使用消息队列会有什么缺点？" class="headerlink" title="使用消息队列会有什么缺点？"></a>使用消息队列会有什么缺点？</h3><ul>
+<li><p>系统可用性降低:你想啊，本来其他系统只要运行好好的，那你的系统就是正常的。现在你非要加个消息队列进去，那消息队列挂了，你的系统不是呵呵了。因此，系统可用性降低。</p>
+</li>
+<li><p>系统复杂性增加:要多考虑很多方面的问题，比如一致性问题、如何保证消息不被重复消费，如何保证保证消息可靠传输。因此，需要考虑的东西更多，系统复杂性增大。</p>
+</li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>elasticsearch查询</title>
@@ -433,57 +477,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>docker配置</title>
-    <url>/2020/04/16/docker%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx:</span><br><span class="line">	container_name: naginx</span><br><span class="line">	restart: always</span><br><span class="line">	image: &#x2F;&#x2F; 镜像名称</span><br><span class="line">	volumes:</span><br><span class="line">	- .&#x2F;config&#x2F;nginx&#x2F;$&#123;DOCKER_ENV&#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;openresty&#x2F;nginx&#x2F;conf&#x2F;nginx.conf</span><br><span class="line">	networks:</span><br><span class="line">		- </span><br><span class="line">	expose:</span><br><span class="line">		-80</span><br><span class="line">		-443</span><br><span class="line">	ports:</span><br><span class="line">		-80:80</span><br><span class="line">		-443:443</span><br><span class="line">	command:</span><br></pre></td></tr></table></figure>
-
-]]></content>
-  </entry>
-  <entry>
-    <title>RabbitMQ的问题</title>
-    <url>/2020/05/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h3 id="1-消息基于什么传输？"><a href="#1-消息基于什么传输？" class="headerlink" title="1.消息基于什么传输？"></a>1.消息基于什么传输？</h3><p>由于TCP连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶颈。RabbitMQ使用信道的<br>方式来传输数据。信道是建立在真实的TCP连接内的虚拟连接，且每条TCP连接上的信道数量没有限制。</p>
-<h3 id="2-消息如何分布？"><a href="#2-消息如何分布？" class="headerlink" title="2.消息如何分布？"></a>2.消息如何分布？</h3><p>若该队列至少有一个消费者订阅，消息将以循环(round-robin)的方式发送给消费者。每条消息只会分<br>发给一个订阅的消费者（前提是消费者能够正常处理消息并进行确认）。</p>
-<h3 id="3-如何确保消息正确地发送至RabbitMQ"><a href="#3-如何确保消息正确地发送至RabbitMQ" class="headerlink" title="3.如何确保消息正确地发送至RabbitMQ?"></a>3.如何确保消息正确地发送至RabbitMQ?</h3><p>RabbitMQ使用发送方确认模式，确保消息正确地发送到RabbitMQ。发送方确认模式：将信道设置成confirm<br>模式（发送方确认模式），则所有在信道上发布的消息都会被指派一个唯一的ID。一旦消息被投递到目<br>的队列后，或者消息被写入磁盘后（可持久化的消息），信道会发送一个确认给生产者（发送消息唯一<br>ID）。如果RabbitMQ发生内部错误从而导致消息丢失，会发送一条nack（not acknowledged，未确认<br>）消息。发送方确认模式是异步的，生产者应用程序在等待确认的同时，可以继续发送消息。当确认消息<br>到达生产者应用程序，生产者应用程序的回调方法就会被触发来处理确认消息。</p>
-<h3 id="4-如何确保消息接收方消费了消息？"><a href="#4-如何确保消息接收方消费了消息？" class="headerlink" title="4.如何确保消息接收方消费了消息？"></a>4.如何确保消息接收方消费了消息？</h3><p>接收方消息确认机制：消费者接收每一条消息后都必须进行确认（消息接收和消息确认是两个不同操作）<br>。只有消费者确认了消息，RabbitMQ才能安全地把消息从队列中删除。这里并没有用到超时机制，RabbitMQ<br>仅通过Consumer的连接中断来确认是否需要重新发送消息。也就是说，只要连接不中断，RabbitMQ给了<br>Consumer足够长的时间来处理消息。<br>会有以下几种特殊情况：</p>
-<ul>
-<li>如果消费者接收到消息，在确认之前断开了连接或取消订阅，RabbitMQ会认为消息没有被分发，然后<br>重新分发给下一个订阅的消费者。（可能存在消息重复消费的隐患，需要根据bizId去重）</li>
-<li>如果消费者接收到消息却没有确认消息，连接也未断开，则RabbitMQ认为该消费者繁忙，将不会给该<br>消费者分发更多的消息。</li>
-</ul>
-<h3 id="5-如何避免消息重复投递或重复消费？"><a href="#5-如何避免消息重复投递或重复消费？" class="headerlink" title="5. 如何避免消息重复投递或重复消费？"></a>5. 如何避免消息重复投递或重复消费？</h3><p>在消息生产时，MQ内部针对每条生产者发送的消息生成一个inner-msg-id，作为去重和幂等的依据（消息投递失败并重传），避免重复的消息进入队列；在消息消费时，要求消息体中必须要有一个bizId（对于同一业务全局唯一，如支付ID、订单ID、帖子ID等）作为去重和幂等的依据，避免同一条消息被重复消费。</p>
-<p>这个问题针对业务场景来答分以下几点：</p>
-<ul>
-<li><p>比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。</p>
-</li>
-<li><p>再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。</p>
-</li>
-<li><p>如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&lt;id,message&gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。</p>
-</li>
-</ul>
-<h3 id="6-生产者丢数据"><a href="#6-生产者丢数据" class="headerlink" title="6.生产者丢数据"></a>6.生产者丢数据</h3><p>生产者的消息没有投递到MQ中怎么办？从生产者弄丢数据这个角度来看，RabbitMQ提供transaction和confirm模式来确保生产者不丢消息。</p>
-<p>transaction机制就是说，发送消息前，开启事物(channel.txSelect())，然后发送消息，如果发送过程中出现什么异常，事物就会回滚(channel.txRollback())，如果发送成功则提交事物(channel.txCommit())。</p>
-<p>然而缺点就是吞吐量下降了。因此，按照博主的经验，生产上用confirm模式的居多。一旦channel进入confirm模式，所有在该信道上面发布的消息都将会被指派一个唯一的ID(从1开始)，一旦消息被投递到所有匹配的队列之后，rabbitMQ就会发送一个Ack给生产者(包含消息的唯一ID)，这就使得生产者知道消息已经正确到达目的队列了.如果rabiitMQ没能处理该消息，则会发送一个Nack消息给你，你可以进行重试操作</p>
-<h3 id="7-消息队列丢数据"><a href="#7-消息队列丢数据" class="headerlink" title="7.消息队列丢数据"></a>7.消息队列丢数据</h3><p>处理消息队列丢数据的情况，一般是开启持久化磁盘的配置。这个持久化配置可以和confirm机制配合使用，你可以在消息持久化磁盘后，再给生产者发送一个Ack信号。这样，如果消息持久化磁盘之前，rabbitMQ阵亡了，那么生产者收不到Ack信号，生产者会自动重发。</p>
-<p>那么如何持久化呢？<br>①、将queue的持久化标识durable设置为true,则代表是一个持久的队列.<br>②、发送消息的时候将deliveryMode=2</p>
-<p>这样设置以后，rabbitMQ就算挂了，重启后也能恢复数据。在消息还没有持久化到硬盘时，可能服务已经死掉，这种情况可以通过引入mirrored-queue即镜像队列，但也不能保证消息百分百不丢失（整个集群都挂掉）</p>
-<h3 id="8-消费者丢数据"><a href="#8-消费者丢数据" class="headerlink" title="8.消费者丢数据"></a>8.消费者丢数据</h3><p>启用手动确认模式可以解决这个问题</p>
-<ul>
-<li><p>自动确认模式，消费者挂掉，待ack的消息回归到队列中。消费者抛出异常，消息会不断的被重发，直到处理成功。不会丢失消息，即便服务挂掉，没有处理完成的消息会重回队列，但是异常会让消息不断重试。</p>
-</li>
-<li><p>手动确认模式，如果消费者来不及处理就死掉时，没有响应ack时会重复发送一条信息给其他消费者；如果监听程序处理异常了，且未对异常进行捕获，会一直重复接收消息，然后一直抛异常；如果对异常进行了捕获，但是没有在finally里ack，也会一直重复发送消息(重试机制)。</p>
-</li>
-<li><p>不确认模式，acknowledge=”none” 不使用确认机制，只要消息发送完成会立即在队列移除，无论客户端异常还是断开，只要发送完就移除，不会重发。</p>
-</li>
-</ul>
-<h3 id="使用消息队列会有什么缺点？"><a href="#使用消息队列会有什么缺点？" class="headerlink" title="使用消息队列会有什么缺点？"></a>使用消息队列会有什么缺点？</h3><ul>
-<li><p>系统可用性降低:你想啊，本来其他系统只要运行好好的，那你的系统就是正常的。现在你非要加个消息队列进去，那消息队列挂了，你的系统不是呵呵了。因此，系统可用性降低。</p>
-</li>
-<li><p>系统复杂性增加:要多考虑很多方面的问题，比如一致性问题、如何保证消息不被重复消费，如何保证保证消息可靠传输。因此，需要考虑的东西更多，系统复杂性增大。</p>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>Mysql阅读笔记</title>
     <url>/2020/06/18/Mysql%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序？"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序？" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序？"></a>在建立联合索引的时候，如何安排索引内的字段顺序？</h3><p>第一考虑的是：索引的复用能力，因为可以支持最左前缀，所以当已经有了（a,b）联合索引后，一般就不需要单独在a上简历索引了。因此，第一原则是如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。</p>
@@ -516,6 +509,109 @@
 <p>结论 ：按照效率排序的话，count(字段) &lt; count(主键id) &lt; count(1) ≈ count(<em>),所以尽量使用 count(</em>).</p>
 </blockquote>
 ]]></content>
+  </entry>
+  <entry>
+    <title>docker配置</title>
+    <url>/2020/04/16/docker%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx:</span><br><span class="line">	container_name: naginx</span><br><span class="line">	restart: always</span><br><span class="line">	image: &#x2F;&#x2F; 镜像名称</span><br><span class="line">	volumes:</span><br><span class="line">	- .&#x2F;config&#x2F;nginx&#x2F;$&#123;DOCKER_ENV&#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;openresty&#x2F;nginx&#x2F;conf&#x2F;nginx.conf</span><br><span class="line">	networks:</span><br><span class="line">		- </span><br><span class="line">	expose:</span><br><span class="line">		-80</span><br><span class="line">		-443</span><br><span class="line">	ports:</span><br><span class="line">		-80:80</span><br><span class="line">		-443:443</span><br><span class="line">	command:</span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
+    <title>redis三种集群模式</title>
+    <url>/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="Redis发展过程中的三种模式：主从，哨兵，集群"><a href="#Redis发展过程中的三种模式：主从，哨兵，集群" class="headerlink" title="Redis发展过程中的三种模式：主从，哨兵，集群"></a>Redis发展过程中的三种模式：主从，哨兵，集群</h3><h4 id="主从模式"><a href="#主从模式" class="headerlink" title="主从模式"></a>主从模式</h4><p>Redis早期用于保证数据可靠性的一种简单方式，具体来说，Master可用于写，读，而Slave一般只用于读。</p>
+<p><strong>优点</strong><br>读写分离，提高效率<br>数据热备份，提供多个副本</p>
+<p><strong>缺点</strong><br>主节点故障，集群则无法进行工作，可用性比较低，从节点升主节点需要人工手动干预。<br>单点容易造成性能低下<br>主节点的存储能力受到限制<br>主节点的写受到限制（只有一个主节点）<br>全量同步可能会造成毫秒或者秒级的卡顿现象</p>
+<p><strong>特点</strong><br>只能master到slave 单向的；</p>
+<h4 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h4><h5 id="1-哨兵模式介绍"><a href="#1-哨兵模式介绍" class="headerlink" title="1.哨兵模式介绍"></a>1.哨兵模式介绍</h5><ul>
+<li>Sentinel(哨兵)进程是用于监控Redis集群中Master主服务器工作的状态。</li>
+<li>在Master主服务器发生故障的时候，可以实现Master和Slave服务器的切换,保证系统的高可用（HA）</li>
+<li>其已经被集成在redis2.6+的版本中，Redis的哨兵模式到2.8版本之后就稳定了下来。</li>
+</ul>
+<h5 id="2-哨兵进程的作用"><a href="#2-哨兵进程的作用" class="headerlink" title="2.哨兵进程的作用"></a>2.哨兵进程的作用</h5><ul>
+<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器。</li>
+<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其它的从服务<br>器，修改配置文件，让它们切换主机。</li>
+</ul>
+<p><strong>优点</strong></p>
+<ul>
+<li>Redis Sentinel 集群部署简单</li>
+<li>可以实现一套Sentinel监控一组 Redis数据节点或多组数据节点</li>
+<li>有效解决主从模式主库异常手动主从切换的问题。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>运维复杂，哨兵选举期间，不能对外提供服务。</li>
+<li>部署相对Redis主从模式要复杂一些，原理理解更繁琐；</li>
+<li>不能解决读写分离问题，实现起来相对复杂</li>
+</ul>
+<h3 id="集群模式-Redis-Cluster"><a href="#集群模式-Redis-Cluster" class="headerlink" title="集群模式(Redis Cluster)"></a>集群模式(Redis Cluster)</h3><p>Redis Cluster 是社区版推出的Redis分布式集群解决方案，主要解决Redis分布式方面的需求，比如<br>当遇到单机内存，并发和流量等瓶颈的时候，Redis Cluster能起到很好的负载均衡的目的。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>无中心架构</li>
+<li>数据按照slot存储分布在多个节点，节点间数据共享，可动态调整数据分布；</li>
+<li>可扩展性：可线扩展到1000多个节点，节点可动态添加或删除；</li>
+<li>高可用性：部分节点不可用时，集群仍可用，通过增加Slave或standby数据副本，能够实现故障自动<br>failover，节点之间通过gossip协议交换状态信息，用投票机制完成Slave到Master的角色提升；</li>
+<li>降低运维成本，提高系统的扩展性和可用性。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>Client实现复杂，驱动要求实现Smart Client，缓存slots mapping信息并及时更新，提高了开发<br>难度，客户端的不成熟影响业务的稳定性。目前仅JedisCluster相对成熟，异常处理部分还不完善，<br>比如常见的 “max redirect exception”.</li>
+<li>数据通过异步复制，不保证数据的强一致性。</li>
+</ul>
+<blockquote>
+<p>参考的文档：<a href="https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ</a></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>elasticsearch索引创建</title>
+    <url>/2020/08/06/elasticsearch%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA/</url>
+    <content><![CDATA[<h3 id="Elasticsearch-7-X版本创建索引"><a href="#Elasticsearch-7-X版本创建索引" class="headerlink" title="Elasticsearch 7.X版本创建索引"></a>Elasticsearch 7.X版本创建索引</h3><ul>
+<li>编写索引文件,如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$params &#x3D; [</span><br><span class="line">            &#39;index&#39; &#x3D;&gt; &#39;my_index&#39;,</span><br><span class="line">            &#39;body&#39; &#x3D;&gt; [</span><br><span class="line">            	&#39;order&#39; &#x3D;&gt; 0, &#x2F;&#x2F; 模板优先级 越大优先级越高</span><br><span class="line">                &#39;settings&#39; &#x3D;&gt; [</span><br><span class="line">                	&#39;refresh_interval&#39; &#x3D;&gt; &quot;10s&quot;, &#x2F;&#x2F; 每10秒刷新</span><br><span class="line">                    &#39;number_of_shards&#39; &#x3D;&gt; 3, &#x2F;&#x2F; 主分片数量</span><br><span class="line">                    &#39;number_of_replicas&#39; &#x3D;&gt; 2 &#x2F;&#x2F; 副本数量</span><br><span class="line">                    &#39;translog&#39; &#x3D;&gt; [</span><br><span class="line">                    	&quot;flush_threshold_size&quot; &#x3D;&gt; &quot;1gb&quot;, &#x2F;&#x2F; 内容容量到达1gb异步刷新</span><br><span class="line">                    	&quot;sync_interval&quot; &#x3D;&gt; &quot;30s&quot;, &#x2F;&#x2F; 间隔30s异步刷新（设置后无法更改）</span><br><span class="line">                    	&quot;durability&quot;&#x3D;&gt;&quot;async&quot; &#x2F;&#x2F; 异步刷新</span><br><span class="line">                    ]</span><br><span class="line">                ],</span><br><span class="line">                &#39;mappings&#39; &#x3D;&gt; [ &#x2F;&#x2F; 索引中各字段的映射定义</span><br><span class="line">                    &#39;properties&#39; &#x3D;&gt; [</span><br><span class="line">                        &#39;name&#39; &#x3D;&gt; [</span><br><span class="line">                            &#39;type&#39; &#x3D;&gt; &#39;text&#39;,</span><br><span class="line">                            &#39;analyzer&#39; &#x3D;&gt; &#39;ik_max_word&#39;, &#x2F;&#x2F; 分析器</span><br><span class="line">                            &#39;search_analyzer&#39; &#x3D;&gt; &#39;ik_smart&#39;</span><br><span class="line">                        ],</span><br><span class="line">                        &#39;age&#39; &#x3D;&gt; [</span><br><span class="line">                            &#39;type&#39; &#x3D;&gt; &#39;integer&#39;</span><br><span class="line">                        ]</span><br><span class="line">                    ]</span><br><span class="line">                ]</span><br><span class="line">            ]</span><br><span class="line">        ];</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>连接Elasticsearch的客户端</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$hosts &#x3D; [127.0.0.1:9200];</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;setRetries 设置链接次数，例如，如果你有 10 个节点，设置 setRetries(5) ，客户端便会最多发送 5 次连接命令。如果 5 个节点返回的结果都是 connection timeout，那么客户端会抛出 OperationTimeoutException 。由于连接池处于使用状态，这些节点也可能会被标记为死节点。</span><br><span class="line"></span><br><span class="line">$client &#x3D; \Elasticsearch\ClientBuilder::create()</span><br><span class="line">	-&gt;setHosts($hosts)</span><br><span class="line">	-&gt;setRetries(3)</span><br><span class="line">	-&gt;build();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建索引</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$es &#x3D; $client-&gt;create($params);  &#x2F;&#x2F;create当存在相同的index+type+id的时候报错</span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
+    <title>hexo博客安装教程</title>
+    <url>/2020/04/30/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="新建仓库"><a href="#新建仓库" class="headerlink" title="新建仓库"></a>新建仓库</h3><p>github 新建一个仓库，仓库名必须为<user-name>.github.io格式，其中<user-name>是你github的昵称。</p>
+<h3 id="全局安装hexo"><a href="#全局安装hexo" class="headerlink" title="全局安装hexo"></a>全局安装hexo</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 本地运行</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署到github上"><a href="#部署到github上" class="headerlink" title="部署到github上"></a>部署到github上</h3><p>项目根目录下找到_config.yml,找到deploy字段并填写</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: &lt;你的仓库地址&gt; # https:&#x2F;&#x2F;github.com&#x2F;feng&#x2F;feng.github.io</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>填写完之后需要hexo-deployer-git推到仓库上。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>执行下面两个命令,就可以自动部署到github上。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看效果"><a href="#查看效果" class="headerlink" title="查看效果"></a>查看效果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">浏览器访问：https:&#x2F;&#x2F;feng.github.io&#x2F; 即可看到效果。</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建新文章"><a href="#创建新文章" class="headerlink" title="创建新文章"></a>创建新文章</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; [layout] 为布局，可选项为 &#96;post&#96;、&#96;page&#96;、&#96;draft&#96;，这将决定文章所在文件路径。</span><br><span class="line">&#x2F;&#x2F; &lt;title&gt; 为文章标题</span><br><span class="line">&#x2F;&#x2F; 如 hexo new post 除了帅气，我还有啥！</span><br><span class="line">hexo new [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="更换主题皮肤"><a href="#更换主题皮肤" class="headerlink" title="更换主题皮肤"></a>更换主题皮肤</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 下载到themes文件夹下</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;KevinOfNeu&#x2F;hexo-theme-xoxo xoxo</span><br><span class="line"></span><br><span class="line"># 修改 _config.yml 配置</span><br><span class="line">theme: xoxo</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署优化"><a href="#部署优化" class="headerlink" title="部署优化"></a>部署优化</h3><p>每次都要执行hexo clean 和 hexo deploy 不如写个新的脚本，修改package.json</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">	  &quot;scripts&quot;: &#123;</span><br><span class="line">	    &quot;rebuild&quot;: &quot;hexo clean &amp;&amp; hexo deploy&quot;</span><br><span class="line">	  &#125;</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">部署命令</span><br></pre></td></tr></table></figure>
+<pre><code>npm run rebuild</code></pre><pre><code></code></pre>]]></content>
+      <tags>
+        <tag>hexo安装</tag>
+      </tags>
   </entry>
   <entry>
     <title>Ubuntu 安装 docker</title>
@@ -717,111 +813,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>hexo博客安装教程</title>
-    <url>/2020/04/30/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="新建仓库"><a href="#新建仓库" class="headerlink" title="新建仓库"></a>新建仓库</h3><p>github 新建一个仓库，仓库名必须为<user-name>.github.io格式，其中<user-name>是你github的昵称。</p>
-<h3 id="全局安装hexo"><a href="#全局安装hexo" class="headerlink" title="全局安装hexo"></a>全局安装hexo</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure>
-
-<h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 本地运行</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署到github上"><a href="#部署到github上" class="headerlink" title="部署到github上"></a>部署到github上</h3><p>项目根目录下找到_config.yml,找到deploy字段并填写</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: &lt;你的仓库地址&gt; # https:&#x2F;&#x2F;github.com&#x2F;feng&#x2F;feng.github.io</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<p>填写完之后需要hexo-deployer-git推到仓库上。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-<p>执行下面两个命令,就可以自动部署到github上。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看效果"><a href="#查看效果" class="headerlink" title="查看效果"></a>查看效果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">浏览器访问：https:&#x2F;&#x2F;feng.github.io&#x2F; 即可看到效果。</span><br></pre></td></tr></table></figure>
-
-<h3 id="创建新文章"><a href="#创建新文章" class="headerlink" title="创建新文章"></a>创建新文章</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; [layout] 为布局，可选项为 &#96;post&#96;、&#96;page&#96;、&#96;draft&#96;，这将决定文章所在文件路径。</span><br><span class="line">&#x2F;&#x2F; &lt;title&gt; 为文章标题</span><br><span class="line">&#x2F;&#x2F; 如 hexo new post 除了帅气，我还有啥！</span><br><span class="line">hexo new [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="更换主题皮肤"><a href="#更换主题皮肤" class="headerlink" title="更换主题皮肤"></a>更换主题皮肤</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 下载到themes文件夹下</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;KevinOfNeu&#x2F;hexo-theme-xoxo xoxo</span><br><span class="line"></span><br><span class="line"># 修改 _config.yml 配置</span><br><span class="line">theme: xoxo</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署优化"><a href="#部署优化" class="headerlink" title="部署优化"></a>部署优化</h3><p>每次都要执行hexo clean 和 hexo deploy 不如写个新的脚本，修改package.json</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">	  &quot;scripts&quot;: &#123;</span><br><span class="line">	    &quot;rebuild&quot;: &quot;hexo clean &amp;&amp; hexo deploy&quot;</span><br><span class="line">	  &#125;</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">部署命令</span><br></pre></td></tr></table></figure>
-<pre><code>npm run rebuild</code></pre><pre><code></code></pre>]]></content>
-      <tags>
-        <tag>hexo安装</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vagrant基本命令</title>
-    <url>/2020/04/16/vagrant%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h3 id="vagrant-box-基本命令"><a href="#vagrant-box-基本命令" class="headerlink" title="vagrant box 基本命令"></a>vagrant box 基本命令</h3><ul>
-<li>列出本地环境中所有的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box list</span><br></pre></td></tr></table></figure></li>
-<li>添加box到本地vagrant环境<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box add box-name (box-url)</span><br></pre></td></tr></table></figure></li>
-<li>更新本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box update box-name</span><br></pre></td></tr></table></figure></li>
-<li>删除本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box remove box-name</span><br></pre></td></tr></table></figure></li>
-<li>重新打包本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box repackage box-name</span><br></pre></td></tr></table></figure></li>
-<li>在线查找需要的box<br>网址：<a href="https://app.vagrantup.com/boxes/search" target="_blank" rel="noopener">https://app.vagrantup.com/boxes/search</a></li>
-</ul>
-<h3 id="vagrant-基本命令"><a href="#vagrant-基本命令" class="headerlink" title="vagrant 基本命令"></a>vagrant 基本命令</h3><ul>
-<li>在空文件夹初始化虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagran init [box-name]</span><br></pre></td></tr></table></figure></li>
-<li>在初始化完的文件夹内启动虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant up</span><br></pre></td></tr></table></figure></li>
-<li>ssh登录启动的虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant ssh</span><br></pre></td></tr></table></figure></li>
-<li>挂起启动的虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant suspend</span><br></pre></td></tr></table></figure></li>
-<li>重启虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant reload</span><br></pre></td></tr></table></figure></li>
-<li>关闭虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant halt</span><br></pre></td></tr></table></figure></li>
-<li>查找虚拟机的运行状态<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant status</span><br></pre></td></tr></table></figure></li>
-<li>销毁<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant destroy</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>vagrant基本命令</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>redis三种集群模式</title>
-    <url>/2020/04/23/redis%E4%B8%89%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="Redis发展过程中的三种模式：主从，哨兵，集群"><a href="#Redis发展过程中的三种模式：主从，哨兵，集群" class="headerlink" title="Redis发展过程中的三种模式：主从，哨兵，集群"></a>Redis发展过程中的三种模式：主从，哨兵，集群</h3><h4 id="主从模式"><a href="#主从模式" class="headerlink" title="主从模式"></a>主从模式</h4><p>Redis早期用于保证数据可靠性的一种简单方式，具体来说，Master可用于写，读，而Slave一般只用于读。</p>
-<p><strong>优点</strong><br>读写分离，提高效率<br>数据热备份，提供多个副本</p>
-<p><strong>缺点</strong><br>主节点故障，集群则无法进行工作，可用性比较低，从节点升主节点需要人工手动干预。<br>单点容易造成性能低下<br>主节点的存储能力受到限制<br>主节点的写受到限制（只有一个主节点）<br>全量同步可能会造成毫秒或者秒级的卡顿现象</p>
-<p><strong>特点</strong><br>只能master到slave 单向的；</p>
-<h4 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h4><h5 id="1-哨兵模式介绍"><a href="#1-哨兵模式介绍" class="headerlink" title="1.哨兵模式介绍"></a>1.哨兵模式介绍</h5><ul>
-<li>Sentinel(哨兵)进程是用于监控Redis集群中Master主服务器工作的状态。</li>
-<li>在Master主服务器发生故障的时候，可以实现Master和Slave服务器的切换,保证系统的高可用（HA）</li>
-<li>其已经被集成在redis2.6+的版本中，Redis的哨兵模式到2.8版本之后就稳定了下来。</li>
-</ul>
-<h5 id="2-哨兵进程的作用"><a href="#2-哨兵进程的作用" class="headerlink" title="2.哨兵进程的作用"></a>2.哨兵进程的作用</h5><ul>
-<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器。</li>
-<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其它的从服务<br>器，修改配置文件，让它们切换主机。</li>
-</ul>
-<p><strong>优点</strong></p>
-<ul>
-<li>Redis Sentinel 集群部署简单</li>
-<li>可以实现一套Sentinel监控一组 Redis数据节点或多组数据节点</li>
-<li>有效解决主从模式主库异常手动主从切换的问题。</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>运维复杂，哨兵选举期间，不能对外提供服务。</li>
-<li>部署相对Redis主从模式要复杂一些，原理理解更繁琐；</li>
-<li>不能解决读写分离问题，实现起来相对复杂</li>
-</ul>
-<h3 id="集群模式-Redis-Cluster"><a href="#集群模式-Redis-Cluster" class="headerlink" title="集群模式(Redis Cluster)"></a>集群模式(Redis Cluster)</h3><p>Redis Cluster 是社区版推出的Redis分布式集群解决方案，主要解决Redis分布式方面的需求，比如<br>当遇到单机内存，并发和流量等瓶颈的时候，Redis Cluster能起到很好的负载均衡的目的。</p>
-<p><strong>优点</strong></p>
-<ul>
-<li>无中心架构</li>
-<li>数据按照slot存储分布在多个节点，节点间数据共享，可动态调整数据分布；</li>
-<li>可扩展性：可线扩展到1000多个节点，节点可动态添加或删除；</li>
-<li>高可用性：部分节点不可用时，集群仍可用，通过增加Slave或standby数据副本，能够实现故障自动<br>failover，节点之间通过gossip协议交换状态信息，用投票机制完成Slave到Master的角色提升；</li>
-<li>降低运维成本，提高系统的扩展性和可用性。</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>Client实现复杂，驱动要求实现Smart Client，缓存slots mapping信息并及时更新，提高了开发<br>难度，客户端的不成熟影响业务的稳定性。目前仅JedisCluster相对成熟，异常处理部分还不完善，<br>比如常见的 “max redirect exception”.</li>
-<li>数据通过异步复制，不保证数据的强一致性。</li>
-</ul>
-<blockquote>
-<p>参考的文档：<a href="https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Z-PyNgiqYrm0ZYg0r6MVeQ</a></p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>多台电脑部署hexo</title>
     <url>/2020/04/30/%E5%A4%9A%E5%8F%B0%E7%94%B5%E8%84%91%E9%83%A8%E7%BD%B2hexo/</url>
     <content><![CDATA[<h3 id="将之前创建的hexo项目文件上传到github上"><a href="#将之前创建的hexo项目文件上传到github上" class="headerlink" title="将之前创建的hexo项目文件上传到github上"></a>将之前创建的hexo项目文件上传到github上</h3><ul>
@@ -877,6 +868,33 @@
       </tags>
   </entry>
   <entry>
+    <title>vagrant基本命令</title>
+    <url>/2020/04/16/vagrant%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h3 id="vagrant-box-基本命令"><a href="#vagrant-box-基本命令" class="headerlink" title="vagrant box 基本命令"></a>vagrant box 基本命令</h3><ul>
+<li>列出本地环境中所有的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box list</span><br></pre></td></tr></table></figure></li>
+<li>添加box到本地vagrant环境<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box add box-name (box-url)</span><br></pre></td></tr></table></figure></li>
+<li>更新本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box update box-name</span><br></pre></td></tr></table></figure></li>
+<li>删除本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box remove box-name</span><br></pre></td></tr></table></figure></li>
+<li>重新打包本地环境中指定的box<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant box repackage box-name</span><br></pre></td></tr></table></figure></li>
+<li>在线查找需要的box<br>网址：<a href="https://app.vagrantup.com/boxes/search" target="_blank" rel="noopener">https://app.vagrantup.com/boxes/search</a></li>
+</ul>
+<h3 id="vagrant-基本命令"><a href="#vagrant-基本命令" class="headerlink" title="vagrant 基本命令"></a>vagrant 基本命令</h3><ul>
+<li>在空文件夹初始化虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagran init [box-name]</span><br></pre></td></tr></table></figure></li>
+<li>在初始化完的文件夹内启动虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant up</span><br></pre></td></tr></table></figure></li>
+<li>ssh登录启动的虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant ssh</span><br></pre></td></tr></table></figure></li>
+<li>挂起启动的虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant suspend</span><br></pre></td></tr></table></figure></li>
+<li>重启虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant reload</span><br></pre></td></tr></table></figure></li>
+<li>关闭虚拟机<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant halt</span><br></pre></td></tr></table></figure></li>
+<li>查找虚拟机的运行状态<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant status</span><br></pre></td></tr></table></figure></li>
+<li>销毁<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vagrant destroy</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>vagrant基本命令</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>享元模式（Flyweight）</title>
     <url>/2020/04/14/%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%EF%BC%88Flyweight%EF%BC%89/</url>
     <content><![CDATA[<hr>
@@ -922,60 +940,6 @@
 </ol>
 <h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 注意划分外部状态和内部状态，否则可能会引起线程安全问题。</span><br><span class="line">2. 这些类必须有一个工厂对象加以控制。</span><br></pre></td></tr></table></figure>
 ]]></content>
-  </entry>
-  <entry>
-    <title>建造者模式（Builder）</title>
-    <url>/2020/04/14/%E6%9E%84%E5%BB%BA%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<hr>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">建造者模式（Builder Pattern）使用多个简单的对象一步一步构建成一个复杂</span><br><span class="line">的对象。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。</span><br><span class="line">一个Builder类会一步一步构造最终的对象。该Builder类是独立于其它对象的。</span><br></pre></td></tr></table></figure>
-<ul>
-<li>意图：将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。</li>
-<li>主要解决：主要解决在软件系统中，有时候面临着”一个复杂对象”的创建工作，其通常<br>由各个部分的子对象用一定的算法构成；由于需求的变化，这个复杂对象的各个部分经常<br>面临着剧烈的变化，但是它们组合在一起的算法相对稳定。</li>
-<li>何时使用：一些基本部件不会变，而其组合经常变化的时候。</li>
-<li>如何解决：将变与不变分离开。</li>
-<li>关键代码：创建和提供实例，导演：管理建造出来的实例的依赖关系。</li>
-</ul>
-<h3 id="现实中的例子"><a href="#现实中的例子" class="headerlink" title="现实中的例子"></a>现实中的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">想象下，你在万达订购了一个特定的交易，让我们说：“Big Hardee”，他们毫无疑问地把它交给你了；这是简单工厂的例子。</span><br><span class="line">但有些情况下，创建逻辑可能涉及更多步骤。例如，你想要一个定制的汉堡交易，</span><br><span class="line">你有多种选择如何制作你的汉堡，例如你想要什么面包？你想要什么类型的酱汁？</span><br><span class="line">你想要什么奶酪？在这种情况下，建造者模式得以拯救</span><br></pre></td></tr></table></figure>
-<h3 id="简单来说"><a href="#简单来说" class="headerlink" title="简单来说"></a>简单来说</h3><ul>
-<li>允许您创建不同风格的对象，同时避免构造函数污染，当有几种风格的物体很有用。或<br>者在创建对象时涉及很多步骤。</li>
-</ul>
-<h3 id="百度上说"><a href="#百度上说" class="headerlink" title="百度上说"></a>百度上说</h3><ul>
-<li>建造者模式是对象创建软件设计模式，其目的是找到伸缩构造器反模式的解决方案。</li>
-</ul>
-<p>伸缩构造函数反模式是什么。在某一点或另一点，我们看到了如下构造函数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public function __construct($size, $cheese &#x3D; true, $pepperoni &#x3D; true,$tomato &#x3D; false, $lettuce &#x3D;  true)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>我们可以看到：构造函数参数的数量很快就会失控，并且可能难以理解参数的排列。此外<br>如果您希望将来添加更多选项，此参数列表可能会继续增长。这被称为伸缩构造器反模式。</li>
-</ul>
-<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>理智的替代方案是使用建造者模式。首先，我们要制作汉堡。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Burger</span><br><span class="line">&#123;</span><br><span class="line">	protect $size;</span><br><span class="line">	protect $cheese &#x3D; false;</span><br><span class="line">	protect $lettuce &#x3D; false;</span><br><span class="line">	protect $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(BurgerBuilder $builder)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $builder-&gt;size;</span><br><span class="line">		$this-&gt;cheese &#x3D; $builder-&gt;cheese;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; $builder-&gt;pepperoni;</span><br><span class="line">		$this-&gt;lettuce &#x3D; $builder-&gt;lettuce;</span><br><span class="line">		$this-&gt;tomato &#x3D; $builder-&gt;tomato;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后我们就有了建设者</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class BurgerBuilder</span><br><span class="line">&#123;</span><br><span class="line">	public $size;</span><br><span class="line"></span><br><span class="line">	public $cheese &#x3D; false;</span><br><span class="line">	public $pepperoni &#x3D; false;</span><br><span class="line">	public $lettuce &#x3D; false;</span><br><span class="line">	public $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(int $size)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $size;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addPepperoni()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addLettuce()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;lettuce &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addCheese()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;cheese &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addTomato()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;tomato &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function build(): Burger</span><br><span class="line">	&#123;</span><br><span class="line">		return new Burger($this);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后它可以用作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$burger &#x3D; (new BurgerBuilder(14))</span><br><span class="line">-&gt;addPepperoni()</span><br><span class="line">-&gt;addLettuce()</span><br><span class="line">-&gt;addTomato()</span><br><span class="line">-&gt;build()</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>建造者独立，易扩展。</li>
-<li>便于控制细节风险。</li>
-</ul>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li>产品必须有共同点，范围有限制。</li>
-<li>如内部变化复杂，会有很多的建造类。</li>
-</ul>
-<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
-<li>需要生成的对象具有复杂的内部结构。</li>
-<li>需要生产的对象内部属性本身相互依赖。</li>
-<li>当可能存在几种类型的对象并避免构造函数伸缩时。</li>
-</ul>
-<h3 id="与工厂模式区别"><a href="#与工厂模式区别" class="headerlink" title="与工厂模式区别"></a>与工厂模式区别</h3><ul>
-<li>当创建时一步过程时，将使用工厂模式，而当创建时多步骤时，将使用建造者模式。</li>
-</ul>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">与工厂模式的区别是：建造者模式更加关注与零件装配的顺序</span><br></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
   </entry>
   <entry>
     <title>类/对象函数</title>
@@ -1073,14 +1037,95 @@
       </tags>
   </entry>
   <entry>
-    <title>设计模式的六大原则</title>
-    <url>/2020/04/30/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/</url>
-    <content><![CDATA[<h3 id="开闭原则（Open-Close-Principle）"><a href="#开闭原则（Open-Close-Principle）" class="headerlink" title="开闭原则（Open Close Principle）"></a>开闭原则（Open Close Principle）</h3><p>开闭原则的意思是：对扩展开发，对修改关闭。在程序需要进行拓展的时候，不能去修改原有的代码，<br>实现一个热插拔的效果。简言之，是为了使程序的扩展性好，易于维护和升级。想要达到这样的效果，<br>我们需要使用接口和抽象类，后面的具体设计中我们会提到这点。</p>
-<h3 id="里氏代换原则（Liskov-Substitution-Principle）"><a href="#里氏代换原则（Liskov-Substitution-Principle）" class="headerlink" title="里氏代换原则（Liskov Substitution Principle）"></a>里氏代换原则（Liskov Substitution Principle）</h3><p>里氏代换原则是面向对象设计的基本原则之一。里氏代换原则中说，任何基类可以出现的地方，子类一定<br>可以出现。LSP是继承复用的基石，只有当派生类可以替换掉基类，且软件单位的功能不受到影响时，基<br>类才能真正被复用，而派生类也能够在基类的基础上增加新的行为。里氏代换原则是对开闭原则的补充。<br>实现开闭原则的关键步骤就是抽象化，而基类与子类的继承关系就是抽象化的具体实现，所以里氏代换原<br>则是对实现抽象化的具体步骤的规范。</p>
-<h3 id="依赖倒转原则（Dependence-Inversion-Principle）"><a href="#依赖倒转原则（Dependence-Inversion-Principle）" class="headerlink" title="依赖倒转原则（Dependence Inversion Principle）"></a>依赖倒转原则（Dependence Inversion Principle）</h3><p>这个原则是开闭原则的基础，具体内容：针对接口编程，依赖于抽象而不依赖于具体。</p>
-<h3 id="接口隔离原则（Interface-Segregation-Principle）"><a href="#接口隔离原则（Interface-Segregation-Principle）" class="headerlink" title="接口隔离原则（Interface Segregation Principle）"></a>接口隔离原则（Interface Segregation Principle）</h3><p>这个原则的意思是：使用多个隔离的接口，比使用单个接口要好。它还有另外一个意思是：降低类之间的<br>耦合度。由此可见，其实设计模式就是从大型软件架构出发，便于升级和维护的软件设计思想，它强调降<br>低依赖，降低耦合。</p>
-<h3 id="迪米特法则，又称最少知道原则（Demeter-Principle）"><a href="#迪米特法则，又称最少知道原则（Demeter-Principle）" class="headerlink" title="迪米特法则，又称最少知道原则（Demeter Principle）"></a>迪米特法则，又称最少知道原则（Demeter Principle）</h3><p>最少知道原则是指：一个实体应当尽量少地与其他实体之间发生相互作用，使得系统功能模块相对独立。</p>
-<h3 id="合成复用原则（Composite-Reuse-Principle）"><a href="#合成复用原则（Composite-Reuse-Principle）" class="headerlink" title="合成复用原则（Composite Reuse Principle）"></a>合成复用原则（Composite Reuse Principle）</h3><p>合成复用原则是指：尽量使用合成/聚合的方式，而不是使用继承。</p>
+    <title>建造者模式（Builder）</title>
+    <url>/2020/04/14/%E6%9E%84%E5%BB%BA%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<hr>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">建造者模式（Builder Pattern）使用多个简单的对象一步一步构建成一个复杂</span><br><span class="line">的对象。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。</span><br><span class="line">一个Builder类会一步一步构造最终的对象。该Builder类是独立于其它对象的。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>意图：将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。</li>
+<li>主要解决：主要解决在软件系统中，有时候面临着”一个复杂对象”的创建工作，其通常<br>由各个部分的子对象用一定的算法构成；由于需求的变化，这个复杂对象的各个部分经常<br>面临着剧烈的变化，但是它们组合在一起的算法相对稳定。</li>
+<li>何时使用：一些基本部件不会变，而其组合经常变化的时候。</li>
+<li>如何解决：将变与不变分离开。</li>
+<li>关键代码：创建和提供实例，导演：管理建造出来的实例的依赖关系。</li>
+</ul>
+<h3 id="现实中的例子"><a href="#现实中的例子" class="headerlink" title="现实中的例子"></a>现实中的例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">想象下，你在万达订购了一个特定的交易，让我们说：“Big Hardee”，他们毫无疑问地把它交给你了；这是简单工厂的例子。</span><br><span class="line">但有些情况下，创建逻辑可能涉及更多步骤。例如，你想要一个定制的汉堡交易，</span><br><span class="line">你有多种选择如何制作你的汉堡，例如你想要什么面包？你想要什么类型的酱汁？</span><br><span class="line">你想要什么奶酪？在这种情况下，建造者模式得以拯救</span><br></pre></td></tr></table></figure>
+<h3 id="简单来说"><a href="#简单来说" class="headerlink" title="简单来说"></a>简单来说</h3><ul>
+<li>允许您创建不同风格的对象，同时避免构造函数污染，当有几种风格的物体很有用。或<br>者在创建对象时涉及很多步骤。</li>
+</ul>
+<h3 id="百度上说"><a href="#百度上说" class="headerlink" title="百度上说"></a>百度上说</h3><ul>
+<li>建造者模式是对象创建软件设计模式，其目的是找到伸缩构造器反模式的解决方案。</li>
+</ul>
+<p>伸缩构造函数反模式是什么。在某一点或另一点，我们看到了如下构造函数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public function __construct($size, $cheese &#x3D; true, $pepperoni &#x3D; true,$tomato &#x3D; false, $lettuce &#x3D;  true)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们可以看到：构造函数参数的数量很快就会失控，并且可能难以理解参数的排列。此外<br>如果您希望将来添加更多选项，此参数列表可能会继续增长。这被称为伸缩构造器反模式。</li>
+</ul>
+<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><p>理智的替代方案是使用建造者模式。首先，我们要制作汉堡。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Burger</span><br><span class="line">&#123;</span><br><span class="line">	protect $size;</span><br><span class="line">	protect $cheese &#x3D; false;</span><br><span class="line">	protect $lettuce &#x3D; false;</span><br><span class="line">	protect $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(BurgerBuilder $builder)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $builder-&gt;size;</span><br><span class="line">		$this-&gt;cheese &#x3D; $builder-&gt;cheese;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; $builder-&gt;pepperoni;</span><br><span class="line">		$this-&gt;lettuce &#x3D; $builder-&gt;lettuce;</span><br><span class="line">		$this-&gt;tomato &#x3D; $builder-&gt;tomato;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们就有了建设者</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class BurgerBuilder</span><br><span class="line">&#123;</span><br><span class="line">	public $size;</span><br><span class="line"></span><br><span class="line">	public $cheese &#x3D; false;</span><br><span class="line">	public $pepperoni &#x3D; false;</span><br><span class="line">	public $lettuce &#x3D; false;</span><br><span class="line">	public $tomato &#x3D; false;</span><br><span class="line"></span><br><span class="line">	public function __construct(int $size)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;size &#x3D; $size;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addPepperoni()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;pepperoni &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addLettuce()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;lettuce &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addCheese()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;cheese &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addTomato()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;tomato &#x3D; true;</span><br><span class="line">		return $this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function build(): Burger</span><br><span class="line">	&#123;</span><br><span class="line">		return new Burger($this);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后它可以用作：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$burger &#x3D; (new BurgerBuilder(14))</span><br><span class="line">-&gt;addPepperoni()</span><br><span class="line">-&gt;addLettuce()</span><br><span class="line">-&gt;addTomato()</span><br><span class="line">-&gt;build()</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>建造者独立，易扩展。</li>
+<li>便于控制细节风险。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>产品必须有共同点，范围有限制。</li>
+<li>如内部变化复杂，会有很多的建造类。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
+<li>需要生成的对象具有复杂的内部结构。</li>
+<li>需要生产的对象内部属性本身相互依赖。</li>
+<li>当可能存在几种类型的对象并避免构造函数伸缩时。</li>
+</ul>
+<h3 id="与工厂模式区别"><a href="#与工厂模式区别" class="headerlink" title="与工厂模式区别"></a>与工厂模式区别</h3><ul>
+<li>当创建时一步过程时，将使用工厂模式，而当创建时多步骤时，将使用建造者模式。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">与工厂模式的区别是：建造者模式更加关注与零件装配的顺序</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>策略模式（Strategy）</title>
+    <url>/2020/04/14/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><ul>
+<li>定义： 在计算机编程中，策略模式（也称为策略模式）是一种行为软件设计模式，<br>可以在运行时选择算法的行为。</li>
+<li>意图： 定义一系列的算法，把它们一个个封装起来，并且使它们可相互替换。</li>
+<li>主要解决： 在有多种算法相似的情况下，使用if…else所带来的复杂和难以维护。</li>
+<li>何时使用： 一个系统有许许多多类，而区分它们的只是他们的直接的行为。</li>
+<li>如何解决： 将这些算法封装成一个一个的类，任意的替换。</li>
+<li>关键代码： 实现同一个接口。</li>
+</ul>
+<h3 id="现实中的实际应用"><a href="#现实中的实际应用" class="headerlink" title="现实中的实际应用"></a>现实中的实际应用</h3><ol>
+<li>诸葛亮的锦囊妙计，每一个锦囊就是一个策略。</li>
+<li>旅行的出游方式，选择骑自行车。坐汽车。每一种旅行方式都是一个策略。</li>
+</ol>
+<h3 id="程序代码实现"><a href="#程序代码实现" class="headerlink" title="程序代码实现"></a>程序代码实现</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BusTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通工具_&quot;.$vechicle;</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CarTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通_&quot;.$vehicle；</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们的客户将使用任何策略</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Traveler</span><br><span class="line">&#123;</span><br><span class="line">	protected $travel;</span><br><span class="line"></span><br><span class="line">	public function __construct(Travel $travel)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;travel &#x3D; $travel;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;travel-&gt;vehicle($vehicle);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$vehicle &#x3D; &#39;私家车&#39;;</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new CarTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new BusTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br></pre></td></tr></table></figure>
+
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>算法可以自由切换。</li>
+<li>避免使用多重条件判断。</li>
+<li>扩展性良好。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>策略类会增多。</li>
+<li>所有策略类都需要对外暴露。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li>如果一个系统里面有许多类，它们之间的区别仅在于它们的行为，那么使用策略模式<br>可以动态地让一个对象在许多行为中选择一种行为。</li>
+<li>一个系统需要动态地在几种算法中选择一种。</li>
+<li>如果一个对象有很多的行为，如果不用恰当的模式，这些行为就只好使用多重的条件<br>选择语句来实现。</li>
+</ol>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果一个系统的策略多余四个，就需要考虑使用混合模式，解决策略类膨胀的问题。</span><br></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>设计模式</tag>
@@ -1123,47 +1168,6 @@
 <li>避免循环引用</li>
 <li>如果顺序执行，某一观察者错误会导致系统卡壳，一般采用异步形式</li>
 </ul>
-]]></content>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>策略模式（Strategy）</title>
-    <url>/2020/04/14/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><ul>
-<li>定义： 在计算机编程中，策略模式（也称为策略模式）是一种行为软件设计模式，<br>可以在运行时选择算法的行为。</li>
-<li>意图： 定义一系列的算法，把它们一个个封装起来，并且使它们可相互替换。</li>
-<li>主要解决： 在有多种算法相似的情况下，使用if…else所带来的复杂和难以维护。</li>
-<li>何时使用： 一个系统有许许多多类，而区分它们的只是他们的直接的行为。</li>
-<li>如何解决： 将这些算法封装成一个一个的类，任意的替换。</li>
-<li>关键代码： 实现同一个接口。</li>
-</ul>
-<h3 id="现实中的实际应用"><a href="#现实中的实际应用" class="headerlink" title="现实中的实际应用"></a>现实中的实际应用</h3><ol>
-<li>诸葛亮的锦囊妙计，每一个锦囊就是一个策略。</li>
-<li>旅行的出游方式，选择骑自行车。坐汽车。每一种旅行方式都是一个策略。</li>
-</ol>
-<h3 id="程序代码实现"><a href="#程序代码实现" class="headerlink" title="程序代码实现"></a>程序代码实现</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BusTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通工具_&quot;.$vechicle;</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CarTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通_&quot;.$vehicle；</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后我们的客户将使用任何策略</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Traveler</span><br><span class="line">&#123;</span><br><span class="line">	protected $travel;</span><br><span class="line"></span><br><span class="line">	public function __construct(Travel $travel)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;travel &#x3D; $travel;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;travel-&gt;vehicle($vehicle);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实际使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$vehicle &#x3D; &#39;私家车&#39;;</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new CarTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new BusTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br></pre></td></tr></table></figure>
-
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>算法可以自由切换。</li>
-<li>避免使用多重条件判断。</li>
-<li>扩展性良好。</li>
-</ul>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li>策略类会增多。</li>
-<li>所有策略类都需要对外暴露。</li>
-</ul>
-<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
-<li>如果一个系统里面有许多类，它们之间的区别仅在于它们的行为，那么使用策略模式<br>可以动态地让一个对象在许多行为中选择一种行为。</li>
-<li>一个系统需要动态地在几种算法中选择一种。</li>
-<li>如果一个对象有很多的行为，如果不用恰当的模式，这些行为就只好使用多重的条件<br>选择语句来实现。</li>
-</ol>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果一个系统的策略多余四个，就需要考虑使用混合模式，解决策略类膨胀的问题。</span><br></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>设计模式</tag>
@@ -1339,41 +1343,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>针对秒杀场景的方法</title>
-    <url>/2020/07/22/%E9%92%88%E5%AF%B9%E7%A7%92%E6%9D%80%E5%9C%BA%E6%99%AF%E7%9A%84%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<h3 id="排队方式"><a href="#排队方式" class="headerlink" title="排队方式"></a>排队方式</h3><ul>
-<li>利用线程池加锁等待也是一种常用的排队方式。</li>
-<li>先进先出，先进后出等常用的内存排队算法的实现方式；</li>
-<li>把请求序列化到文件中，然后再顺序地读文件（例如基于MySQL binlog的同步机制）来恢复请求等方式。</li>
-</ul>
-<blockquote>
-<ol>
-<li>通过把”一步的操作” 变成”两步的操作。”。起到缓冲的作用。2.延缓请求，起到对请求流量进行削峰的作用。</li>
-</ol>
-</blockquote>
-<h3 id="分层过滤"><a href="#分层过滤" class="headerlink" title="分层过滤"></a>分层过滤</h3><p>假如请求分别经过 CDN、前台读系统（如商品详情系统）、后台系统（如交易系统）和数据库这几层，那么：</p>
-<ul>
-<li>大部分数据和流量在用户浏览器或者CDN上获取，这一层可以拦截大部分数据的读取；</li>
-<li>经过第二层（即前台系统）时数据（包括强一致性的数据）尽量得走Cache，过滤一些无效的请求；</li>
-<li>再到第三层后台系统，主要做数据的二次校验，对系统做好保护和限流。这样数据量和请求就进一步减少。</li>
-<li>最后在数据层完成数据的强一致性校验。</li>
-</ul>
-<blockquote>
-<p>像漏斗一样，尽量把数据量和请求量一层一层地过滤和减少了。</p>
-</blockquote>
-<h4 id="分层校验的基本原则是："><a href="#分层校验的基本原则是：" class="headerlink" title="分层校验的基本原则是："></a>分层校验的基本原则是：</h4><ol>
-<li>将动态请求的读数据缓存(Cache)在Web端，过滤掉无效的数据读；</li>
-<li>对读数据不做强一性校验，减少因为一致性校验产生瓶颈的问题；</li>
-<li>对写数据进行基于时间的合理分片，过滤掉过期的失效请求；</li>
-<li>对写请求做限流保护，将超出系统承载能力的请求过滤掉。</li>
-<li>对写数据进行强一致性校验，只保留最后有效的数据。</li>
-</ol>
-<blockquote>
-<p>分层校验的目的是：在读系统中，尽量减少由于一致性校验带来的系统瓶颈，但是尽量将不影响性能的检查条件提前，如用户是否具有秒杀资格，商品状态是否正常，用户答题是否正确、秒杀是否已经结束、是否非法请求、营销等价物是否充足等；在写数据系统中，主要对写的数据（如“库存”）做一致性检查，最后在数据库层保证数据的最终准确性（如“库存”不能减为负数）。</p>
-</blockquote>
-]]></content>
-  </entry>
-  <entry>
     <title>适配器模式（Adapter）</title>
     <url>/2020/04/14/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<hr>
@@ -1424,6 +1393,55 @@
       <tags>
         <tag>设计模式</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>设计模式的六大原则</title>
+    <url>/2020/04/30/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/</url>
+    <content><![CDATA[<h3 id="开闭原则（Open-Close-Principle）"><a href="#开闭原则（Open-Close-Principle）" class="headerlink" title="开闭原则（Open Close Principle）"></a>开闭原则（Open Close Principle）</h3><p>开闭原则的意思是：对扩展开发，对修改关闭。在程序需要进行拓展的时候，不能去修改原有的代码，<br>实现一个热插拔的效果。简言之，是为了使程序的扩展性好，易于维护和升级。想要达到这样的效果，<br>我们需要使用接口和抽象类，后面的具体设计中我们会提到这点。</p>
+<h3 id="里氏代换原则（Liskov-Substitution-Principle）"><a href="#里氏代换原则（Liskov-Substitution-Principle）" class="headerlink" title="里氏代换原则（Liskov Substitution Principle）"></a>里氏代换原则（Liskov Substitution Principle）</h3><p>里氏代换原则是面向对象设计的基本原则之一。里氏代换原则中说，任何基类可以出现的地方，子类一定<br>可以出现。LSP是继承复用的基石，只有当派生类可以替换掉基类，且软件单位的功能不受到影响时，基<br>类才能真正被复用，而派生类也能够在基类的基础上增加新的行为。里氏代换原则是对开闭原则的补充。<br>实现开闭原则的关键步骤就是抽象化，而基类与子类的继承关系就是抽象化的具体实现，所以里氏代换原<br>则是对实现抽象化的具体步骤的规范。</p>
+<h3 id="依赖倒转原则（Dependence-Inversion-Principle）"><a href="#依赖倒转原则（Dependence-Inversion-Principle）" class="headerlink" title="依赖倒转原则（Dependence Inversion Principle）"></a>依赖倒转原则（Dependence Inversion Principle）</h3><p>这个原则是开闭原则的基础，具体内容：针对接口编程，依赖于抽象而不依赖于具体。</p>
+<h3 id="接口隔离原则（Interface-Segregation-Principle）"><a href="#接口隔离原则（Interface-Segregation-Principle）" class="headerlink" title="接口隔离原则（Interface Segregation Principle）"></a>接口隔离原则（Interface Segregation Principle）</h3><p>这个原则的意思是：使用多个隔离的接口，比使用单个接口要好。它还有另外一个意思是：降低类之间的<br>耦合度。由此可见，其实设计模式就是从大型软件架构出发，便于升级和维护的软件设计思想，它强调降<br>低依赖，降低耦合。</p>
+<h3 id="迪米特法则，又称最少知道原则（Demeter-Principle）"><a href="#迪米特法则，又称最少知道原则（Demeter-Principle）" class="headerlink" title="迪米特法则，又称最少知道原则（Demeter Principle）"></a>迪米特法则，又称最少知道原则（Demeter Principle）</h3><p>最少知道原则是指：一个实体应当尽量少地与其他实体之间发生相互作用，使得系统功能模块相对独立。</p>
+<h3 id="合成复用原则（Composite-Reuse-Principle）"><a href="#合成复用原则（Composite-Reuse-Principle）" class="headerlink" title="合成复用原则（Composite Reuse Principle）"></a>合成复用原则（Composite Reuse Principle）</h3><p>合成复用原则是指：尽量使用合成/聚合的方式，而不是使用继承。</p>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>针对秒杀场景的方法</title>
+    <url>/2020/07/22/%E9%92%88%E5%AF%B9%E7%A7%92%E6%9D%80%E5%9C%BA%E6%99%AF%E7%9A%84%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h3 id="排队方式"><a href="#排队方式" class="headerlink" title="排队方式"></a>排队方式</h3><ul>
+<li>利用线程池加锁等待也是一种常用的排队方式。</li>
+<li>先进先出，先进后出等常用的内存排队算法的实现方式；</li>
+<li>把请求序列化到文件中，然后再顺序地读文件（例如基于MySQL binlog的同步机制）来恢复请求等方式。</li>
+</ul>
+<blockquote>
+<ol>
+<li>通过把”一步的操作” 变成”两步的操作。”。起到缓冲的作用。2.延缓请求，起到对请求流量进行削峰的作用。</li>
+</ol>
+</blockquote>
+<h3 id="分层过滤"><a href="#分层过滤" class="headerlink" title="分层过滤"></a>分层过滤</h3><p>假如请求分别经过 CDN、前台读系统（如商品详情系统）、后台系统（如交易系统）和数据库这几层，那么：</p>
+<ul>
+<li>大部分数据和流量在用户浏览器或者CDN上获取，这一层可以拦截大部分数据的读取；</li>
+<li>经过第二层（即前台系统）时数据（包括强一致性的数据）尽量得走Cache，过滤一些无效的请求；</li>
+<li>再到第三层后台系统，主要做数据的二次校验，对系统做好保护和限流。这样数据量和请求就进一步减少。</li>
+<li>最后在数据层完成数据的强一致性校验。</li>
+</ul>
+<blockquote>
+<p>像漏斗一样，尽量把数据量和请求量一层一层地过滤和减少了。</p>
+</blockquote>
+<h4 id="分层校验的基本原则是："><a href="#分层校验的基本原则是：" class="headerlink" title="分层校验的基本原则是："></a>分层校验的基本原则是：</h4><ol>
+<li>将动态请求的读数据缓存(Cache)在Web端，过滤掉无效的数据读；</li>
+<li>对读数据不做强一性校验，减少因为一致性校验产生瓶颈的问题；</li>
+<li>对写数据进行基于时间的合理分片，过滤掉过期的失效请求；</li>
+<li>对写请求做限流保护，将超出系统承载能力的请求过滤掉。</li>
+<li>对写数据进行强一致性校验，只保留最后有效的数据。</li>
+</ol>
+<blockquote>
+<p>分层校验的目的是：在读系统中，尽量减少由于一致性校验带来的系统瓶颈，但是尽量将不影响性能的检查条件提前，如用户是否具有秒杀资格，商品状态是否正常，用户答题是否正确、秒杀是否已经结束、是否非法请求、营销等价物是否充足等；在写数据系统中，主要对写的数据（如“库存”）做一致性检查，最后在数据库层保证数据的最终准确性（如“库存”不能减为负数）。</p>
+</blockquote>
+]]></content>
   </entry>
   <entry>
     <title>门面模式</title>
