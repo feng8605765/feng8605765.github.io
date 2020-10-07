@@ -80,7 +80,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="تشغيل شريط التصفح">
+    <div class="toggle" aria-label="Toggle navigation bar">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -114,7 +114,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
 
   </li>
   </ul>
@@ -144,6 +144,71 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/16/docker%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/16/docker%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">docker命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-04-16 17:14:37 / Modified: 17:54:30" itemprop="dateCreated datePublished" datetime="2020-04-16T17:14:37+08:00">2020-04-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker version 查看docker版本</span><br><span class="line"></span><br><span class="line">docker info 查看docker详细信息</span><br><span class="line"></span><br><span class="line">docker --help 查看docker命令</span><br></pre></td></tr></table></figure>
+
+<h3 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">docker images 查看docker镜像</span><br><span class="line">1. PEPOSITORY：镜像的仓库源</span><br><span class="line">2. TAG：镜像的标签</span><br><span class="line">3. IMAGE ID：镜像ID</span><br><span class="line">4. CREATED：镜像创建时间</span><br><span class="line">5. SIZE：镜像大小</span><br><span class="line"></span><br><span class="line">docker images -a 列出本地所有的镜像</span><br><span class="line">docker imags -p 只显示镜像ID</span><br><span class="line">docker images --digests 显示镜像的摘要信息</span><br><span class="line">docker images --no-trunc 显示完整的镜像信息</span><br><span class="line">docker search tomcat 从Docker Hub上查找tomacat镜像</span><br><span class="line"></span><br><span class="line">**STARS:关注度**</span><br><span class="line">docker serch -s 30 tomcat 从Docker Hub上查找关注度大于30的tomact镜像。</span><br><span class="line">docker pull tomcat 从Docker Hub上下载tomact镜像。等价于：docker pull tomcat:latest</span><br><span class="line">docker commit -m &quot;提交的描述信息&quot; -a &quot;作者&quot; 容器ID 要创建的目标镜像名称:[标签名]提交容器使之</span><br><span class="line">成为一个新的镜像。</span><br><span class="line">如：docker commit -m &quot;新的tomcat&quot; -a &quot;lizq&quot; f9e29e8455a5 mytomcat:1.2</span><br><span class="line">docker rmi hello-world 从Docker中删除hello-world镜像</span><br><span class="line">docker rmi -f hello-world 从Docker中强制删除hello-world镜像</span><br><span class="line">docker rmi -f hello-world nginx 从Docker中强制删除hello-world镜像和nginx镜像</span><br><span class="line">docker rmi -f $(docker images -p) 通过docker images -p 查询到的镜像ID来删除所有镜像。</span><br></pre></td></tr></table></figure>
+
+<h3 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">docker run [OPTIONS] IMAGE 根据镜像新建并启动容器。IMAGE是镜像ID或镜像名称</span><br><span class="line">OPTIONS说明：</span><br><span class="line">	--name &#x3D; &quot;容器新名字&quot;：为容器指定一个名称</span><br><span class="line">	-d：后台运行容器，并返回容器ID，也即启动守护式容器</span><br><span class="line">	-i：以交互模式运行容器，通常与 -t 同时使用</span><br><span class="line">	-t：为容器重新分配一个伪输入终端，通常与-i同时使用</span><br><span class="line">	-p：随机端口映射</span><br><span class="line">	-P：指定端口映射，有以下四种格式：</span><br><span class="line">		ip:hostPort:containerPort</span><br><span class="line">		ip::containerPort</span><br><span class="line">		hostPort:containerPort</span><br><span class="line">		containerPort</span><br><span class="line">docker ps 列出当前所有正在运行的容器</span><br><span class="line">docker ps -a 列出所有的容器</span><br><span class="line">docker ps -l 列出最近创建的容器</span><br><span class="line">docker ps -n 3 列出最近创建的三个容器</span><br><span class="line">docker ps --no-trunc 显示当前所有正在运行的容器完整信息</span><br><span class="line">exit 退出并停止容器</span><br><span class="line">Ctrl+p+q 只退出容器，不停止容器</span><br><span class="line">docker start 容器ID或容器名称 启动容器</span><br><span class="line">docker restart 容器ID或容器名称 重新启动容器</span><br><span class="line">docker stop 容器ID或容器名称 停止容器</span><br><span class="line">docker kill 容器ID或容器名称 强制停止容器</span><br><span class="line">docker rm 容器ID或容器名称 删除容器</span><br><span class="line">docker rm -f 容器ID或容器名称 强制删除容器</span><br><span class="line">docker rm -f $(docker ps -a -q) 删除多个容器</span><br><span class="line">docker logs -f -t --since --tail 容器ID或容器名称 查看容器日志</span><br><span class="line">如：docker logs -f -t --since&#x3D;”2018-09-10” --tail&#x3D;10 f9e29e8455a5</span><br><span class="line">	-f:查看实时日志</span><br><span class="line">	-t:查看日志产生的日期</span><br><span class="line">	--since:此参数指定了输出日志开始日期，即只输出指定日期之后的日志</span><br><span class="line">	--tail&#x3D;10:查看最后的10条日志</span><br><span class="line">docker top 容器ID或容器名称 查看容器内允许的进程</span><br><span class="line">docker inspect 容器ID或容器名称 查看容器内部细节</span><br><span class="line">docker attach 容器ID 进到容器内</span><br><span class="line">docker exec 容器ID 进到容器内</span><br><span class="line">docker cp 容器ID：容器内的文件路径 宿主机路径 从容器内拷贝文件到宿主机</span><br><span class="line">如：docker cp f9e29e8455a5:&#x2F;tmp&#x2F;yum.log &#x2F;root</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/16/docker%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -166,10 +231,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-16 16:50:43 / عُدل: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
+              <time title="Created: 2020-04-16 16:50:43 / Modified: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
             </span>
 
           
@@ -226,10 +291,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-16 14:11:52 / عُدل: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
+              <time title="Created: 2020-04-16 14:11:52 / Modified: 14:24:37" itemprop="dateCreated datePublished" datetime="2020-04-16T14:11:52+08:00">2020-04-16</time>
             </span>
 
           
@@ -303,10 +368,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-16 10:12:06 / عُدل: 17:14:03" itemprop="dateCreated datePublished" datetime="2020-04-16T10:12:06+08:00">2020-04-16</time>
+              <time title="Created: 2020-04-16 10:12:06 / Modified: 17:14:03" itemprop="dateCreated datePublished" datetime="2020-04-16T10:12:06+08:00">2020-04-16</time>
             </span>
 
           
@@ -429,10 +494,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-15 14:15:34 / عُدل: 15:33:42" itemprop="dateCreated datePublished" datetime="2020-04-15T14:15:34+08:00">2020-04-15</time>
+              <time title="Created: 2020-04-15 14:15:34 / Modified: 15:33:42" itemprop="dateCreated datePublished" datetime="2020-04-15T14:15:34+08:00">2020-04-15</time>
             </span>
 
           
@@ -581,16 +646,16 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
 
-              <time title="أُنشأ: 2020-04-15 08:56:50" itemprop="dateCreated datePublished" datetime="2020-04-15T08:56:50+08:00">2020-04-15</time>
+              <time title="Created: 2020-04-15 08:56:50" itemprop="dateCreated datePublished" datetime="2020-04-15T08:56:50+08:00">2020-04-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
-                <span class="post-meta-item-text">عُدل في</span>
-                <time title="عُدل: 2020-07-22 16:19:17" itemprop="dateModified" datetime="2020-07-22T16:19:17+08:00">2020-07-22</time>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-22 16:19:17" itemprop="dateModified" datetime="2020-07-22T16:19:17+08:00">2020-07-22</time>
               </span>
 
           
@@ -763,16 +828,16 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
 
-              <time title="أُنشأ: 2020-04-14 16:22:32" itemprop="dateCreated datePublished" datetime="2020-04-14T16:22:32+08:00">2020-04-14</time>
+              <time title="Created: 2020-04-14 16:22:32" itemprop="dateCreated datePublished" datetime="2020-04-14T16:22:32+08:00">2020-04-14</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
-                <span class="post-meta-item-text">عُدل في</span>
-                <time title="عُدل: 2020-04-30 15:28:00" itemprop="dateModified" datetime="2020-04-30T15:28:00+08:00">2020-04-30</time>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-30 15:28:00" itemprop="dateModified" datetime="2020-04-30T15:28:00+08:00">2020-04-30</time>
               </span>
 
           
@@ -869,10 +934,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-14 15:40:53 / عُدل: 16:12:21" itemprop="dateCreated datePublished" datetime="2020-04-14T15:40:53+08:00">2020-04-14</time>
+              <time title="Created: 2020-04-14 15:40:53 / Modified: 16:12:21" itemprop="dateCreated datePublished" datetime="2020-04-14T15:40:53+08:00">2020-04-14</time>
             </span>
 
           
@@ -971,10 +1036,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-14 14:06:55 / عُدل: 16:55:50" itemprop="dateCreated datePublished" datetime="2020-04-14T14:06:55+08:00">2020-04-14</time>
+              <time title="Created: 2020-04-14 14:06:55 / Modified: 16:55:50" itemprop="dateCreated datePublished" datetime="2020-04-14T14:06:55+08:00">2020-04-14</time>
             </span>
 
           
@@ -1075,10 +1140,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">نُشر في</span>
+              <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="أُنشأ: 2020-04-14 11:03:41 / عُدل: 16:56:06" itemprop="dateCreated datePublished" datetime="2020-04-14T11:03:41+08:00">2020-04-14</time>
+              <time title="Created: 2020-04-14 11:03:41 / Modified: 16:56:06" itemprop="dateCreated datePublished" datetime="2020-04-14T11:03:41+08:00">2020-04-14</time>
             </span>
 
           
@@ -1141,101 +1206,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/14/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">策略模式（Strategy）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">نُشر في</span>
-              
-
-              <time title="أُنشأ: 2020-04-14 09:56:53 / عُدل: 16:55:32" itemprop="dateCreated datePublished" datetime="2020-04-14T09:56:53+08:00">2020-04-14</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><ul>
-<li>定义： 在计算机编程中，策略模式（也称为策略模式）是一种行为软件设计模式，<br>可以在运行时选择算法的行为。</li>
-<li>意图： 定义一系列的算法，把它们一个个封装起来，并且使它们可相互替换。</li>
-<li>主要解决： 在有多种算法相似的情况下，使用if…else所带来的复杂和难以维护。</li>
-<li>何时使用： 一个系统有许许多多类，而区分它们的只是他们的直接的行为。</li>
-<li>如何解决： 将这些算法封装成一个一个的类，任意的替换。</li>
-<li>关键代码： 实现同一个接口。</li>
-</ul>
-<h3 id="现实中的实际应用"><a href="#现实中的实际应用" class="headerlink" title="现实中的实际应用"></a>现实中的实际应用</h3><ol>
-<li>诸葛亮的锦囊妙计，每一个锦囊就是一个策略。</li>
-<li>旅行的出游方式，选择骑自行车。坐汽车。每一种旅行方式都是一个策略。</li>
-</ol>
-<h3 id="程序代码实现"><a href="#程序代码实现" class="headerlink" title="程序代码实现"></a>程序代码实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">interface Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BusTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通工具_&quot;.$vechicle;</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CarTravel implements Travel</span><br><span class="line">&#123;</span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		echo &quot;乘坐对应的交通_&quot;.$vehicle；</span><br><span class="line"></span><br><span class="line">		return $vehicle;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后我们的客户将使用任何策略</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Traveler</span><br><span class="line">&#123;</span><br><span class="line">	protected $travel;</span><br><span class="line"></span><br><span class="line">	public function __construct(Travel $travel)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;travel &#x3D; $travel;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function vehicle(string $vehicle): string</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;travel-&gt;vehicle($vehicle);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实际使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$vehicle &#x3D; &#39;私家车&#39;;</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new CarTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br><span class="line"></span><br><span class="line">$traveler &#x3D; new Traveler(new BusTravel());</span><br><span class="line">$traveler-&gt;vehicle($vehicle);</span><br></pre></td></tr></table></figure>
-
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>算法可以自由切换。</li>
-<li>避免使用多重条件判断。</li>
-<li>扩展性良好。</li>
-</ul>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li>策略类会增多。</li>
-<li>所有策略类都需要对外暴露。</li>
-</ul>
-<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
-<li>如果一个系统里面有许多类，它们之间的区别仅在于它们的行为，那么使用策略模式<br>可以动态地让一个对象在许多行为中选择一种行为。</li>
-<li>一个系统需要动态地在几种算法中选择一种。</li>
-<li>如果一个对象有很多的行为，如果不用恰当的模式，这些行为就只好使用多重的条件<br>选择语句来实现。</li>
-</ol>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果一个系统的策略多余四个，就需要考虑使用混合模式，解决策略类膨胀的问题。</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="الصفحة السابقة"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="الصفحة التالية"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1279,10 +1253,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          المحتويات
+          Table of Contents
         </li>
         <li class="sidebar-nav-overview">
-          عام
+          Overview
         </li>
       </ul>
 
@@ -1301,13 +1275,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
-          <span class="site-state-item-name">المقالات</span>
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">11</span>
-        <span class="site-state-item-name">الوسوم</span>
+        <span class="site-state-item-name">tags</span>
       </div>
   </nav>
 </div>
@@ -1339,7 +1313,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">GIO</span>
 </div>
-  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
         
