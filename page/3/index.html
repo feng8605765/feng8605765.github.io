@@ -144,6 +144,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/Laravel%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%EF%BC%8CIoc%EF%BC%8CDI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/21/Laravel%E6%9C%8D%E5%8A%A1%E5%AE%B9%E5%99%A8%EF%BC%8CIoc%EF%BC%8CDI/" class="post-title-link" itemprop="url">Laravel服务容器，Ioc，DI</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+              
+
+              <time title="أُنشأ: 2020-04-21 10:21:12 / عُدل: 14:04:17" itemprop="dateCreated datePublished" datetime="2020-04-21T10:21:12+08:00">2020-04-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Laravel服务容器是用于管理类依赖关系和执行依赖关系注入的强大工具。依赖注入是一<br>个花哨的短语，从本质上讲是这样的：类依赖通过构造函数或在某些情况下通过”设置”方法<br>注入到”类”中。</p>
+<h3 id="DI"><a href="#DI" class="headerlink" title="DI"></a>DI</h3><p>DI就是常说的依赖注入，那么究竟什么是依赖注入呢？<br>打个比方，电脑需要键盘和鼠标我们才能进行操作，这个”需要”换句话说就是”依赖”键盘和<br>鼠标。那么相应的一个类需要另一个类才能进行作业，那么这也就是依赖。<br>如下示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct()</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的computer类依赖了键盘类，既然我们已经知道了什么是依赖，那么什么是注入呢？</p>
+<p>我们改造一下上面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Computer&#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct(Keyboard $keyboard)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new Keyboard());</span><br></pre></td></tr></table></figure>
+
+<p>关于依赖注入，我的理解是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">所需要的类通过参数的形式传入的就是依赖注入</span><br></pre></td></tr></table></figure>
+
+<h3 id="IOC"><a href="#IOC" class="headerlink" title="IOC"></a>IOC</h3><blockquote>
+<p>IOC是什么呢？<br>    控制容器的Laravel反转是用于管理依赖项的强大工具。依赖注入是一种删除硬编码类依赖的方法。<br>    而是在运行时注入依赖项，因为可以轻松交换依赖项实现，因此具有更大的灵活性。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">控制反转的意思是说将依赖类的控制权交出去，由主动变为被动。</span><br></pre></td></tr></table></figure>
+<p>代码示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">namespace App\Http\Controllerd;</span><br><span class="line"></span><br><span class="line">use Illuminate\Http\Request;</span><br><span class="line"></span><br><span class="line">class SessionController extends Controller</span><br><span class="line">&#123;</span><br><span class="line">	public function login(Request $request)</span><br><span class="line">	&#123;</span><br><span class="line">		&#x2F;&#x2F; 这就是IOC 我们不需要主动传入类。一切由laravel去实现</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务容器"><a href="#服务容器" class="headerlink" title="服务容器"></a>服务容器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">它的目的就是解耦依赖</span><br></pre></td></tr></table></figure>
+<p>服务容器类似设计模式中的《享元模式》，区别在于服务容器解决了所有依赖的实现。<br>依然是电脑的例子，我们知道电脑依赖键盘鼠标，可是键盘鼠标也有很多种呀。<br>代码原始示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; null) &#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上出现的问题已经很明显了,如果我们需要增加另外一个键盘，我们又得对这个类进行修改。这样下去<br>这个类会变的庞大且耦合度过高。所以接下来我么可以使用工厂模式：</p>
+<ul>
+<li><p>简单工厂模式<br>这样我们就可以避免直接修改Computer 类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class Factory &#123;</span><br><span class="line"></span><br><span class="line">	public static function getinstance($type)&#123;</span><br><span class="line"></span><br><span class="line">		switch($type) &#123;</span><br><span class="line">			case &#39;common&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new CommonKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			case &#39;awesome&#39;:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new AweSomeKeyboard();</span><br><span class="line">			break;</span><br><span class="line">			default:</span><br><span class="line">				$this-&gt;keyboard &#x3D; new Keyboard();</span><br><span class="line">			break;</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line"></span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct($type &#x3D; &#39;&#39;)&#123;</span><br><span class="line"></span><br><span class="line">		$this-&gt;keyboard &#x3D; Factory::getinstance($type);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样使用了简单工厂模式后，我们后续的修改可以不用对computer类进行操作而只要修改工厂类就行了。<br>这就相当于对Computer类进行了解耦。<br>Computer类虽不在依赖那些键盘类了，但是却变成了依赖工厂类了。<br>后续添加新类型的键盘就必须对工厂类进行修改。<br>所以这个工厂类还不能很好的满足要求，我们知道电脑对键盘的接口都是一致的，键盘必须实现这一接<br>口才能被电脑识别，那我们对Computer和Keyboard类进行修改。</p>
+</li>
+<li><p>DI(依赖注入)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">interface Board &#123;</span><br><span class="line">	public function getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class CommonKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()&#123;</span><br><span class="line">		echo &#39;普通键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class MechanicalKeyboard implements Board &#123;</span><br><span class="line"></span><br><span class="line">	public function getName()</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;机械键盘&#39;；</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Computer &#123;</span><br><span class="line">	protected $keyboard;</span><br><span class="line"></span><br><span class="line">	public function __construct (Board $keyboard) &#123;</span><br><span class="line">		$this-&gt;keyboard &#x3D; $keyboard;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$computer &#x3D; new Computer(new MechanicalKeyboard());</span><br></pre></td></tr></table></figure>
+<p>可是这样也有问题，如果我们后续对这台电脑使用的键盘不满意要进行替换呢？我们又回到了原点了，<br>必须去修改传入的键盘类。能不能做成可配置的呢？</p>
+</li>
+<li><p>IOC服务容器（超级工厂）</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class Container</span><br><span class="line">&#123;</span><br><span class="line">	protected $binds;</span><br><span class="line"></span><br><span class="line">	protected $instances;</span><br><span class="line"></span><br><span class="line">	public function bind($abstract, $concrete)</span><br><span class="line">	&#123;</span><br><span class="line">		if($concrete instanceof Closure) &#123;</span><br><span class="line">			$this-&gt;binds[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$this-&gt;instances[$abstract] &#x3D; $concrete;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function make($abstract, $parameters &#x3D; [])</span><br><span class="line">	&#123;</span><br><span class="line">		if (isset($this-&gt;instances[$abstract]))&#123;</span><br><span class="line">			return $this-&gt;instances[$abstract];</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		array_unshift($parameters, $this);</span><br><span class="line"></span><br><span class="line">		return call_user_func_array($this-&gt;binds[$abstranct], $parameters);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这就是一个简单的IOC服务容器。<br>这个要怎么解决我们上述的问题呢？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$container &#x3D; new Container();</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new CommonKeyboard();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container,$moudle)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($moudle));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
+
+<p>这里生产出来的Computer类就是一个使用普通键盘类了。<br>解释一下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bind(name, function($container)&#123;</span><br><span class="line">	return new Name();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">这里的name和Name之间的关系是：</span><br><span class="line">   当我需要name类的时候你就给我实例化Name类。</span><br><span class="line"></span><br><span class="line">   make(name)方法是对name进行生产返回一个实例。</span><br></pre></td></tr></table></figure>
+
+<p>如果我们要更换键盘怎么办呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$container-&gt;bind(&#39;Board&#39;, function($container)&#123;</span><br><span class="line">	return new MechanicalKeyboard();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">$container-&gt;bind(&#39;Computer&#39;, function($container, $module)&#123;</span><br><span class="line">	return new Computer($container-&gt;make($module));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$computer &#x3D; $container-&gt;make(&#39;Computer&#39;,[&#39;Board&#39;]);</span><br></pre></td></tr></table></figure>
+
+<p>只要对bind绑定的Board类的实现进行修改，我们就可以很容易替换掉键盘了，这就是一个服务容器。<br>对服务容器进行一个理解：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">容器就是一个装东西的，好比碗。而服务就是这个碗要装的饭 菜等等东西。当我没需要饭时，</span><br><span class="line">我们就能从这个碗里拿到，如果你想要在饭里加点菜（也就是饭依赖注入了菜），我们从碗里</span><br><span class="line">直接拿饭就可以了，而这些依赖都由容器解决了（这也就是控制反转）。</span><br></pre></td></tr></table></figure>
+
+<p>我们需要做的就是对提供的服务进行维护。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/16/docker%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1114,98 +1223,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/14/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">观察者模式（Observer）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">نُشر في</span>
-              
-
-              <time title="أُنشأ: 2020-04-14 11:03:41 / عُدل: 16:56:06" itemprop="dateCreated datePublished" datetime="2020-04-14T11:03:41+08:00">2020-04-14</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="观察者模式（Observer）"><a href="#观察者模式（Observer）" class="headerlink" title="观察者模式（Observer）"></a>观察者模式（Observer）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">当对象间存在一对多关系时，则使用观察者模式（Observer Pattern）。比如，</span><br><span class="line">当一个对象被修改时，则会自动通知它的依赖对象。观察者模式属于行为型模式。</span><br></pre></td></tr></table></figure>
-<ul>
-<li>意图： 定义对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有</li>
-<li>依赖它的对象都得到通知并自动更新。</li>
-<li>主要解决： 一个对象状态改变给其它对象通知的问题，而且要考虑到易用和低耦合，保证高度的协作。</li>
-<li>何时使用：一个对象（目标对象）的状态发生改变，所有的依赖对象（观察者对象）都将<br>得到通知，进行广播通知。</li>
-<li>如何解决：使用面向对象技术，可以将这种依赖关系弱化。</li>
-<li>关键代码：在抽象类里面有一个ArrayList 存放观察者们。</li>
-</ul>
-<h3 id="现实中应用"><a href="#现实中应用" class="headerlink" title="现实中应用"></a>现实中应用</h3><ul>
-<li>求职者订阅了一些职位发布网站，只要有匹配的工作机会，他们就会得到通知。</li>
-<li>拍卖的时候，拍卖师观察最高标价，然后通知给其他竞价者竞价。</li>
-<li>西游记里面悟空请求菩萨降服红孩儿，菩萨洒了一地水招来一个老乌龟，这个乌龟就是<br>观察者，它观察菩萨洒水这个动作。</li>
-</ul>
-<h3 id="程序上的实现"><a href="#程序上的实现" class="headerlink" title="程序上的实现"></a>程序上的实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">class JobPost</span><br><span class="line">&#123;</span><br><span class="line">	protect $title;</span><br><span class="line"></span><br><span class="line">	public function __contruct(string $title)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;title &#x3D; $title;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function getTitle()</span><br><span class="line">	&#123;</span><br><span class="line">		return $this-&gt;title;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class JobSeeker implements Observer</span><br><span class="line">&#123;</span><br><span class="line">	protected $name;</span><br><span class="line"></span><br><span class="line">	public function __contruct(string $name)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;name &#x3D; $name;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function onJobPosted(JobPost $job)</span><br><span class="line">	&#123;</span><br><span class="line">		echo &#39;Hi &#39;. $this-&gt;name.&#39;! New job posted: &#39;.$job-&gt;getTitle();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后我们会找到求职者会订阅的招聘信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class EmploymentAgency implements Observable</span><br><span class="line">&#123;</span><br><span class="line">	protected $observers &#x3D; [];</span><br><span class="line"></span><br><span class="line">	protected function notify(JobPost $jobPosting)</span><br><span class="line">	&#123;</span><br><span class="line">		foreach ($this-&gt;observers as $observer)&#123;</span><br><span class="line">			$observer-&gt;onJobPosted($jobPosting);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function attach(Observer $observer)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;observers[] &#x3D; $observer;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public function addJob(JobPost $jobPosting)</span><br><span class="line">	&#123;</span><br><span class="line">		$this-&gt;notify($jobPosting);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>接下来调用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$johnDoe &#x3D; new JobSeeker(&#39;John Doe&#39;);</span><br><span class="line">$janeDoe &#x3D; new JobSeeker(&#39;Jane Doe&#39;);</span><br><span class="line"></span><br><span class="line">$jobPostings &#x3D; new EmploymentAgency();</span><br><span class="line">$jobPostings-&gt;attach($johnDoe);</span><br><span class="line">$jobPostings-&gt;attach($janeDoe);</span><br><span class="line"></span><br><span class="line">$jobPostings-&gt;addJob(new JobPost(&#39;Software Engineer&#39;));</span><br></pre></td></tr></table></figure>
-
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>观察者和被观察者是抽象耦合的。</li>
-<li>建立一套触发机制。</li>
-</ul>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li>一个抽象模型有俩个方面，其中一个方面依赖于另一个方面。将这些方面封装在独立的<br>对象中使它们可以各自独立的改变和复用。</li>
-<li>一个对象的改变将导致其它一个或多个对象也发送改变，而不知道具体有多少对象将发<br>生改变，可以降低对象之间的耦合度。</li>
-<li>一个对象必须通知其它对象，而并不知道这些对象是谁。</li>
-<li>需要系统中创建一个触发链，A对象的行为将影响B对象，B对象的行为将影响C对象，可<br>以使用观察者模式创建一种链式触发机制。</li>
-</ul>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
-<li>避免循环引用</li>
-<li>如果顺序执行，某一观察者错误会导致系统卡壳，一般采用异步形式</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1275,7 +1292,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">المقالات</span>
         </a>
       </div>

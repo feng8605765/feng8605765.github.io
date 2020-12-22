@@ -20,18 +20,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Rabbitmq的工作流程RabbitMQ组成部分说明如下：  Broker:消息队列服务进程,此进程包括两个部分:Exchange和Queue. Exchange:消息队列交换机,按一定的规则将消息路由转发到某个队列,对消息进行过滤。 Queue:消息队列,存储消息的队列,消息到达队列并转发给指定的消费方。 Producer:消息生产者,即生产方客户端,生产方客户端将消息发送给MQ。 Consu">
+  <meta name="description" content="AMQP是什么AMQP（Advanced Message Queuing Protocol，高级消息队列协议）是一个进程间传递异步消息的网络协议。 AMQP模型 工作过程发布者（Publisher）发布消息（Message），经由交换机（Exchange）。交换机根据路由规则将收到的消息分发给与该交换机绑定的队列（Queue）。最后AMQP代理会将消息投递给订阅了此队列的消费者，或者消费者按照需求">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RabbitMq工作流程">
-<meta property="og:url" content="http://yoursite.com/2020/08/17/RabbitMq%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:title" content="AMQP协议">
+<meta property="og:url" content="http://yoursite.com/2020/12/22/AMQP%E5%8D%8F%E8%AE%AE/index.html">
 <meta property="og:site_name" content="十二月的doge">
-<meta property="og:description" content="Rabbitmq的工作流程RabbitMQ组成部分说明如下：  Broker:消息队列服务进程,此进程包括两个部分:Exchange和Queue. Exchange:消息队列交换机,按一定的规则将消息路由转发到某个队列,对消息进行过滤。 Queue:消息队列,存储消息的队列,消息到达队列并转发给指定的消费方。 Producer:消息生产者,即生产方客户端,生产方客户端将消息发送给MQ。 Consu">
-<meta property="article:published_time" content="2020-08-17T06:41:33.000Z">
-<meta property="article:modified_time" content="2020-08-31T06:26:38.468Z">
+<meta property="og:description" content="AMQP是什么AMQP（Advanced Message Queuing Protocol，高级消息队列协议）是一个进程间传递异步消息的网络协议。 AMQP模型 工作过程发布者（Publisher）发布消息（Message），经由交换机（Exchange）。交换机根据路由规则将收到的消息分发给与该交换机绑定的队列（Queue）。最后AMQP代理会将消息投递给订阅了此队列的消费者，或者消费者按照需求">
+<meta property="og:image" content="https://img-blog.csdn.net/20181022113306601?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zNzY0MTgzMg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="article:published_time" content="2020-12-22T02:27:50.000Z">
+<meta property="article:modified_time" content="2020-12-22T02:42:34.596Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdn.net/20181022113306601?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zNzY0MTgzMg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
 
-<link rel="canonical" href="http://yoursite.com/2020/08/17/RabbitMq%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/">
+<link rel="canonical" href="http://yoursite.com/2020/12/22/AMQP%E5%8D%8F%E8%AE%AE/">
 
 
 <script id="page-configurations">
@@ -44,7 +46,7 @@
   };
 </script>
 
-  <title>RabbitMq工作流程 | 十二月的doge</title>
+  <title>AMQP协议 | 十二月的doge</title>
   
 
 
@@ -149,7 +151,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/17/RabbitMq%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/22/AMQP%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -162,7 +164,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          RabbitMq工作流程
+          AMQP协议
         </h1>
 
         <div class="post-meta">
@@ -171,16 +173,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">نُشر في</span>
+              
 
-              <time title="أُنشأ: 2020-08-17 14:41:33" itemprop="dateCreated datePublished" datetime="2020-08-17T14:41:33+08:00">2020-08-17</time>
+              <time title="أُنشأ: 2020-12-22 10:27:50 / عُدل: 10:42:34" itemprop="dateCreated datePublished" datetime="2020-12-22T10:27:50+08:00">2020-12-22</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">عُدل في</span>
-                <time title="عُدل: 2020-08-31 14:26:38" itemprop="dateModified" datetime="2020-08-31T14:26:38+08:00">2020-08-31</time>
-              </span>
 
           
 
@@ -193,85 +189,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="Rabbitmq的工作流程"><a href="#Rabbitmq的工作流程" class="headerlink" title="Rabbitmq的工作流程"></a>Rabbitmq的工作流程</h3><p><strong>RabbitMQ组成部分说明如下：</strong></p>
-<ul>
-<li>Broker:消息队列服务进程,此进程包括两个部分:Exchange和Queue.</li>
-<li>Exchange:消息队列交换机,按一定的规则将消息路由转发到某个队列,对消息进行过滤。</li>
-<li>Queue:消息队列,存储消息的队列,消息到达队列并转发给指定的消费方。</li>
-<li>Producer:消息生产者,即生产方客户端,生产方客户端将消息发送给MQ。</li>
-<li>Consumer:消息消费者,即消费方客户端,接收MQ转发的消息。</li>
-</ul>
-<p><strong>消息发布接收流程</strong></p>
-<p>————发送消息————</p>
-<ol>
-<li>生产者和Broker建立TCP连接。</li>
-<li>生产者和Broker建立通道。</li>
-<li>生产者通过通道消息发送给Broker,由Exchange将消息进行转发。</li>
-<li>Exchange将消息转发到指定的Queue(队列)</li>
+        <h3 id="AMQP是什么"><a href="#AMQP是什么" class="headerlink" title="AMQP是什么"></a>AMQP是什么</h3><p>AMQP（Advanced Message Queuing Protocol，高级消息队列协议）是一个进程间传递异步消息的网络协议。</p>
+<h3 id="AMQP模型"><a href="#AMQP模型" class="headerlink" title="AMQP模型"></a>AMQP模型</h3><p><img src="https://img-blog.csdn.net/20181022113306601?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zNzY0MTgzMg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="avatar"></p>
+<h3 id="工作过程"><a href="#工作过程" class="headerlink" title="工作过程"></a>工作过程</h3><p>发布者（Publisher）发布消息（Message），经由交换机（Exchange）。<br>交换机根据路由规则将收到的消息分发给与该交换机绑定的队列（Queue）。<br>最后AMQP代理会将消息投递给订阅了此队列的消费者，或者消费者按照需求自行获取。</p>
+<h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><ol>
+<li>发布者、交换机、队列、消费者都可以有多个。同时因为AMQP是一个网络协议，所以这个过程中的发布者，消费者，消息代理<br>可以分别存在于不同的设备上。</li>
 </ol>
-<p>————接收消息————</p>
-<ol>
-<li>消费者和Broker建立TCP连接。</li>
-<li>消费者和Broker建立通道。</li>
-<li>消费者监听指定的Queue(队列)</li>
-<li>当有消息到达Queue时Broker默认将消息推送给消费者。</li>
-<li>消费者接收到消息。</li>
-</ol>
-<p><strong>生产者操作流程</strong></p>
-<ol>
-<li>创建连接</li>
-<li>创建通道</li>
-<li>声明队列</li>
-<li>发送消息</li>
-</ol>
-<p><strong>消费者操作流程</strong></p>
-<ol>
-<li>创建连接</li>
-<li>创建通道</li>
-<li>声明队列</li>
-<li>监听队列</li>
-<li>接收消息</li>
-<li>ack回复</li>
-</ol>
-<p><strong>RabbitMQ工作模式</strong></p>
-<ol>
-<li>Work queues</li>
-<li>Publish/Subscribe</li>
-<li>Routing</li>
-<li>Topics</li>
-<li>Header</li>
-<li>RPC</li>
-</ol>
-<h4 id="Work-queues"><a href="#Work-queues" class="headerlink" title="Work queues"></a>Work queues</h4><p>介绍：work queues与入门程序相比,多了一个消费端,两个消费端共同消费同一个队列的消息。</p>
-<p>应用场景：对于任务过重或任务较多情况使用工作队列可以提高任务处理的速度.</p>
-<p>测试：</p>
-<ol>
-<li>使用入门程序,启动多个消费者。</li>
-<li>生产者发送多个消息。</li>
-</ol>
-<p>结果：</p>
-<ol>
-<li>一条消息只会被一个消费者接收。</li>
-<li>rabbit采用轮询的方式将消息是平均发送给消费者的.</li>
-<li>消费者在处理完某条消息后,才会收到下一条消息。</li>
-</ol>
-<h4 id="Publish-subscribe"><a href="#Publish-subscribe" class="headerlink" title="Publish/subscribe"></a>Publish/subscribe</h4><p>介绍: 发布订阅模式:</p>
-<ol>
-<li>每个消费者监听自己的队列。</li>
-<li>生产者将消息发给broker,由交换机将消息转发到绑定此交换机的每个队列,每个绑定交换机的队列都将接收到消息。</li>
-</ol>
-<p>小结：</p>
-<p>一 publish/subscribe与work queues有什么区别。</p>
-<p>区别：</p>
-<ol>
-<li>work queues不用定义交换机,而publish/subscribe需要定义交换机.</li>
-<li>publish/subscribe的生产方式是面向交换机发送消息,work queues的生产方式面向队列发送消息(底层使用默认交换机)。</li>
-<li>publish/subscribe需要设置队列和交换机的绑定,work queues 不需要设置,实质上work queues会将队列绑定到默认的交换机。</li>
-</ol>
-<p>相同点:</p>
-<p>所以两者实现的发布/订阅的效果是一样的.多个消费端监听同一个队列不会重复消费消息。</p>
-<p>二 实质工作用什么 publish/subscribe 还是work queues。</p>
-<p>建议使用publish/subscribe,发布订阅模式比工作队列模式更加强大,并且发布订阅模式可以指定自己专用的交换机</p>
+<p>2、发布者发布消息时可以给消息指定各种消息属性。有些属性有可能会被取消代理（Brokers）使用，然而其他的属性则是完全不<br>透明的，它们只能被接收消息的应用所使用。</p>
+<p>3、从安全角度考虑，网络是不可靠的，又或是消费者在处理消息的过程中意外挂掉，这样没有处理成功的消息就会丢失。基于此原<br>因，AMQP模块包含了一个消息确认（Message Acknowledgements）机制：当一个消息从队列中投递给消费者后，不会立即从队列中<br>删除，直到它收到来自消费者的确认回执（Acknowledgement）后，才完全从队列中删除。</p>
+<p>4、在某些情况下，例如当一个消息无法被成功路由时（无法从交换机分发到队列），消息或许会被返回给发布者并丢弃。或者，如果<br>消息代理执行了延期操作，消息会被放入一个所谓的死信队列中。此时，消息发布者可以选择某些参数来处理这些特殊情况。</p>
 
     </div>
 
@@ -287,8 +213,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/08/06/elasticsearch%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA/" rel="prev" title="elasticsearch索引创建">
-      <i class="fa fa-chevron-left"></i> elasticsearch索引创建
+    <a href="/2020/09/17/RabbitMq%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" rel="prev" title="RabbitMq工作流程">
+      <i class="fa fa-chevron-left"></i> RabbitMq工作流程
     </a></div>
       <div class="post-nav-item"></div>
     </div>
@@ -349,7 +275,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rabbitmq的工作流程"><span class="nav-number">1.</span> <span class="nav-text">Rabbitmq的工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Work-queues"><span class="nav-number">1.1.</span> <span class="nav-text">Work queues</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Publish-subscribe"><span class="nav-number">1.2.</span> <span class="nav-text">Publish&#x2F;subscribe</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#AMQP是什么"><span class="nav-number">1.</span> <span class="nav-text">AMQP是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AMQP模型"><span class="nav-number">2.</span> <span class="nav-text">AMQP模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作过程"><span class="nav-number">3.</span> <span class="nav-text">工作过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深入理解"><span class="nav-number">4.</span> <span class="nav-text">深入理解</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -363,7 +289,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">المقالات</span>
         </a>
       </div>

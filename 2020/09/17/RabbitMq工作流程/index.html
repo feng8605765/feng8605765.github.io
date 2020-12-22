@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="123456789101112131415nginx:	container_name: naginx	restart: always	image: &#x2F;&#x2F; 镜像名称	volumes:	- .&#x2F;config&#x2F;nginx&#x2F;$&amp;#123;DOCKER_ENV&amp;#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;o">
+  <meta name="description" content="Rabbitmq的工作流程RabbitMQ组成部分说明如下：  Broker:消息队列服务进程,此进程包括两个部分:Exchange和Queue. Exchange:消息队列交换机,按一定的规则将消息路由转发到某个队列,对消息进行过滤。 Queue:消息队列,存储消息的队列,消息到达队列并转发给指定的消费方。 Producer:消息生产者,即生产方客户端,生产方客户端将消息发送给MQ。 Consu">
 <meta property="og:type" content="article">
-<meta property="og:title" content="docker配置">
-<meta property="og:url" content="http://yoursite.com/2020/04/16/docker%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:title" content="RabbitMq工作流程">
+<meta property="og:url" content="http://yoursite.com/2020/09/17/RabbitMq%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/index.html">
 <meta property="og:site_name" content="十二月的doge">
-<meta property="og:description" content="123456789101112131415nginx:	container_name: naginx	restart: always	image: &#x2F;&#x2F; 镜像名称	volumes:	- .&#x2F;config&#x2F;nginx&#x2F;$&amp;#123;DOCKER_ENV&amp;#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;o">
-<meta property="article:published_time" content="2020-04-16T08:50:43.000Z">
-<meta property="article:modified_time" content="2020-04-16T08:52:54.043Z">
+<meta property="og:description" content="Rabbitmq的工作流程RabbitMQ组成部分说明如下：  Broker:消息队列服务进程,此进程包括两个部分:Exchange和Queue. Exchange:消息队列交换机,按一定的规则将消息路由转发到某个队列,对消息进行过滤。 Queue:消息队列,存储消息的队列,消息到达队列并转发给指定的消费方。 Producer:消息生产者,即生产方客户端,生产方客户端将消息发送给MQ。 Consu">
+<meta property="article:published_time" content="2020-09-17T06:41:33.000Z">
+<meta property="article:modified_time" content="2020-12-22T02:28:10.950Z">
 <meta property="article:author" content="GIO">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/04/16/docker%E9%85%8D%E7%BD%AE/">
+<link rel="canonical" href="http://yoursite.com/2020/09/17/RabbitMq%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/">
 
 
 <script id="page-configurations">
@@ -44,7 +44,7 @@
   };
 </script>
 
-  <title>docker配置 | 十二月的doge</title>
+  <title>RabbitMq工作流程 | 十二月的doge</title>
   
 
 
@@ -149,7 +149,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/16/docker%E9%85%8D%E7%BD%AE/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/17/RabbitMq%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -162,7 +162,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          docker配置
+          RabbitMq工作流程
         </h1>
 
         <div class="post-meta">
@@ -171,10 +171,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">نُشر في</span>
-              
 
-              <time title="أُنشأ: 2020-04-16 16:50:43 / عُدل: 16:52:54" itemprop="dateCreated datePublished" datetime="2020-04-16T16:50:43+08:00">2020-04-16</time>
+              <time title="أُنشأ: 2020-09-17 14:41:33" itemprop="dateCreated datePublished" datetime="2020-09-17T14:41:33+08:00">2020-09-17</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-12-22 10:28:10" itemprop="dateModified" datetime="2020-12-22T10:28:10+08:00">2020-12-22</time>
+              </span>
 
           
 
@@ -187,8 +193,85 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">nginx:</span><br><span class="line">	container_name: naginx</span><br><span class="line">	restart: always</span><br><span class="line">	image: &#x2F;&#x2F; 镜像名称</span><br><span class="line">	volumes:</span><br><span class="line">	- .&#x2F;config&#x2F;nginx&#x2F;$&#123;DOCKER_ENV&#125;&#x2F;nginx.conf:&#x2F;usr&#x2F;local&#x2F;openresty&#x2F;nginx&#x2F;conf&#x2F;nginx.conf</span><br><span class="line">	networks:</span><br><span class="line">		- </span><br><span class="line">	expose:</span><br><span class="line">		-80</span><br><span class="line">		-443</span><br><span class="line">	ports:</span><br><span class="line">		-80:80</span><br><span class="line">		-443:443</span><br><span class="line">	command:</span><br></pre></td></tr></table></figure>
-
+        <h3 id="Rabbitmq的工作流程"><a href="#Rabbitmq的工作流程" class="headerlink" title="Rabbitmq的工作流程"></a>Rabbitmq的工作流程</h3><p><strong>RabbitMQ组成部分说明如下：</strong></p>
+<ul>
+<li>Broker:消息队列服务进程,此进程包括两个部分:Exchange和Queue.</li>
+<li>Exchange:消息队列交换机,按一定的规则将消息路由转发到某个队列,对消息进行过滤。</li>
+<li>Queue:消息队列,存储消息的队列,消息到达队列并转发给指定的消费方。</li>
+<li>Producer:消息生产者,即生产方客户端,生产方客户端将消息发送给MQ。</li>
+<li>Consumer:消息消费者,即消费方客户端,接收MQ转发的消息。</li>
+</ul>
+<p><strong>消息发布接收流程</strong></p>
+<p>————发送消息————</p>
+<ol>
+<li>生产者和Broker建立TCP连接。</li>
+<li>生产者和Broker建立通道。</li>
+<li>生产者通过通道消息发送给Broker,由Exchange将消息进行转发。</li>
+<li>Exchange将消息转发到指定的Queue(队列)</li>
+</ol>
+<p>————接收消息————</p>
+<ol>
+<li>消费者和Broker建立TCP连接。</li>
+<li>消费者和Broker建立通道。</li>
+<li>消费者监听指定的Queue(队列)</li>
+<li>当有消息到达Queue时Broker默认将消息推送给消费者。</li>
+<li>消费者接收到消息。</li>
+</ol>
+<p><strong>生产者操作流程</strong></p>
+<ol>
+<li>创建连接</li>
+<li>创建通道</li>
+<li>声明队列</li>
+<li>发送消息</li>
+</ol>
+<p><strong>消费者操作流程</strong></p>
+<ol>
+<li>创建连接</li>
+<li>创建通道</li>
+<li>声明队列</li>
+<li>监听队列</li>
+<li>接收消息</li>
+<li>ack回复</li>
+</ol>
+<p><strong>RabbitMQ工作模式</strong></p>
+<ol>
+<li>Work queues</li>
+<li>Publish/Subscribe</li>
+<li>Routing</li>
+<li>Topics</li>
+<li>Header</li>
+<li>RPC</li>
+</ol>
+<h4 id="Work-queues"><a href="#Work-queues" class="headerlink" title="Work queues"></a>Work queues</h4><p>介绍：work queues与入门程序相比,多了一个消费端,两个消费端共同消费同一个队列的消息。</p>
+<p>应用场景：对于任务过重或任务较多情况使用工作队列可以提高任务处理的速度.</p>
+<p>测试：</p>
+<ol>
+<li>使用入门程序,启动多个消费者。</li>
+<li>生产者发送多个消息。</li>
+</ol>
+<p>结果：</p>
+<ol>
+<li>一条消息只会被一个消费者接收。</li>
+<li>rabbit采用轮询的方式将消息是平均发送给消费者的.</li>
+<li>消费者在处理完某条消息后,才会收到下一条消息。</li>
+</ol>
+<h4 id="Publish-subscribe"><a href="#Publish-subscribe" class="headerlink" title="Publish/subscribe"></a>Publish/subscribe</h4><p>介绍: 发布订阅模式:</p>
+<ol>
+<li>每个消费者监听自己的队列。</li>
+<li>生产者将消息发给broker,由交换机将消息转发到绑定此交换机的每个队列,每个绑定交换机的队列都将接收到消息。</li>
+</ol>
+<p>小结：</p>
+<p>一 publish/subscribe与work queues有什么区别。</p>
+<p>区别：</p>
+<ol>
+<li>work queues不用定义交换机,而publish/subscribe需要定义交换机.</li>
+<li>publish/subscribe的生产方式是面向交换机发送消息,work queues的生产方式面向队列发送消息(底层使用默认交换机)。</li>
+<li>publish/subscribe需要设置队列和交换机的绑定,work queues 不需要设置,实质上work queues会将队列绑定到默认的交换机。</li>
+</ol>
+<p>相同点:</p>
+<p>所以两者实现的发布/订阅的效果是一样的.多个消费端监听同一个队列不会重复消费消息。</p>
+<p>二 实质工作用什么 publish/subscribe 还是work queues。</p>
+<p>建议使用publish/subscribe,发布订阅模式比工作队列模式更加强大,并且发布订阅模式可以指定自己专用的交换机</p>
 
     </div>
 
@@ -204,12 +287,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/16/vagrant%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/" rel="prev" title="vagrant基本命令">
-      <i class="fa fa-chevron-left"></i> vagrant基本命令
+    <a href="/2020/09/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/" rel="prev" title="RabbitMQ的问题">
+      <i class="fa fa-chevron-left"></i> RabbitMQ的问题
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/16/docker%E5%91%BD%E4%BB%A4/" rel="next" title="docker命令">
-      docker命令 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/12/22/AMQP%E5%8D%8F%E8%AE%AE/" rel="next" title="AMQP协议">
+      AMQP协议 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -269,6 +352,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rabbitmq的工作流程"><span class="nav-number">1.</span> <span class="nav-text">Rabbitmq的工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Work-queues"><span class="nav-number">1.1.</span> <span class="nav-text">Work queues</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Publish-subscribe"><span class="nav-number">1.2.</span> <span class="nav-text">Publish&#x2F;subscribe</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
