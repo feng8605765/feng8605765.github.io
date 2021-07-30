@@ -80,7 +80,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Navigationsleiste an/ausschalten">
+    <div class="toggle" aria-label="تشغيل شريط التصفح">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -109,12 +109,12 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Startseite</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archiv</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>الأرشيفات</a>
 
   </li>
   </ul>
@@ -144,6 +144,219 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/18/Mysql%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/18/Mysql%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Mysql阅读笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+
+              <time title="أُنشأ: 2020-06-18 11:55:58" itemprop="dateCreated datePublished" datetime="2020-06-18T11:55:58+08:00">2020-06-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-06-22 21:42:32" itemprop="dateModified" datetime="2020-06-22T21:42:32+08:00">2020-06-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="在建立联合索引的时候，如何安排索引内的字段顺序？"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序？" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序？"></a>在建立联合索引的时候，如何安排索引内的字段顺序？</h3><p>第一考虑的是：索引的复用能力，因为可以支持最左前缀，所以当已经有了（a,b）联合索引后，一般就不需要单独在a上简历索引了。因此，第一原则是如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。</p>
+<p>第二考虑的原则是空间：例如a字段是比b字段大的，那么我就建议创建一个(a,b)的联合索引和一个(b)的单字段索引。</p>
+<h3 id="count这么慢的解释"><a href="#count这么慢的解释" class="headerlink" title="count这么慢的解释"></a>count这么慢的解释</h3><h4 id="分析性能差的别的时候，需要记住这么几个原则："><a href="#分析性能差的别的时候，需要记住这么几个原则：" class="headerlink" title="分析性能差的别的时候，需要记住这么几个原则："></a>分析性能差的别的时候，需要记住这么几个原则：</h4><ol>
+<li><p>server层要什么给什么；</p>
+</li>
+<li><p>InnoDB只给必要的值；</p>
+</li>
+<li><p>现在的优化器只优化了count(<em>)的语义为“取行数”,其他“显而易见”的优化并没有做。Mysql已经优化过count(</em>)了，直接使用这种用法就可以了。</p>
+</li>
+</ol>
+<p><strong>对于count(主键ID)</strong>来说，InnoDB引擎会遍历整张表，把每一行的ID值都取出来，返回给server层。server层拿到ID后，判断是不可能为空，就按行累加。</p>
+<p><strong>对于count(1)</strong>来说，InnoDB引擎遍历整张表，但不取值。server层对于返回的每一个行，放一个数字“1”进去，判断是不可能为空的，按行累加。</p>
+<blockquote>
+<p>单看这两个用法的差别的话，你能对比出来，count(1)执行得要比count(主键ID)快。因为从引擎返回id会涉及到解析数据行，以及拷贝字段值的操作。</p>
+</blockquote>
+<p><strong>对于count(字段)</strong>来说：</p>
+<ol>
+<li><p>如果这个“字段”是定义为not null 的话，一行行地从记录里面读出这个字段，判断不能为null，按行累加；</p>
+</li>
+<li><p>如果这个“字段”定义允许为null，那么执行的时候，判断到有可能是null，还要把值取出来再判断一下，不是null才累加。</p>
+</li>
+</ol>
+<p>也就是前面的第一原则，server层要什么字段，InnoDB就返回什么字段。</p>
+<ul>
+<li>但是count(<em>)是例外，并不会把全部字段取出来，而是专门做了优化，不取值。count(</em>)肯定不是null,按行累加。</li>
+</ul>
+<blockquote>
+<p>结论 ：按照效率排序的话，count(字段) &lt; count(主键id) &lt; count(1) ≈ count(<em>),所以尽量使用 count(</em>).</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/15/%E8%AE%BE%E8%AE%A1%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="GIO">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="十二月的doge">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/15/%E8%AE%BE%E8%AE%A1%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F/" class="post-title-link" itemprop="url">设计秒杀系统</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">نُشر في</span>
+              
+
+              <time title="أُنشأ: 2020-06-15 08:55:57 / عُدل: 14:14:50" itemprop="dateCreated datePublished" datetime="2020-06-15T08:55:57+08:00">2020-06-15</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="秒杀其实主要解决两个问题"><a href="#秒杀其实主要解决两个问题" class="headerlink" title="秒杀其实主要解决两个问题"></a>秒杀其实主要解决两个问题</h3><h4 id="并发读"><a href="#并发读" class="headerlink" title="并发读"></a>并发读</h4><ul>
+<li>并发读的核心优化理念是尽量减少用户到服务端来“读”数据，或者让他们读更少的数据；</li>
+</ul>
+<h4 id="并发写"><a href="#并发写" class="headerlink" title="并发写"></a>并发写</h4><ul>
+<li>并发写的处理原则也一样，它要求我们在数据库层面独立出来一个库，做一个库，做特殊处理。另外，我们还要针对秒杀系统做一些保护，针对意料之外的情况设计兜底方案，以防止最坏的情况发生。 </li>
+</ul>
+<h3 id="设计秒杀系统关注的三点-稳，准，快"><a href="#设计秒杀系统关注的三点-稳，准，快" class="headerlink" title="设计秒杀系统关注的三点 稳，准，快"></a>设计秒杀系统关注的三点 稳，准，快</h3><h4 id="高性能"><a href="#高性能" class="headerlink" title="高性能"></a>高性能</h4><ul>
+<li>秒杀及大量的并发读和并发写，因此支持高并发访问这点非常关键</li>
+</ul>
+<h4 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h4><ul>
+<li>秒杀中商品减库存的实现方式同样关键。在有限数量的商品在同一时刻被很多倍的请求同时来减库存，减库存又分为“拍下减库存” “付款减库存”以及预扣等几种，在大并发更新的过程中都要保证数据的准确性。</li>
+</ul>
+<h4 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h4><ul>
+<li>在实际的操作中会有一些考虑不到的情况，所以要保证系统的高可用和正确性，我们需要设计一个plan B 来进行对最坏情况发生的应急处理。</li>
+</ul>
+<h3 id="架构原则：”4-要-1-不要”"><a href="#架构原则：”4-要-1-不要”" class="headerlink" title="架构原则：”4 要 1 不要”"></a>架构原则：”4 要 1 不要”</h3><ol>
+<li>数据要尽量少<br>所谓“数据要尽量少”，首先是指用户请求的数据能少就少。请求的数据包括上传给系统的数据和系统返回给用户的数据（通常就是网页）。</li>
+</ol>
+<p>为啥“数据要尽量少”呢？因为首先这些数据在网络上传输需要时间，其次不管是请求数据还是返回数据都需要服务器做处理，而服务器在写网络时通常都要做压缩和字符编码，这些都非常消耗CPU，所以减少传输的数据量可以显著减少CPU的使用。例如，我们可以简化秒杀页面的大小去掉不必要的页面装修效果，等等。</p>
+<p>其次，“数据要尽量少”还要求系统依赖的数据能少就少，包括系统完成某些业务逻辑需要读取和保存的数据，这些数据一般是和后台服务以及数据库打交道的。调用其他服务会涉及数据的序列化和反序列化，而这也是CPU的一大杀手，同样也会增加延时。而且，数据库本身也容易成为一个瓶颈，所以和数据库打交道越少越好，数据越简单，越小则越好。</p>
+<ol start="2">
+<li><p>请求数量要尽量少<br>用户请求的页面返回后，浏览器渲染这个页面还要包含其他的额外请求，比如说，这个页面依赖CSS/JavaScript，图片 以及Ajax请求等等都定义为 “额外请求”,这些额外请求应该尽量少。因为浏览器每发出一个请求都多少会有一些消耗，例如建立连接要做三次握手，有的时候有页面依赖或者连接限制，一些请求（例如Javascript）还需要串行加载等。另外，如果不同请求的域名不一样的话，还涉及这些域名的DNS解析，可能会耗时更久。所以减少请求数可以显著减少以上这些因素导致的资源消耗。</p>
+</li>
+<li><p>路径要尽量短<br>所谓“路径”，就是用户发出请求到返回数据这个过程中，需求经过的中间的节点数。</p>
+</li>
+</ol>
+<p>通常，这些节点可以表示为一个系统或者一个新的Socket链接（比如代理服务器只是创建一个新的Socket连接来转发请求）。每经过一个节点，一般都会产生一个新的Socket连接。</p>
+<p>然而，每增加一个连接都会增加新的不确定性。从概率统计上来说，加入一次请求经过5个节点，每个节点的可用性是99%的话，那么整个请求的可用性是：99.9%的5次方，约等于99.5%。</p>
+<p>所以缩短请求路径不仅可以增加可用性，同样可以有效提升性能（减少中间节点可以减少数据的序列化与反序列化），并减少延时（可以减少网络传输耗时）。</p>
+<p>要缩短访问路径有一种方法，就是多个相互强依赖的应用合并部署在一起，把远程过程调用（RPC）编程JVM内部之间的方法调用。</p>
+<ol start="4">
+<li>依赖要尽量少<br>所谓依赖，指的是要完成一次用户请求必须依赖的系统或者服务，这里的依赖指的是强依赖。</li>
+</ol>
+<p>举个例子，比如说你要展示秒杀页面，而这个页面必须强依赖商品信息，用户信息，还有其它如优惠券，成交列表等这些对秒杀不是非要不可的信息（弱依赖），这些若依赖在紧急情况下就可以去掉。</p>
+<p>要减少依赖，我们可以给系统进行分级，比如0级系统，1级系统，2级系统，3级系统，0级系统如果是最重要的系统，那么0级系统强依赖的系统也统一是最重要的系统，以此类推。</p>
+<blockquote>
+<p>0级系统要尽量减少对1级系统的强依赖，防止重要的系统被不重要的系统拖垮。例如支付系统是0级系统，而优惠劵是1级系统的话，在极端情况下可以把优惠劵给降级，防止支付系统被优惠劵这个1级系统给拖垮。</p>
+</blockquote>
+<ol start="5">
+<li>不要有单点<br>系统中的单点可以说是系统架构上的一个大忌，因为单点意味着没有备份，风险不可控，我们设计分布式系统最重要的原则就是 “消除单点”。</li>
+</ol>
+<p>那如何避免单点呢？ 最重要的是避免将服务的状态和机器绑定，即把服务无状态化，这样服务就可以在机器中随意移动。</p>
+<p>如何把服务的状态和机器解耦呢？这里也有很多实现方式。例如把和机器相关的配置动态化，这些参数可以通过配置中心来动态推送，在服务启动时动态拉取下来，我们在这些配置中心设置一些规则来方便地改变这些映射关系。</p>
+<p>应用无状态化是有效避免单点的一种方式，但是像存储服务本身很难无状态化，因为数据要存储在磁盘上，本身就要和机器绑定，那么这种场景一般要通过冗余多个备份的方式来解决单点问题。</p>
+<h3 id="（1w-s-到了-10w-s-的量级）架构"><a href="#（1w-s-到了-10w-s-的量级）架构" class="headerlink" title="（1w/s 到了 10w/s 的量级）架构"></a>（1w/s 到了 10w/s 的量级）架构</h3><ol>
+<li><p>把秒杀系统独立出来单独打造个系统，这样就可以有针对性地做优化，例如这个独立出来的系统就减少了店铺装修的功能，减少了页面的复杂度。</p>
+</li>
+<li><p>在系统部署上也独立做一个机器集群，这样秒杀的大流量就不会影响到正常的商品购买集群的机器负载；</p>
+</li>
+<li><p>将热点数据（如库存数据）单独放到一个缓存系统中，以提高“读性能”；</p>
+</li>
+<li><p>增加秒杀答题，防止有秒杀器抢单。</p>
+</li>
+</ol>
+<h3 id="升级架构"><a href="#升级架构" class="headerlink" title="升级架构"></a>升级架构</h3><ol>
+<li><p>对页面进行彻底的动静分离，使得用户秒杀时不需要刷新整个页面，而只需要点击抢宝按钮，借此把页面刷新的数据降到最少；</p>
+</li>
+<li><p>在服务端对秒杀商品进行本地缓存，不需要再调用依赖系统的后台服务获取数据，甚至不需要去公共的缓存集群中查询数据，这样不仅可以减少系统调用，而且能够避免压垮公共缓存集群。</p>
+</li>
+<li><p>增加系统限流保护，防止最坏情况发生。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/09/Mysql%E7%9A%84SQL%E5%88%86%E7%B1%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -166,16 +379,16 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
 
-              <time title="Erstellt: 2020-06-09 16:26:40" itemprop="dateCreated datePublished" datetime="2020-06-09T16:26:40+08:00">2020-06-09</time>
+              <time title="أُنشأ: 2020-06-09 16:26:40" itemprop="dateCreated datePublished" datetime="2020-06-09T16:26:40+08:00">2020-06-09</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
-                <span class="post-meta-item-text">Bearbeitet am</span>
-                <time title="Geändert am: 2020-06-10 12:51:24" itemprop="dateModified" datetime="2020-06-10T12:51:24+08:00">2020-06-10</time>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-06-10 12:51:24" itemprop="dateModified" datetime="2020-06-10T12:51:24+08:00">2020-06-10</time>
               </span>
 
           
@@ -233,16 +446,16 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
 
-              <time title="Erstellt: 2020-05-28 19:47:32" itemprop="dateCreated datePublished" datetime="2020-05-28T19:47:32+08:00">2020-05-28</time>
+              <time title="أُنشأ: 2020-05-28 19:47:32" itemprop="dateCreated datePublished" datetime="2020-05-28T19:47:32+08:00">2020-05-28</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
-                <span class="post-meta-item-text">Bearbeitet am</span>
-                <time title="Geändert am: 2020-06-09 16:26:49" itemprop="dateModified" datetime="2020-06-09T16:26:49+08:00">2020-06-09</time>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-06-09 16:26:49" itemprop="dateModified" datetime="2020-06-09T16:26:49+08:00">2020-06-09</time>
               </span>
 
           
@@ -313,10 +526,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-05-11 16:06:36 / Geändert am: 16:48:46" itemprop="dateCreated datePublished" datetime="2020-05-11T16:06:36+08:00">2020-05-11</time>
+              <time title="أُنشأ: 2020-05-11 16:06:36 / عُدل: 16:48:46" itemprop="dateCreated datePublished" datetime="2020-05-11T16:06:36+08:00">2020-05-11</time>
             </span>
 
           
@@ -394,16 +607,16 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
 
-              <time title="Erstellt: 2020-04-30 14:50:56" itemprop="dateCreated datePublished" datetime="2020-04-30T14:50:56+08:00">2020-04-30</time>
+              <time title="أُنشأ: 2020-04-30 14:50:56" itemprop="dateCreated datePublished" datetime="2020-04-30T14:50:56+08:00">2020-04-30</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
-                <span class="post-meta-item-text">Bearbeitet am</span>
-                <time title="Geändert am: 2020-08-31 14:32:55" itemprop="dateModified" datetime="2020-08-31T14:32:55+08:00">2020-08-31</time>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-08-31 14:32:55" itemprop="dateModified" datetime="2020-08-31T14:32:55+08:00">2020-08-31</time>
               </span>
 
           
@@ -475,16 +688,16 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
 
-              <time title="Erstellt: 2020-04-30 14:03:41" itemprop="dateCreated datePublished" datetime="2020-04-30T14:03:41+08:00">2020-04-30</time>
+              <time title="أُنشأ: 2020-04-30 14:03:41" itemprop="dateCreated datePublished" datetime="2020-04-30T14:03:41+08:00">2020-04-30</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
-                <span class="post-meta-item-text">Bearbeitet am</span>
-                <time title="Geändert am: 2020-12-22 10:11:45" itemprop="dateModified" datetime="2020-12-22T10:11:45+08:00">2020-12-22</time>
+                <span class="post-meta-item-text">عُدل في</span>
+                <time title="عُدل: 2020-12-22 10:11:45" itemprop="dateModified" datetime="2020-12-22T10:11:45+08:00">2020-12-22</time>
               </span>
 
           
@@ -546,10 +759,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-30 10:21:12 / Geändert am: 10:33:25" itemprop="dateCreated datePublished" datetime="2020-04-30T10:21:12+08:00">2020-04-30</time>
+              <time title="أُنشأ: 2020-04-30 10:21:12 / عُدل: 10:33:25" itemprop="dateCreated datePublished" datetime="2020-04-30T10:21:12+08:00">2020-04-30</time>
             </span>
 
           
@@ -624,10 +837,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-30 10:08:45 / Geändert am: 10:50:28" itemprop="dateCreated datePublished" datetime="2020-04-30T10:08:45+08:00">2020-04-30</time>
+              <time title="أُنشأ: 2020-04-30 10:08:45 / عُدل: 10:50:28" itemprop="dateCreated datePublished" datetime="2020-04-30T10:08:45+08:00">2020-04-30</time>
             </span>
 
           
@@ -729,10 +942,10 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
+              <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="Erstellt: 2020-04-23 14:34:01 / Geändert am: 14:43:51" itemprop="dateCreated datePublished" datetime="2020-04-23T14:34:01+08:00">2020-04-23</time>
+              <time title="أُنشأ: 2020-04-23 14:34:01 / عُدل: 14:43:51" itemprop="dateCreated datePublished" datetime="2020-04-23T14:34:01+08:00">2020-04-23</time>
             </span>
 
           
@@ -803,282 +1016,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/redis%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/23/redis%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" class="post-title-link" itemprop="url">redis高级特性</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              <time title="Erstellt: 2020-04-23 13:54:50 / Geändert am: 16:10:40" itemprop="dateCreated datePublished" datetime="2020-04-23T13:54:50+08:00">2020-04-23</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="Redis的数据基本类型"><a href="#Redis的数据基本类型" class="headerlink" title="Redis的数据基本类型"></a>Redis的数据基本类型</h3><p><strong>String</strong><br>Redis中最基本，也是最简单的数据类型。注意：VALUE既可以简单的string 也可以是复杂的String，<br>如JSON，在实际中常常利用fastjson将对象序列化后存储到Redis中，另外注意mget批量获取可以提<br>高效率。</p>
-<p><strong>Hash</strong><br>Hash结构适用于存储对象，相较于String，存储占用更少的内存。Hash结构可以使你像在数据库中<br>Update一个属性一样只修改某一项属性值，而且还可以快速定位数据。比如：如果我们把表User中<br>的一个数据可以这样放置到Redis中：Hash存储，Key：User，Field：USERID,VALUE:user 序列化后<br>的string。</p>
-<p><strong>List</strong><br>既可以当做栈，又可以当做队列。实际上，可以利用Lisg的先进先出或者先进后出的特性维护一段列表，<br>比如排行榜，实时列表等，甚至还可以简单的当做消息队列来使用。</p>
-<p><strong>Set</strong><br>Set是String类型的不重复无序集合。Set的特点在于，它提供了集合的一些运算，比如交集，并集，差<br>集等。这些运算特性，非常方便的解决实际场景中的一些问题，如共同关注，共同粉丝等。</p>
-<p><strong>ZSet</strong><br>ZSet就是SortedSet 实际中，很多排序场景都可以考虑ZSet来做。</p>
-<hr>
-<h3 id="Redis的事务（transaction）"><a href="#Redis的事务（transaction）" class="headerlink" title="Redis的事务（transaction）"></a>Redis的事务（transaction）</h3><p>redis中的事务是一组命令的集合，事务同命令一样都是redis的最小执行单元。一组事务中的命令要么<br>都执行，要么都不执行。（例如：转账）</p>
-<p>原理：<br>先将属于一个事务的命令发送给redis进行缓存，最后再让redis依次执行这些命令。</p>
-<p>应用场景：</p>
-<ol>
-<li>一组命令必须同时都执行，或者都不执行。</li>
-<li>我们想要保证一组命令在执行的过程中不被其它命令插入。</li>
-</ol>
-<p>命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">multi  &#x2F;&#x2F; 事务开始</span><br><span class="line">.....</span><br><span class="line">exec   &#x2F;&#x2F; 事务结束，开始执行事务中的命令</span><br><span class="line">discard  	&#x2F;&#x2F; 放弃事务</span><br></pre></td></tr></table></figure>
-
-<p>错误处理</p>
-<ol>
-<li>语法错误：致命的错误，事务中的所有命令都不会执行。</li>
-<li>运行错误：不会影响事务中其它命令的执行。</li>
-</ol>
-<p>Redis不支持回滚 （roll back）<br>正因为redis不支持回滚功能，才使得redis在事务上可以保持简洁和快速。</p>
-<p>watch命令</p>
-<blockquote>
-<p>作用：监控一个或多个键，当被监控的键值被修改后阻止之后的一个事务的执行。但是不能保证其它<br>客户端不修改这一键值，所以我们需要在事务执行失败后重新执行事务中的命令。</p>
-</blockquote>
-<p>注意：执行完事务的exec命令之后，watch就会取消对所有键值的监控。<br>unwatch：取消监控</p>
-<h3 id="redis中数据的排序（sort）"><a href="#redis中数据的排序（sort）" class="headerlink" title="redis中数据的排序（sort）"></a>redis中数据的排序（sort）</h3><p>sort命令可以对列表类型，集合类和有序集合类型进行排序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sort key [desc] [limit offset count]</span><br></pre></td></tr></table></figure>
-
-<p>by 参考值（参考值可以使字符串类型或者是hash类型的某个字段，hash类型的格式为：键名-&gt;字段名）</p>
-<ol>
-<li>如果参考键中不带*号则不排序</li>
-<li>如果某个元素的参考键不存在，则默认参考键的值为0</li>
-</ol>
-<p>扩展get参数</p>
-<ol>
-<li>get参数的规则和by参数的规则一样</li>
-<li>get #（返回元素本身的值）</li>
-</ol>
-<p>扩展store参数<br>使用store参数可以把sort的排序结果保存到指定的列表中</p>
-<p>性能优化：</p>
-<ol>
-<li>尽可能减少待排序键中元素的数量。</li>
-<li>使用limit参数只获取需要的数据。</li>
-<li>如果要排序的数据数量很大，尽可能使用store参数将结果缓存。</li>
-</ol>
-<h3 id="“发布-订阅”模式"><a href="#“发布-订阅”模式" class="headerlink" title="“发布/订阅”模式"></a>“发布/订阅”模式</h3><p>发布：publish</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">publish channel message</span><br></pre></td></tr></table></figure>
-<p>订阅：subscribe</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">subscribe channel [.....]</span><br></pre></td></tr></table></figure>
-<p>取消订阅：unsubscribe</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unsubscribe [channel]</span><br></pre></td></tr></table></figure>
-<p>按照规则订阅：psubscribe</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psubscribe channel ?</span><br></pre></td></tr></table></figure>
-<p>按照规则取消订阅：punsubscribe<br>ps：使用punsubscribe命令只能退订通过psubscribe订阅的频道</p>
-<h3 id="redis管道（pipeline）"><a href="#redis管道（pipeline）" class="headerlink" title="redis管道（pipeline）"></a>redis管道（pipeline）</h3><p>redis的pipeline(管道)功能在命令行中没有，但是redis是支持管道的。</p>
-<h3 id="redis持久化（persistence）"><a href="#redis持久化（persistence）" class="headerlink" title="redis持久化（persistence）"></a>redis持久化（persistence）</h3><p>redis支持两种方式的持久化，可以单独使用或者结合起来使用。</p>
-<ol>
-<li>RDB方式（redis默认的持久化方式）</li>
-<li>AOF方式</li>
-</ol>
-<p><strong>RDB方式</strong><br>rdb方式的持久化是通过快照完成的。当符合一定条件时redis会自动将内存中的所有数据执行操作并<br>存储到硬盘上。默认存储在dump.rdb文件中。（文件名在配置文件中dbfilename）</p>
-<p>redis进行快照的时机（在配置文件redis.conf中）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1</span><br><span class="line">save 300 10</span><br><span class="line">save 60  10000</span><br></pre></td></tr></table></figure>
-<p>Redis自动实现快照的过程</p>
-<ol>
-<li>redis使用fork函数复制一份当前进程的副本（子进程）</li>
-<li>父进程继续接收并处理客户端发来的命令。而子进程开始将内存中的数据写入硬盘中的临时文件</li>
-<li>当子进程写入完所有数据后会用该临时文件替换旧的RDB文件，至此 一次快照操作完成。</li>
-</ol>
-<p>注意：redis在进行快照的过程中不会修改RDB文件，只有快照结束后才会将旧的文件替换成新的，也就<br>是说任何时候RDB文件都是完整的。</p>
-<p>这就使得我们可以通过定时备份RDB文件来实现redis数据库的备份</p>
-<p>RDB文件是经过压缩的二进制文件，占用的空间会小于内存中的数据，更加利于传输</p>
-<p>手动执行save或者bgsave命令会让redis执行快照</p>
-<p>两个命令的区别在于 save是由主进程进行快照操作，会阻塞其它请求。bgsave是由redis执行fork函<br>数复制出一个子进程来进行快照操作。</p>
-<p>文件修复：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-check-dump</span><br></pre></td></tr></table></figure>
-<p>rdb的优缺点：</p>
-<ul>
-<li>优点：由于存储的有数据快照文件，恢复数据很方便</li>
-<li>缺点：会丢失最后一次快照以后更改的所有数据</li>
-</ul>
-<p><strong>AOF方式</strong><br>aof方式的持久化是通过日志文件的方式。默认情况下redis没有开启aof,可以通过参数appendonly参<br>数开启。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
-<p>aof文件的保存位置和rdb文件的位置相同，都是dir参数设置的。默认文件名是appendonly.aof,可以通过参数appendfilename参数修改</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendfilename appendonly.aof</span><br></pre></td></tr></table></figure>
-<p>redis写命令同步的时机</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">appendfsync always 每次都会执行</span><br><span class="line">appendfsync everysec 默认 每秒执行一次同步操作</span><br><span class="line">appendfsync no 不主动进行同步 由操作系统来做，30秒一次</span><br></pre></td></tr></table></figure>
-<p>aof日志文件重写</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br></pre></td></tr></table></figure>
-<p>手动执行bgrewriteaof进行重写<br>重写的过程只和内存中的数据有关，和之前的aof文件无关<br>所谓的”重写”其实是一个有歧义的词语，实际上 AOF重写并不需要对原有的AOF文件进行任何写入和读<br>取，它针对的是数据库中键的当前值。</p>
-<p>文件修复：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-check-aof</span><br></pre></td></tr></table></figure>
-<p>动态切换redis持久方式，从RDB切换到AOF（支持Redis2.2及以上）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CONFIG SET appendonly yes</span><br><span class="line">CONFIG SET save &quot;&quot; (可选)</span><br></pre></td></tr></table></figure>
-
-<p>注意： </p>
-<blockquote>
-<ol>
-<li>当redis启动时，如果rdb持久化和aof持久化都打开了，那么程序会优先使用aof方式来回复数据<br>集，因为aof方式所保存的数据通常是最完整的。如果aof文件丢失了，则启动之后数据库内容为空。</li>
-<li>如果想把正在运行的redis数据库，从RDB切换到AOF 建议先使用动态切换方式，再修改配置文件<br>重启数据库（不能自己修改配置文件，重启数据库，否则数据库中数据就为空了）</li>
-</ol>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/%E7%B1%BB-%E5%AF%B9%E8%B1%A1%E5%87%BD%E6%95%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="GIO">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="十二月的doge">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/23/%E7%B1%BB-%E5%AF%B9%E8%B1%A1%E5%87%BD%E6%95%B0/" class="post-title-link" itemprop="url">类/对象函数</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              <time title="Erstellt: 2020-04-23 09:59:34 / Geändert am: 13:51:16" itemprop="dateCreated datePublished" datetime="2020-04-23T09:59:34+08:00">2020-04-23</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="autoload"><a href="#autoload" class="headerlink" title="__autoload()"></a>__autoload()</h3><p>解释：尝试加载未定义的类（自动加载类）</p>
-<ol>
-<li><p>以前没有加载时代码书写 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">include &quot;Mysql.php&quot;; &#x2F;&#x2F; 引入MySQL类</span><br><span class="line">include &quot;Upload.php&quot;; &#x2F;&#x2F; 引入上传类</span><br><span class="line">include &quot;Form.php&quot;; &#x2F;&#x2F; 引入表单验证类</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>运用自动加载类时代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function __autoload($class)&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;当你echo 信息时会发现 出来Mysql Upload Form 那么这些数据是怎么来的呢，。原因是底下</span><br><span class="line">实例化了，当底下实例化一个对象时，系统会自动检查你引入此文件，如果没有引入，自动帮你引</span><br><span class="line">入,但是注意一个问题，在写类名时一定要和文件名称一样，否则会引入文件失败</span><br><span class="line"></span><br><span class="line">	include $class.&quot;.php&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$mysql &#x3D; new Mysql();</span><br><span class="line">$upload &#x3D; new Upload();</span><br><span class="line">$form &#x3D; new Form();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>由于系统的不断升级，自动加载出来了一个函数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function __autoload($class)&#123;</span><br><span class="line">	include $class.&quot;.php&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">spl_autoload_register(&quot;autoload&quot;);</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<blockquote>
-<p>spl_autoload_register </p>
-</blockquote>
-<ul>
-<li><p>注册给定的函数作为 __autoload() 的实现</p>
-</li>
-<li><p>spl_autoload_register有三个参数:</p>
-</li>
-</ul>
-<ol>
-<li>autoload_function : 欲注册的自动装载函数。如果没有提供任何参数，则自动注册 autoload 的默认实现函数spl_autoload()。</li>
-<li>throw 此参数设置了autoload_function 无法成功注册时，spl_autoload_register()是否抛出异常。</li>
-<li>prepend ： 如果是true,spl_autoload_register()会添加函数到队列之首，而不是队列尾部。</li>
-</ol>
-<p><strong>返回值</strong><br>成功返回TRUE，或者在失败时返回FALSE；</p>
-<h3 id="call-user-func-array"><a href="#call-user-func-array" class="headerlink" title="call_user_func_array()"></a>call_user_func_array()</h3><p>解释：回调函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function fun ($str1, $str2)&#123;</span><br><span class="line">	echo &quot;$str1 &#x3D; &quot;.$str1;</span><br><span class="line">	echo &quot;&lt;br&gt;&quot;;</span><br><span class="line">	echo &quot;$str2 &#x3D; &quot;.$str2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">call_user_func_array(&quot;fun&quot;,array(&quot;php.cn&quot;,&quot;php中文网&quot;));</span><br></pre></td></tr></table></figure>
-<p>简介：回调函数将一个函数作为参数传递到调用的函数中，如果在函数的格式说明中出现callback类型<br>的参数，则该函数就是回调函数。</p>
-<h3 id="get-class-methods-array"><a href="#get-class-methods-array" class="headerlink" title="get_class_methods() : array"></a>get_class_methods() : array</h3><p>解释：返回由类的方法名组成的数组</p>
-<p>参数：</p>
-<ol>
-<li>class_name: 类名或者对象实例。</li>
-</ol>
-<p>返回值：</p>
-<p>返回由 class_name 指定的类中定义的方法名所组成的数组。如果出错，则返回 NULL。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class myclass &#123;</span><br><span class="line"></span><br><span class="line">	function myclass()</span><br><span class="line">	&#123;</span><br><span class="line">		return(true);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	function myfunc1()</span><br><span class="line">	&#123;</span><br><span class="line">		return (false);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$class_methods &#x3D; get_class_methods(&#39;myclass&#39;);</span><br><span class="line"></span><br><span class="line">$class_methods &#x3D; get_class_methods(new myclass());</span><br><span class="line"></span><br><span class="line">foreach ($class_methods as $methond_nam)&#123;</span><br><span class="line">	echo &quot;$methond_name\n&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上示例会输出：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">myclass</span><br><span class="line">myfunc1</span><br></pre></td></tr></table></figure>
-
-<h3 id="get-object-vars-object"><a href="#get-object-vars-object" class="headerlink" title="get_object_vars($object)"></a>get_object_vars($object)</h3><p>解释：获取$object对象中的属性，组成一个数组</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class person&#123;</span><br><span class="line">	public $name &#x3D; &#39;王美人&#39;;</span><br><span class="line">	public $age &#x3D; 25;</span><br><span class="line">	public $birth;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$p &#x3D; new person();</span><br><span class="line">print_r(get_object_vars($p));</span><br></pre></td></tr></table></figure>
-<p>运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">Array ( [name] &#x3D;&gt; 王美人 [age] &#x3D;&gt; 25 [birth] &#x3D;&gt; )</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Vorherige Seite"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Nächste Seite"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="الصفحة السابقة"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="الصفحة التالية"></i></a>
   </nav>
 
 
@@ -1122,10 +1063,10 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Inhaltsverzeichnis
+          المحتويات
         </li>
         <li class="sidebar-nav-overview">
-          Übersicht
+          عام
         </li>
       </ul>
 
@@ -1144,13 +1085,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
-          <span class="site-state-item-name">Artikel</span>
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">المقالات</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">11</span>
-        <span class="site-state-item-name">schlagwörter</span>
+        <span class="site-state-item-name">الوسوم</span>
       </div>
   </nav>
 </div>
@@ -1182,7 +1123,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">GIO</span>
 </div>
-  <div class="powered-by">Erstellt mit  <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">تطبيق الموقع <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
         
