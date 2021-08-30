@@ -20,18 +20,19 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Elasticsearch 7.X版本创建索引 编写索引文件,如下：  12345678910111213141516171819202122232425262728$params &#x3D; [            &#39;index&#39; &#x3D;&gt; &#39;my_index&#39;,            &#39;body&#39; &#x3D;&gt; [">
+  <meta name="description" content="模式介绍 门面模式（Facade）又称外观模式，门面模式为子系统提供一组统一的接口，定义一组高层接口让子系统更易用。  示例代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061class Good&amp;#123;    pu">
 <meta property="og:type" content="article">
-<meta property="og:title" content="elasticsearch索引创建">
-<meta property="og:url" content="http://yoursite.com/2020/08/06/elasticsearch%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA/index.html">
+<meta property="og:title" content="门面模式">
+<meta property="og:url" content="http://yoursite.com/2021/08/30/%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="十二月的doge">
-<meta property="og:description" content="Elasticsearch 7.X版本创建索引 编写索引文件,如下：  12345678910111213141516171819202122232425262728$params &#x3D; [            &#39;index&#39; &#x3D;&gt; &#39;my_index&#39;,            &#39;body&#39; &#x3D;&gt; [">
-<meta property="article:published_time" content="2020-08-06T06:31:06.000Z">
-<meta property="article:modified_time" content="2020-08-06T06:45:38.772Z">
+<meta property="og:description" content="模式介绍 门面模式（Facade）又称外观模式，门面模式为子系统提供一组统一的接口，定义一组高层接口让子系统更易用。  示例代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061class Good&amp;#123;    pu">
+<meta property="article:published_time" content="2021-08-30T11:50:56.000Z">
+<meta property="article:modified_time" content="2021-08-30T07:11:01.332Z">
 <meta property="article:author" content="GIO">
+<meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/08/06/elasticsearch%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA/">
+<link rel="canonical" href="http://yoursite.com/2021/08/30/%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F/">
 
 
 <script id="page-configurations">
@@ -44,7 +45,7 @@
   };
 </script>
 
-  <title>elasticsearch索引创建 | 十二月的doge</title>
+  <title>门面模式 | 十二月的doge</title>
   
 
 
@@ -149,7 +150,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/06/elasticsearch%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/08/30/%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -162,7 +163,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          elasticsearch索引创建
+          门面模式
         </h1>
 
         <div class="post-meta">
@@ -173,7 +174,7 @@
               <span class="post-meta-item-text">نُشر في</span>
               
 
-              <time title="أُنشأ: 2020-08-06 14:31:06 / عُدل: 14:45:38" itemprop="dateCreated datePublished" datetime="2020-08-06T14:31:06+08:00">2020-08-06</time>
+              <time title="أُنشأ: 2021-08-30 19:50:56 / عُدل: 15:11:01" itemprop="dateCreated datePublished" datetime="2021-08-30T19:50:56+08:00">2021-08-30</time>
             </span>
 
           
@@ -187,19 +188,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="Elasticsearch-7-X版本创建索引"><a href="#Elasticsearch-7-X版本创建索引" class="headerlink" title="Elasticsearch 7.X版本创建索引"></a>Elasticsearch 7.X版本创建索引</h3><ul>
-<li>编写索引文件,如下：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$params &#x3D; [</span><br><span class="line">            &#39;index&#39; &#x3D;&gt; &#39;my_index&#39;,</span><br><span class="line">            &#39;body&#39; &#x3D;&gt; [</span><br><span class="line">            	&#39;order&#39; &#x3D;&gt; 0, &#x2F;&#x2F; 模板优先级 越大优先级越高</span><br><span class="line">                &#39;settings&#39; &#x3D;&gt; [</span><br><span class="line">                	&#39;refresh_interval&#39; &#x3D;&gt; &quot;10s&quot;, &#x2F;&#x2F; 每10秒刷新</span><br><span class="line">                    &#39;number_of_shards&#39; &#x3D;&gt; 3, &#x2F;&#x2F; 主分片数量</span><br><span class="line">                    &#39;number_of_replicas&#39; &#x3D;&gt; 2 &#x2F;&#x2F; 副本数量</span><br><span class="line">                    &#39;translog&#39; &#x3D;&gt; [</span><br><span class="line">                    	&quot;flush_threshold_size&quot; &#x3D;&gt; &quot;1gb&quot;, &#x2F;&#x2F; 内容容量到达1gb异步刷新</span><br><span class="line">                    	&quot;sync_interval&quot; &#x3D;&gt; &quot;30s&quot;, &#x2F;&#x2F; 间隔30s异步刷新（设置后无法更改）</span><br><span class="line">                    	&quot;durability&quot;&#x3D;&gt;&quot;async&quot; &#x2F;&#x2F; 异步刷新</span><br><span class="line">                    ]</span><br><span class="line">                ],</span><br><span class="line">                &#39;mappings&#39; &#x3D;&gt; [ &#x2F;&#x2F; 索引中各字段的映射定义</span><br><span class="line">                    &#39;properties&#39; &#x3D;&gt; [</span><br><span class="line">                        &#39;name&#39; &#x3D;&gt; [</span><br><span class="line">                            &#39;type&#39; &#x3D;&gt; &#39;text&#39;,</span><br><span class="line">                            &#39;analyzer&#39; &#x3D;&gt; &#39;ik_max_word&#39;, &#x2F;&#x2F; 分析器</span><br><span class="line">                            &#39;search_analyzer&#39; &#x3D;&gt; &#39;ik_smart&#39;</span><br><span class="line">                        ],</span><br><span class="line">                        &#39;age&#39; &#x3D;&gt; [</span><br><span class="line">                            &#39;type&#39; &#x3D;&gt; &#39;integer&#39;</span><br><span class="line">                        ]</span><br><span class="line">                    ]</span><br><span class="line">                ]</span><br><span class="line">            ]</span><br><span class="line">        ];</span><br></pre></td></tr></table></figure>
+        <h3 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h3><blockquote>
+<p>门面模式（Facade）又称外观模式，门面模式为子系统提供一组统一的接口，定义一组高层接口让子系统更易用。</p>
+</blockquote>
+<p><strong>示例代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">class Good</span><br><span class="line">&#123;</span><br><span class="line">    public function add(string $name)</span><br><span class="line">    &#123;</span><br><span class="line">        return &#39;添加商品&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Stock</span><br><span class="line">&#123;</span><br><span class="line">    public function reduce(float $quantity)</span><br><span class="line">    &#123;</span><br><span class="line">        return &#39;扣减库存&#39;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public function add(float $quantity)</span><br><span class="line">    &#123;</span><br><span class="line">        return &#39;添加回库存&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Order</span><br><span class="line">&#123;</span><br><span class="line">    public function buy()</span><br><span class="line">    &#123;</span><br><span class="line">        return &#39;购买订单&#39;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public function cancel()</span><br><span class="line">    &#123;</span><br><span class="line">        return &#39;取消订单&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Facade</span><br><span class="line">&#123;</span><br><span class="line">    protected $good;</span><br><span class="line">    protected $stock;</span><br><span class="line">    protected $order;</span><br><span class="line"></span><br><span class="line">    public function __construct()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;good &#x3D; new Good();</span><br><span class="line">        $this-&gt;stock &#x3D; new Stock();</span><br><span class="line">        $this-&gt;order &#x3D; new Order();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public function confirm()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;good-&gt;add(&#39;衣服&#39;);</span><br><span class="line">        $this-&gt;stock-&gt;reduce(1);</span><br><span class="line">        $this-&gt;order-&gt;buy();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public function cancel()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;good-&gt;add(&#39;裤子&#39;);</span><br><span class="line">        $this-&gt;stock-&gt;reduce(2);</span><br><span class="line">        $this-&gt;order-&gt;cancel();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h4 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">$facade &#x3D; new Facade();</span><br><span class="line"></span><br><span class="line">$facade-&gt;confirm();</span><br><span class="line"></span><br><span class="line">$facade-&gt;cancel();</span><br></pre></td></tr></table></figure>
+
+<p><strong>优势</strong></p>
 <ul>
-<li><p>连接Elasticsearch的客户端</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$hosts &#x3D; [127.0.0.1:9200];</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;setRetries 设置链接次数，例如，如果你有 10 个节点，设置 setRetries(5) ，客户端便会最多发送 5 次连接命令。如果 5 个节点返回的结果都是 connection timeout，那么客户端会抛出 OperationTimeoutException 。由于连接池处于使用状态，这些节点也可能会被标记为死节点。</span><br><span class="line"></span><br><span class="line">$client &#x3D; \Elasticsearch\ClientBuilder::create()</span><br><span class="line">	-&gt;setHosts($hosts)</span><br><span class="line">	-&gt;setRetries(3)</span><br><span class="line">	-&gt;build();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建索引</p>
-</li>
+<li>它可以对客户屏蔽子系统组件，因而减少了客户处理的对象的数目并使得子系统使用起来更加方便。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$es &#x3D; $client-&gt;create($params);  &#x2F;&#x2F;create当存在相同的index+type+id的时候报错</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -208,6 +208,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
 
         
 
@@ -215,13 +218,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/08/05/es%E6%90%9C%E7%B4%A2%E8%AF%AD%E5%8F%A5/" rel="prev" title="elasticsearch查询">
-      <i class="fa fa-chevron-left"></i> elasticsearch查询
+    <a href="/2021/07/30/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" rel="prev" title="工厂模式（Factory）">
+      <i class="fa fa-chevron-left"></i> 工厂模式（Factory）
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/09/11/RabbitMQ%E7%9A%84%E9%97%AE%E9%A2%98/" rel="next" title="RabbitMQ的问题">
-      RabbitMQ的问题 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -280,7 +280,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Elasticsearch-7-X版本创建索引"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch 7.X版本创建索引</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#模式介绍"><span class="nav-number">1.</span> <span class="nav-text">模式介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#测试代码"><span class="nav-number">1.1.</span> <span class="nav-text">测试代码</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
